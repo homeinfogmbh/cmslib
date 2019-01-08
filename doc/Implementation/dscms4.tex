@@ -1,0 +1,86 @@
+\documentclass[a4paper]{article}
+
+% Paketimporte
+\usepackage[ngerman]{babel} % Neue Deutsche Rechtschreibung
+\usepackage[utf8]{inputenc} % UTF-8 für plattformunabhängige Codierung mit Umlauten
+\DeclareUnicodeCharacter{00A0}{ } % Für no-break-spaces
+\usepackage{eurosym} % €-Symbol
+\usepackage{titlesec} % Textüberschriften anpassen
+\usepackage[pdftex]{graphicx} % Für Grafiken
+\usepackage{float} 
+\usepackage{url} % Für korrekte URL-Formatierung
+\usepackage{wrapfig} % Für Abbildungen mit textumlauf
+\usepackage{csquotes} % Für Zitate
+\usepackage{glossaries} % Für Glossar
+\usepackage[markup=nocolor,deletedmarkup=xout]{changes} % Für Änderungen
+\usepackage[section]{placeins} % Für floar barrier
+
+% \titleformat{⟨Überschriftenklasse⟩}[Absatzformatierung⟩]{⟨Textformatierung⟩} {⟨Nummerierung⟩}{⟨Abstand zwischen Nummerierung und Überschriftentext⟩}{⟨Code vor der Überschrift⟩}[⟨Code nach der Überschrift⟩]
+
+\titleformat{\chapter}[hang]{\large\bfseries}{\thechapter\quad}{0pt}{}
+\titleformat{\section}[hang]{\large\bfseries}{\thesection\quad}{0pt}{}
+\titleformat{\subsection}[hang]{\large\bfseries}{\thesubsection\quad}{0pt}{}
+\titleformat{\subsubsection}[hang]{\large\bfseries}{\thesubsubsection\quad}{0pt}{}
+\titleformat{\paragraph}[hang]{\large\bfseries}{\theparagraph\quad}{0pt}{}
+
+% \titlespacing{⟨Überschriftenklasse⟩}{⟨Linker Einzug⟩}{⟨Platz oberhalb⟩}{⟨Platz unterhalb⟩}[⟨rechter Einzug⟩]
+
+\titlespacing{\chapter}{0pt}{-3em}{6pt}
+\titlespacing{\section}{0pt}{6pt}{6pt}
+\titlespacing{\subsection}{0pt}{6pt}{6pt}
+\titlespacing{\subsubsection}{0pt}{6pt}{6pt}
+\titlespacing{\paragraph}{0pt}{6pt}{6pt}
+
+%Toleranzen für Mikrotypographie
+\pretolerance=150
+\setlength{\emergencystretch}{10em}
+
+% Metadaten
+\title{Entwurf zum Projekt \linebreak \enquote{DSCMS4}}
+\author{HOMEINFO - Digitale Informationssysteme GmbH}
+\date{\today}
+
+% Inhaltsverzeichnis-Konfiguration
+\setcounter{tocdepth}{5}
+\setcounter{secnumdepth}{5}
+
+% Glossar
+\makeglossaries
+	
+\begin{document}	
+	% Titelblatt
+	\maketitle
+	\pagebreak
+	
+	% Inhaltsverzeichnis
+	\tableofcontents
+	\pagebreak
+	
+	\section*{Vorwort}
+	Dieser Entwurf stellt fest, wie das DSCMS4 implementiert werden soll. Er enthält dazu die Beschreibung der notwendigen technischen Komponenten deren Aufbau und Beziehungen zueinander.
+	Vermerke und ausstehende Aktionen sind \emph{kursiv} gedruckt.
+	\section*{Änderungsliste}
+	\begin{itemize}
+		\item 05.03.2017
+		\begin{itemize}
+			\item Erstellung des Dokuments.
+		\end{itemize}
+	\end{itemize}
+	
+	\pagebreak
+	\section{Komponenten}
+	Das DSCMS4 teilt sich als Webanwendung in Frontend und Backend auf.
+	\subsection{Frontend}
+	Das Frontend des DSMCS4 soll, wie bereits in der Anforderungsspezifikation festgehalten in HTML5 mit CSS3 und JavaScript implementiert werden.
+	Eine serverseitige Bearbeitung des Frontends ist ausgeschlossen.
+	TODO: Implementationsbeschreibung durch Raphael Haupt.
+	\subsection{Backend}
+	Das Backend soll gemäß der Anforderungsspezifikation auf einem Linux-Server lauffähig sein und als HIS-Modul implementiert werden.
+	Daher ist eine Implementation as UWSGI Dienst in Python3 naheliegend.
+	\subsubsection{Datenbanken}
+	Um die in der Anforderungsanalyse vorgegebenen Entitäten werden in einer MariaDB Datenbank mit InnoDB Engine wie folgt implementiert.
+	TODO: (E)ER Diagramme einfügen.
+	\subsubsection{Objektrelationales Mapping}
+	TODO: ORM Modelle
+	\subsubsection{Controller}
+\end{document}
