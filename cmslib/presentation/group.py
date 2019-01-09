@@ -10,7 +10,6 @@ from cmslib.orm.content.group import GroupBaseChart
 from cmslib.orm.content.group import GroupConfiguration
 from cmslib.orm.content.group import GroupMenu
 from cmslib.orm.menu import Menu
-
 from cmslib.presentation.common import charts
 from cmslib.presentation.common import indexify
 from cmslib.presentation.common import PresentationMixin

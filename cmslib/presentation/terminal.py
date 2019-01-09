@@ -15,7 +15,6 @@ from cmslib.orm.content.group import GroupBaseChart
 from cmslib.orm.content.group import GroupMenu
 from cmslib.orm.group import GroupMemberTerminal
 from cmslib.orm.menu import Menu
-
 from cmslib.presentation.common import charts
 from cmslib.presentation.common import indexify
 from cmslib.presentation.common import level_configs

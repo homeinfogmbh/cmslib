@@ -1,8 +1,8 @@
 """Per-customer Settings regarding this CMS itself.
 Not to be confused with "configuration".
 """
-
 from peewee import BooleanField
+
 from cmslib.orm.common import CustomerModel
 
 

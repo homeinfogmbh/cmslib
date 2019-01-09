@@ -2,7 +2,7 @@
 
 from peewee import CharField, ForeignKeyField, IntegerField, TextField
 
-from comcat import Account
+from comcatlib import Account
 from his.messages.data import MissingKeyError, InvalidKeys
 from terminallib import Terminal
 
