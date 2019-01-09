@@ -10,7 +10,9 @@ setup(
     author_email='<info at homeinfo dot de>',
     maintainer='Richard Neumann',
     maintainer_email='<r dot neumann at homeinfo period de>',
-    requires=['his'],
+    requires=[
+        'comcatlib', 'configlib', 'flask', 'functoolsplus', 'his', 'hisfs',
+        'mdb', 'peewee', 'peeweeplus', 'pyxb', 'terminallib'],
     packages=[
         'cmslib',
         'cmslib.messages',
