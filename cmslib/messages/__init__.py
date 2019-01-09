@@ -1,1 +1,1 @@
-"""DSCMS4 messages."""
+"""JSON messages."""

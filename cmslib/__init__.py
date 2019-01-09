@@ -1,7 +1,3 @@
-"""DSCMS 4.
-
-Digital Signage Content Management System version 4.
-
-A web application backend to edit and publish digital
-signage applications based on the HIS framework.
+"""Library for JSON messages, ORM models and common
+operations regarding HOMEINFO's content management systems.
 """
