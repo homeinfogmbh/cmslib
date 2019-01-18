@@ -23,9 +23,14 @@ class RSS(Chart):
     url = CharField()
 
     @property
-    def rss(self):
-        """Returns the RSS data."""
-        return get(self.url)
+    def feed(self):
+        """Returns the RSS feed."""
+        response = get(self.url)
+
+        if response.status_code == 200:
+            return response.text
+
+        return None
 
     def to_dom(self, brief=False):
         """Returns an XML DOM of this chart."""
