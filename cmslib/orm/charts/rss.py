@@ -25,12 +25,7 @@ class RSS(Chart):
     @property
     def rss(self):
         """Returns the RSS data."""
-        response = get(self.url)
-
-        if response.status_code == 200:
-            return response.text
-
-        return None
+        return get(self.url)
 
     def to_dom(self, brief=False):
         """Returns an XML DOM of this chart."""
