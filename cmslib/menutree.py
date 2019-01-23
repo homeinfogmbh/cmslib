@@ -4,7 +4,7 @@ from collections import defaultdict
 from itertools import chain
 from json import dumps
 
-from cmslib import dom
+from cmslib import dom  # pylint: disable=E0611
 
 
 __all__ = ['add', 'merge', 'get_index', 'MenuTreeItem']

@@ -11,8 +11,6 @@ __all__ = [
 class CMSLibError(Exception):
     """Base class for exceptions within the DSCMS4."""
 
-    pass
-
 
 class OrphanedBaseChart(CMSLibError):
     """Indicates that the respective base chart is orphaned."""
@@ -29,8 +27,6 @@ class OrphanedBaseChart(CMSLibError):
 
 class AmbiguityError(CMSLibError):
     """Indicates an error due to ambiguous information."""
-
-    pass
 
 
 class AmbiguousBaseChart(AmbiguityError):
@@ -63,5 +59,3 @@ class AmbiguousConfigurationsError(AmbiguityError):
 
 class NoConfigurationFound(CMSLibError):
     """Indicates that no configuration has been found."""
-
-    pass

@@ -3,7 +3,7 @@
 from peewee import CharField, ForeignKeyField, IntegerField, TextField
 
 from comcatlib import Account
-from his.messages.data import MissingKeyError, InvalidKeys
+from his.messages.data import MISSING_KEY_ERROR, INVALID_KEYS
 from terminallib import Terminal
 
 from cmslib.messages.data import CIRCULAR_REFERENCE
@@ -133,11 +133,11 @@ class GroupMember(DSCMS4Model):
         try:
             member_type = json.pop('type')
         except KeyError:
-            raise MissingKeyError('type')
+            raise MISSING_KEY_ERROR.update(key='type')
 
         # The remaining key/value pairs are record identifiers.
         if not json:
-            raise MissingKeyError('<identifiers>')
+            raise MISSING_KEY_ERROR.update(key='<identifiers>')
 
         try:
             member_mapping_class = GROUP_MEMBERS[member_type]
@@ -159,7 +159,7 @@ class GroupMember(DSCMS4Model):
                 select &= field == value
 
         if invalid_keys:
-            raise InvalidKeys(keys=invalid_keys)
+            raise INVALID_KEYS.update(keys=invalid_keys)
 
         try:
             member = member_class.get(select)
