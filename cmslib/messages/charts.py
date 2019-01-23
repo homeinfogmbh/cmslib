@@ -1,82 +1,34 @@
 """Charts related messages."""
 
-from cmslib.messages.common import DSCMS4Message
+from cmslib.messages.facility import DSCMS4_MESSAGE
 
 
 __all__ = [
-    'ChartDataIncomplete',
-    'ChartDataInvalid',
-    'NoChartTypeSpecified',
-    'InvalidChartType',
-    'NoChartIdSpecified',
-    'NoSuchChart',
-    'NoSuchBaseChart',
-    'ChartAdded',
-    'ChartDeleted',
-    'ChartPatched']
+    'CHART_DATA_INCOMPLETE',
+    'CHART_DATA_INVALID',
+    'NO_CHART_TYPE_SPECIFIED',
+    'INVALID_CHART_TYPE',
+    'NO_CHART_ID_SPECIFIED',
+    'NO_SUCH_CHART',
+    'NO_SUCH_BASE_CHART',
+    'CHART_ADDED',
+    'CHART_DELETED',
+    'CHART_PATCHED',
+    'CHART_TYPE_ADDED']
 
 
-class ChartDataIncomplete(DSCMS4Message):
-    """Indicates that necessary data is missing."""
-
-    STATUS = 400
-
-
-class ChartDataInvalid(DSCMS4Message):
-    """Indicates that some data is invalid."""
-
-    STATUS = 400
-
-
-class NoChartTypeSpecified(DSCMS4Message):
-    """Indicates that no chart type has been specified."""
-
-    STATUS = 422
-
-
-class InvalidChartType(DSCMS4Message):
-    """Indicates that an invalid chart type has been specified."""
-
-    STATUS = 406
-
-
-class NoChartIdSpecified(DSCMS4Message):
-    """Indicates that no chart ID has been specified."""
-
-    STATUS = 422
-
-
-class NoSuchChart(DSCMS4Message):
-    """Indicates that the specified chart does not exist."""
-
-    STATUS = 404
-
-
-class NoSuchBaseChart(DSCMS4Message):
-    """Indicates that the respective base chart does not exist."""
-
-    STATUS = 404
-
-
-class ChartAdded(DSCMS4Message):
-    """Indicates that a new chart was successfully added."""
-
-    STATUS = 201
-
-
-class ChartDeleted(DSCMS4Message):
-    """Indicates that a chart was successfully deleted."""
-
-    STATUS = 200
-
-
-class ChartPatched(DSCMS4Message):
-    """Indicates that a chart was successfully patched."""
-
-    STATUS = 200
-
-
-class ChartTypeAdded(DSCMS4Message):
-    """Indicates that the respective chart type was successfully added."""
-
-    STATUS = 201
+CHART_DATA_INCOMPLETE = DSCMS4_MESSAGE('Chart data is incomplete.', status=400)
+CHART_DATA_INVALID = DSCMS4_MESSAGE('Chart data is invalid.', status=400)
+NO_CHART_TYPE_SPECIFIED = DSCMS4_MESSAGE(
+    'No chart type specified.', status=422)
+INVALID_CHART_TYPE = DSCMS4_MESSAGE(
+    'Invalid chart type specified.', status=406)
+NO_CHART_ID_SPECIFIED = DSCMS4_MESSAGE('No chart ID specified.', status=422)
+NO_SUCH_CHART = DSCMS4_MESSAGE(
+    'The specified chart does not exist.', status=404)
+NO_SUCH_BASE_CHART = DSCMS4_MESSAGE(
+    'The specified base chart does not exist.', status=404)
+CHART_ADDED = DSCMS4_MESSAGE('The chart has been added.', status=201)
+CHART_DELETED = DSCMS4_MESSAGE('The chart has been deleted.', status=200)
+CHART_PATCHED = DSCMS4_MESSAGE('The chart has been patched.', status=200)
+CHART_TYPE_ADDED = DSCMS4_MESSAGE('The chart type has been added.', status=201)

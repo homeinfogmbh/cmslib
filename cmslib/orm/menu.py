@@ -7,8 +7,8 @@ from peewee import ForeignKeyField, CharField, IntegerField
 
 from cmslib import dom
 from cmslib.exceptions import OrphanedBaseChart, AmbiguousBaseChart
-from cmslib.messages.common import CircularReference
-from cmslib.messages.menu import NoMenuSpecified, DifferentMenusError
+from cmslib.messages.data import CIRCULAR_REFERENCE
+from cmslib.messages.menu import NO_MENU_SPECIFIED, DIFFERENT_MENUS_ERROR
 from cmslib.orm.common import UNCHANGED, CustomerModel, DSCMS4Model
 from cmslib.orm.charts import ChartMode, BaseChart
 
@@ -123,7 +123,7 @@ class MenuItem(DSCMS4Model):
     def _get_menu(self, menu, customer=None):
         """Returns the respective menu."""
         if menu is None:
-            raise NoMenuSpecified()
+            raise NO_MENU_SPECIFIED
 
         if menu is UNCHANGED:
             return self.menu
@@ -155,10 +155,10 @@ class MenuItem(DSCMS4Model):
 
         if parent is not None:
             if parent.menu != menu:
-                raise DifferentMenusError()
+                raise DIFFERENT_MENUS_ERROR
 
             if parent in self.childrens_children:
-                raise CircularReference()
+                raise CIRCULAR_REFERENCE
 
         self.menu = menu
         self.parent = parent

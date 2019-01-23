@@ -6,7 +6,7 @@ from flask import request
 
 from hisfs import File
 
-from cmslib.messages.preview import Unauthorized
+from cmslib.messages.preview import UNAUTHORIZED
 
 
 __all__ = ['preview', 'file_preview']
@@ -25,7 +25,7 @@ def preview(token_class):
                 token = token_class.get(
                     token_class.token == request.args.get('token'))
             except token_class.DoesNotExist:
-                raise Unauthorized()
+                raise UNAUTHORIZED
 
             return function(token.obj, *args, **kwargs)
 
@@ -51,7 +51,7 @@ def file_preview(presentation_class):
                     & (File.customer == presentation.customer))
                 return function(file, *args, **kwargs)
 
-            raise Unauthorized(files=list(presentation.files))
+            raise UNAUTHORIZED.update(files=list(presentation.files))
 
         return wrapper
 

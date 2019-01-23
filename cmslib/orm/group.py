@@ -6,8 +6,8 @@ from comcatlib import Account
 from his.messages.data import MissingKeyError, InvalidKeys
 from terminallib import Terminal
 
-from cmslib.messages.common import CircularReference
-from cmslib.messages.group import NoSuchMemberType, NoSuchMember
+from cmslib.messages.data import CIRCULAR_REFERENCE
+from cmslib.messages.group import NO_SUCH_MEMBER_TYPE, NO_SUCH_MEMBER
 from cmslib.orm.common import DSCMS4Model, CustomerModel
 
 
@@ -80,7 +80,7 @@ class Group(CustomerModel):
             parent = self.get_peer(parent)
 
             if parent == self or parent in self.childrens_children:
-                raise CircularReference()
+                raise CIRCULAR_REFERENCE
 
         self.parent = parent
 
@@ -142,7 +142,7 @@ class GroupMember(DSCMS4Model):
         try:
             member_mapping_class = GROUP_MEMBERS[member_type]
         except KeyError:
-            raise NoSuchMemberType()
+            raise NO_SUCH_MEMBER_TYPE
 
         member_class = member_mapping_class.member.rel_model
         # Make sure to filter for the respective customer.
@@ -164,7 +164,7 @@ class GroupMember(DSCMS4Model):
         try:
             member = member_class.get(select)
         except member_class.DoesNotExist:
-            raise NoSuchMember()
+            raise NO_SUCH_MEMBER
 
         return member_mapping_class(group=group, member=member)
 

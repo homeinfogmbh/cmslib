@@ -16,208 +16,250 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Hand\n"
 
-### Charts messages. ####
+#: charts.py:20
+msgid "Chart data is incomplete."
+msgstr "Die Chart-Daten sind unvollständig."
 
-msgid "ChartDataIncomplete"
-msgstr "Chart Daten unvollständig."
+#: charts.py:21
+msgid "Chart data is invalid."
+msgstr "Die Chart-Daten sind ungültig."
 
-msgid "ChartDataInvalid"
-msgstr "Chart Daten ungültig."
-
-msgid "NoChartTypeSpecified"
+#: charts.py:22
+msgid "No chart type specified."
 msgstr "Kein Chart Typ angegeben."
 
-msgid "InvalidChartType"
-msgstr "Ungültiger Chart Typ."
+#: charts.py:24
+msgid "Invalid chart type specified"
+msgstr "Der angegebene Chart-Typ ist ungültig."
 
-msgid "NoChartIdSpecified"
+#: charts.py:26
+msgid "No chart ID specified."
 msgstr "Keine Chart ID angegeben."
 
-msgid "NoSuchChart"
-msgstr "Kein solcher Chart."
+#: charts.py:27
+msgid "The specified chart does not exist."
+msgstr "Der angegebene Chart existiert nicht."
 
-msgid "NoSuchBaseChart"
-msgstr "Kein solcher Basischart."
+#: charts.py:29
+msgid "The specified base chart does not exist."
+msgstr "Der angegebene Bsischart existiert nicht."
 
-msgid "ChartAdded"
-msgstr "Chart hinzugefügt."
+#: charts.py:31
+msgid "The chart has been added."
+msgstr "Der Chart wurde hinzugefügt."
 
-msgid "ChartDeleted"
-msgstr "Chart deleted."
+#: charts.py:32
+msgid "The chart has been deleted."
+msgstr "Der Chart wurde gelöscht."
 
-msgid "ChartPatched"
-msgstr "Chart gepatcht."
+#: charts.py:33
+msgid "The chart has been patched."
+msgstr "Der Chart wurde aktualisiert."
 
-msgid "ChartTypeAdded"
-msgstr "Chart-Typ hinzugefügt."
+#: charts.py:34
+msgid "The chart type has been added."
+msgstr "Der Chart-Typ wurde hinzugefügt."
 
-### Miscellaneous messages. ###
+#: configuration.py:13
+msgid "No such configuration."
+msgstr "Die angegebene Konfiguration existiert nicht."
 
-msgid "InvalidId"
-msgstr "Ungültige ID."
+#: configuration.py:14
+msgid "Configuration has been added."
+msgstr "Die Konfiguration wurde hinzugefügt."
 
-msgid "NoIdSpecified"
-msgstr "Keine ID angegeben."
+#: configuration.py:16
+msgid "Configuration has been patched."
+msgstr "Die Konfiguration wurde aktualisiert."
 
-msgid "CircularReference"
-msgstr "Zirkelbezug entdeckt."
+#: configuration.py:18
+msgid "Configuration has been deleted."
+msgstr "Die Konfiguration wurde gelöscht."
 
-msgid "InvalidReference"
-msgstr "Ungültige Referenz."
+#: content.py:16
+msgid "No such content."
+msgstr "Der angegebene Inhalt existiert nicht."
 
-### Configuration messages. ###
-
-msgid "NoSuchConfiguration"
-msgstr "Keine solche Konfiguration."
-
-msgid "ConfigurationAdded"
-msgstr "Konfiguration hinzugefügt."
-
-msgid "ConfigurationPatched"
-msgstr "Konfiguration gepatcht."
-
-msgid "ConfigurationDeleted"
-msgstr "Konfiguration gelöscht."
-
-### Content messages. ###
-
-msgid "NoSuchContent"
-msgstr "Kein solcher Inhalt."
-
-msgid "NoTypeSpecified"
+#: content.py:17
+msgid "No type specified."
 msgstr "Kein Typ angegeben."
 
-msgid "InvalidContentType"
-msgstr "Ungültiger Inhaltstyp."
+#: content.py:18
+msgid "Invalid content type."
+msgstr "Der angegebene Inhaltstyp is ungültig."
 
-msgid "ContentAdded"
-msgstr "Inhalt hinzugefügt."
+#: content.py:19
+msgid "Content added."
+msgstr "Inhalt wurde hinzugefügt."
 
-msgid "ContentExists"
-msgstr "Inhalt existiert bereits."
+#: content.py:20
+msgid "Content already exists."
+msgstr "Diser Inhalt wurde bereits hinzugefügt."
 
-msgid "ContentPatched"
-msgstr "Inhalt aktualisiert."
+#: content.py:21
+msgid "Content patched."
+msgstr "Inhalt wurde aktualisiert."
 
-msgid "ContentDeleted"
-msgstr "Inhalt gelöscht."
+#: content.py:22
+msgid "Content deleted."
+msgstr "Inhalt wurde gelöscht."
 
-### Group messages. ###
+#: data.py:13
+msgid "Invalid ID."
+msgstr "Ungültige ID."
 
-msgid "NoSuchGroup"
-msgstr "Keine solche Gruppe."
+#: data.py:14
+msgid "No ID specified."
+msgstr "Keine ID angegeben."
 
-msgid "NoSuchMemberType"
-msgstr "Kein solcher Mitgliedstyp."
+#: data.py:15
+msgid "'Circular reference detected."
+msgstr "Zirkelbezug entdeckt."
 
-msgid "NoSuchMember"
-msgstr "Kein solches Mitglied."
+#: data.py:16
+msgid "Invalid reference."
+msgstr "Ungültige Referenz."
 
-msgid "GroupAdded"
-msgstr "Gruppe hinzugefügt."
+#: group.py:17
+msgid "The specified group does not exist."
+msgstr "Die angegebene Gruppe existiert nicht."
 
-msgid "GroupPatched"
-msgstr "Gruppe gepatcht."
+#: group.py:19
+msgid "The specified member type does not exist."
+msgstr "Der angegebene Mitgliedstyp existiert nicht."
 
-msgid "GroupDeleted"
-msgstr "Gruppe gelöscht."
+#: group.py:21
+msgid "The group does not contain the specified member."
+msgstr "Die Gruppe beinhaltet das angegebene Mitglied nicht."
 
-msgid "MemberAdded"
-msgstr "Mitglied hinzugefügt."
+#: group.py:23
+msgid "The group has been added."
+msgstr "Die Gruppe wurde hinzugefügt."
 
-msgid "MemberDeleted"
-msgstr "Mitglied entfernt."
+#: group.py:24
+msgid "The group has been patched."
+msgstr "Die Gruppe wurde aktualisiert."
 
-### Menu messages. ###
+#: group.py:25
+msgid "The group has been deleted."
+msgstr "Die Gruppe wurde gelöscht."
 
-msgid "NoMenuSpecified"
+#: group.py:26
+msgid "The specified member has been added to the group."
+msgstr "Das angegebene Mitglied wurde der Gruppe hinzugefügt."
+
+#: group.py:28
+msgid "The specified member has been removed from the group."
+msgstr "Das angegebene Mitglied wurde aus der Gruppe entfernt."
+
+#: menu.py:30
+msgid "No menu specified."
 msgstr "Kein Menü angegeben."
 
-msgid "NoSuchMenu"
-msgstr "Kein solches Menü."
+#: menu.py:31
+msgid "No such menu."
+msgstr "Das angegebene Menü existiert nicht."
 
-msgid "InvalidMenuData"
-msgstr "Ungültige Menüdaten."
+#: menu.py:32
+msgid "The menu data is invalid."
+msgstr "Die angegebenen Menüdaten sind ungültig."
 
-msgid "MenuAdded"
-msgstr "Menü hinzugefügt."
+#: menu.py:33
+msgid "The menu has been added."
+msgstr "Das Menü wurde hinzugefügt."
 
-msgid "MenuPatched"
-msgstr "Menü aktualisiert."
+#: menu.py:34
+msgid "The menu has been patched."
+msgstr "Das Menü wurde aktualisiert."
 
-msgid "MenuCopied"
-msgstr "Menü kopiert."
+#: menu.py:35
+msgid "The menu has been copied."
+msgstr "Das Menü wurde kopiert."
 
-msgid "MenuDeleted"
-msgstr "Menü gelöscht."
+#: menu.py:36
+msgid "The menu has been deleted."
+msgstr "Das Menü wurde gelöscht."
 
-msgid "NoMenuItemSpecified"
+#: menu.py:37
+msgid "No menu item specified."
 msgstr "Kein Menüelement angegeben."
 
-msgid "NoSuchMenuItem"
-msgstr "Kein solches Menüelement."
+#: menu.py:38
+msgid "No such menu item."
+msgstr "Das angegebene Menüelement existiert nicht."
 
-msgid "MenuItemAdded"
-msgstr "Menüelement hinzugefügt."
+#: menu.py:39
+msgid "The menu item has been added."
+msgstr "Das Menüelement wurde hinzugefügt."
 
-msgid "MenuItemPatched"
-msgstr "Menüelement aktualisiert."
+#: menu.py:40
+msgid "The menu item has been patched."
+msgstr "Das Menüelement wurde aktualisiert."
 
-msgid "MenuItemDeleted"
-msgstr "Menüelement gelöscht."
+#: menu.py:42
+msgid "The menu item has been deleted."
+msgstr "Das Menüelement wurde gelöscht."
 
-msgid "MenuItemsSorted"
-msgstr "Menüelemente sortiert."
+#: menu.py:44
+msgid "The menu items have been sorted."
+msgstr "Die Menüelemente wurden sortiert."
 
-msgid "DifferentMenusError"
-msgstr "Menüelemente befinden sich in unterschiedlichen Menüs."
+#: menu.py:46
+msgid "The menu items are members of different menus."
+msgstr "Die Menüelemente befinden sich in unterschiedlichen Menüs."
 
-msgid "DifferentParentsError"
-msgstr "Menüelemente befinden sich in Untermenüs."
+#: menu.py:48
+msgid "The menu items have different parent items."
+msgstr "Die Menüelemente befinden sich in verschiedenen Untermenüs."
 
-msgid "NoSuchMenuItemChart"
-msgstr "Kein solcher Menüelementchart."
+#: menu.py:50
+msgid "The menu item chart does not exist."
+msgstr "Der angegebene Menüelementchart existiert nicht."
 
-msgid "MenuItemChartAdded"
-msgstr "Menüelementchart hinzugefügt."
+#: menu.py:52
+msgid "The menu item chart has been added."
+msgstr "Der Menüelementchart wurde hinzugefügt."
 
-msgid "MenuItemChartDeleted"
-msgstr "Menüelementchart gelöscht."
+#: menu.py:54
+msgid "The menu item chart has been deleted."
+msgstr "Der Menüelementchart wurde gelöscht."
 
-msgid "MenuItemChartsSorted"
-msgstr "Menüelementcharts sortiert."
+#: menu.py:56
+msgid "The menu item charts have been sorted."
+msgstr "Die Menüelementcharts wurden sortiert."
 
-msgid "DifferentMenuItemsError"
-msgstr "Menüelementcharts befinden sich in unterschiedlichen Menüelementen."
+#: menu.py:58
+msgid "The menu item charts are members of different menu items."
+msgstr "Die Menüelementcharts befinden sich in unterschiedlichen Menüelementen."
 
-msgid "MenuXorParent"
+#: menu.py:60
+msgid "Must specify exclusively a menu or a parent menu item."
 msgstr "Es müssen entweder das Menü oder das Elternelement angegeben werden."
 
-### Presentation messages. ###
-
-msgid "AmbiguousConfigurations"
+#: presentation.py:9
+msgid "Ambiguous assignment of configurations."
 msgstr "Mehrdeutige Zuweisung von Konfigurationen."
 
-msgid "NoConfigurationAssigned"
+#: presentation.py:11
+msgid "No configuration assigned."
 msgstr "Keine Konfiguration zugewiesen."
 
-### Preview messages. ###
-
-msgid "Unauthorized"
+#: preview.py:9
+msgid "Preview not allowed."
 msgstr "Vorschau nicht gestattet."
 
-msgid "InvalidTokenType"
+#: preview.py:10
+msgid "Invalid token type."
 msgstr "Ungültiger Token-Typ."
 
-msgid "NoSuchObject"
-msgstr "Kein solches Objekt."
+#: preview.py:11
+msgid "No such preview object."
+msgstr "Kein solches Objekt für Vorschau."
 
-### Settings messages. ###
-
-msgid "SettingsSaved"
+#: settings.py:9
+msgid "Settings saved."
 msgstr "Einstellungen gespeichert."
 
-### Terminal messages. ###
-
-msgid "NoSuchTerminal"
-msgstr "Kein solches Terminal."
+#: terminal.py:9
+msgid "The specified terminal does not exist."
+msgstr "Das angegebene Terminal existiert nicht."

@@ -1,12 +1,10 @@
 """Terminal related messages."""
 
-from cmslib.messages.common import DSCMS4Message
+from cmslib.messages.facility import DSCMS4_MESSAGE
 
 
-__all__ = ['NoSuchTerminal']
+__all__ = ['NO_SUCH_TERMINAL']
 
 
-class NoSuchTerminal(DSCMS4Message):
-    """Indicates that the respective terminal does not exist."""
-
-    STATUS = 404
+NO_SUCH_TERMINAL = DSCMS4_MESSAGE(
+    'The specified terminal does not exist.', status=404)

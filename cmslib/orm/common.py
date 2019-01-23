@@ -8,7 +8,7 @@ from mdb import Customer
 from peeweeplus import MySQLDatabase, JSONModel
 
 from cmslib.config import CONFIG, LOGGER
-from cmslib.messages.common import InvalidReference
+from cmslib.messages.data import INVALID_REFERENCE
 
 
 __all__ = [
@@ -80,10 +80,10 @@ class CustomerModel(DSCMS4Model):
             if record_or_id.customer == self.customer:
                 return record_or_id
 
-            raise InvalidReference()
+            raise INVALID_REFERENCE
 
         try:
             return cls.get(
                 (cls.id == record_or_id) & (cls.customer == self.customer))
         except cls.DoesNotExist:
-            raise InvalidReference()
+            raise INVALID_REFERENCE

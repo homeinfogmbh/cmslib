@@ -1,20 +1,12 @@
 """Presentation related messages."""
 
-from cmslib.messages.common import DSCMS4Message
+from cmslib.messages.facility import DSCMS4_MESSAGE
 
 
-__all__ = ['AmbiguousConfigurations', 'NoConfigurationAssigned']
+__all__ = ['AMBIGUOUS_CONFIGURATIONS', 'NO_CONFIGURATION_ASSIGNED']
 
 
-class AmbiguousConfigurations(DSCMS4Message):
-    """Indicates that multiple configurations
-    are configured on the same level.
-    """
-
-    STATUS = 400
-
-
-class NoConfigurationAssigned(DSCMS4Message):
-    """Indicates that no configuration has been assigned."""
-
-    STATUS = 400
+AMBIGUOUS_CONFIGURATIONS = DSCMS4_MESSAGE(
+    'Ambiguous assignment of configurations.', status=400)
+NO_CONFIGURATION_ASSIGNED = DSCMS4_MESSAGE(
+    'No configuration assigned.', status=400)

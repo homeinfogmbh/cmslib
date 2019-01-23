@@ -1,34 +1,19 @@
 """Configuration related messages."""
 
-from cmslib.messages.common import DSCMS4Message
+from cmslib.messages.facility import DSCMS4_MESSAGE
 
 
 __all__ = [
-    'NoSuchConfiguration',
-    'ConfigurationAdded',
-    'ConfigurationPatched',
-    'ConfigurationDeleted']
+    'NO_SUCH_CONFIGURATION',
+    'CONFIGURATION_ADDED',
+    'CONFIGURATION_PATCHED',
+    'CONFIGURATION_DELETED']
 
 
-class NoSuchConfiguration(DSCMS4Message):
-    """Indicates that the respective configuration was not found."""
-
-    STATUS = 404
-
-
-class ConfigurationAdded(DSCMS4Message):
-    """indicates that the configuration was successfully added."""
-
-    STATUS = 201
-
-
-class ConfigurationPatched(DSCMS4Message):
-    """Indicates that the configuration was successfully patched."""
-
-    STATUS = 200
-
-
-class ConfigurationDeleted(DSCMS4Message):
-    """Indicates that the configuration was successfully deleted."""
-
-    STATUS = 200
+NO_SUCH_CONFIGURATION = DSCMS4_MESSAGE('No such configuration.', status=404)
+CONFIGURATION_ADDED = DSCMS4_MESSAGE(
+    'Configuration has been added.', status=201)
+CONFIGURATION_PATCHED = DSCMS4_MESSAGE(
+    'Configuration has been patched.', status=200)
+CONFIGURATION_DELETED = DSCMS4_MESSAGE(
+    'Configuration has been deleted.', status=200)

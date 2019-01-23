@@ -19,7 +19,7 @@ from peewee import SmallIntegerField
 from peewee import TextField
 from peewee import UUIDField
 
-from his.messages import MissingData
+from his.messages.data import MISSING_DATA
 from peeweeplus import EnumField    # pylint: disable=E0401
 
 from cmslib import dom  # pylint: disable=E0611
@@ -250,7 +250,7 @@ class Chart(DSCMS4Model, metaclass=MetaChart):
         try:
             base_dict = json.pop('base')
         except KeyError:
-            raise MissingData(key='base')
+            raise MISSING_DATA.update(key='base')
 
         chart = super().from_json(json, **kwargs)
         chart.base = BaseChart.from_json(base_dict)

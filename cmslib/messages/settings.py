@@ -1,12 +1,9 @@
 """Charts related messages."""
 
-from cmslib.messages.common import DSCMS4Message
+from cmslib.messages.facility import DSCMS4_MESSAGE
 
 
-__all__ = ['SettingsSaved']
+__all__ = ['SETTINGS_SAVED']
 
 
-class SettingsSaved(DSCMS4Message):
-    """Indicates that the respective settings have been saved."""
-
-    STATUS = 200
+SETTINGS_SAVED = DSCMS4_MESSAGE('Settings saved.', status=200)

@@ -7,7 +7,7 @@ from peewee import ForeignKeyField, UUIDField
 from his import CUSTOMER
 from terminallib import Terminal
 
-from cmslib.messages.preview import NoSuchObject
+from cmslib.messages.preview import NO_SUCH_OBJECT
 from cmslib.orm.common import DSCMS4Model
 from cmslib.orm.group import Group
 
@@ -35,7 +35,7 @@ class _PreviewToken(DSCMS4Model):
             record = model.get(
                 cls.identify(model, ident) & (model.customer == CUSTOMER.id))
         except model.DoesNotExist:
-            raise NoSuchObject(type=model.__name__)
+            raise NO_SUCH_OBJECT.update(type=model.__name__)
 
         try:
             return cls.get(cls.obj == record)

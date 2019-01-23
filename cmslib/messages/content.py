@@ -1,55 +1,22 @@
 """Messages for content handlers."""
 
-from cmslib.messages.common import DSCMS4Message
+from cmslib.messages.facility import DSCMS4_MESSAGE
 
 
 __all__ = [
-    'NoSuchContent',
-    'NoTypeSpecified',
-    'InvalidContentType',
-    'ContentAdded',
-    'ContentExists',
-    'ContentPatched',
-    'ContentDeleted']
+    'NO_SUCH_CONTENT',
+    'NO_TYPE_SPECIFIED',
+    'INVALID_CONTENT_TYPE',
+    'CONTENT_ADDED',
+    'CONTENT_EXISTS',
+    'CONTENT_PATCHED',
+    'CONTENT_DELETED']
 
 
-class NoSuchContent(DSCMS4Message):
-    """Indicates that the respective content does not exist."""
-
-    STATUS = 404
-
-
-class NoTypeSpecified(DSCMS4Message):
-    """Indicates that no content type was specified."""
-
-    STATUS = 400
-
-
-class InvalidContentType(DSCMS4Message):
-    """Indicates that an invalid content type has bee specified."""
-
-    STATUS = 400
-
-
-class ContentAdded(DSCMS4Message):
-    """Indicates that the respective content was added."""
-
-    STATUS = 201
-
-
-class ContentExists(DSCMS4Message):
-    """Indicates that the respective content already exists."""
-
-    STATUS = 400
-
-
-class ContentPatched(DSCMS4Message):
-    """Indicates that the respective content was patched."""
-
-    STATUS = 200
-
-
-class ContentDeleted(DSCMS4Message):
-    """Indicates that the respective content was deleted."""
-
-    STATUS = 200
+NO_SUCH_CONTENT = DSCMS4_MESSAGE('No such content.', status=404)
+NO_TYPE_SPECIFIED = DSCMS4_MESSAGE('No type specified.', status=400)
+INVALID_CONTENT_TYPE = DSCMS4_MESSAGE('Invalid content type.', status=400)
+CONTENT_ADDED = DSCMS4_MESSAGE('Content added.', status=201)
+CONTENT_EXISTS = DSCMS4_MESSAGE('Content already exists.', status=400)
+CONTENT_PATCHED = DSCMS4_MESSAGE('Content patched.', status=200)
+CONTENT_DELETED = DSCMS4_MESSAGE('Content deleted.', status=200)
