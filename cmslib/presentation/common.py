@@ -20,20 +20,14 @@ from cmslib.orm.content.group import GroupConfiguration
 from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
 
 
-__all__ = [
-    'charts',
-    'identify',
-    'indexify',
-    'level_configs',
-    'uniquesort',
-    'PresentationMixin']
+__all__ = ['PresentationMixin']
 
 
 LOGGER = getLogger(__file__)
 
 
 @coerce(tuple)
-def charts(base_charts):
+def resolve_charts(base_charts):
     """Yields the charts of the respective base charts."""
 
     for base_chart in base_charts:
@@ -156,7 +150,7 @@ class PresentationMixin:
 
     @property
     @cached_method()
-    @coerce(charts)
+    @coerce(resolve_charts)
     def menu_charts(self):
         """Yields charts of the object's menu."""
         return BaseChart.select().join(MenuItemChart).join(MenuItem).where(
@@ -176,7 +170,7 @@ class PresentationMixin:
 
     @property
     @cached_method()
-    @coerce(charts)
+    @coerce(resolve_charts)
     def playlist(self):
         """Yields the playlist."""
         base_charts = chain(self._group_base_charts, self.base_charts)
