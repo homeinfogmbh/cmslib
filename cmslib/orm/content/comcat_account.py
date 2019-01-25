@@ -27,7 +27,7 @@ class _AccountContent(DSCMS4Model):
 class AccountBaseChart(_AccountContent):
     """Association of a base chart with an account."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'account_base_chart'
 
     base_chart = ForeignKeyField(
@@ -58,7 +58,7 @@ class AccountBaseChart(_AccountContent):
 class AccountConfiguration(_AccountContent):
     """Association of a configuration with an account."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'account_configuration'
 
     configuration = ForeignKeyField(
@@ -72,7 +72,7 @@ class AccountConfiguration(_AccountContent):
 class AccountMenu(_AccountContent):
     """Association of a menu with an account."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'account_menu'
 
     menu = ForeignKeyField(Menu, column_name='menu', on_delete='CASCADE')

@@ -25,7 +25,7 @@ class _GroupContent(DSCMS4Model):
 class GroupBaseChart(_GroupContent):
     """Association of a base chart with a group."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'group_base_chart'
 
     base_chart = ForeignKeyField(
@@ -56,7 +56,7 @@ class GroupBaseChart(_GroupContent):
 class GroupConfiguration(_GroupContent):
     """Association of a configuration with a group."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'group_configuration'
 
     configuration = ForeignKeyField(
@@ -70,7 +70,7 @@ class GroupConfiguration(_GroupContent):
 class GroupMenu(_GroupContent):
     """Association of a menu with a group."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'group_menu'
 
     menu = ForeignKeyField(Menu, column_name='menu', on_delete='CASCADE')

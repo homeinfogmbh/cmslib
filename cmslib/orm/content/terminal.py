@@ -27,7 +27,7 @@ class _TerminalContent(DSCMS4Model):
 class TerminalBaseChart(_TerminalContent):
     """Association of a base chart with a terminal."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'terminal_base_chart'
 
     base_chart = ForeignKeyField(
@@ -58,7 +58,7 @@ class TerminalBaseChart(_TerminalContent):
 class TerminalConfiguration(_TerminalContent):
     """Association of a configuration with a terminal."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'terminal_configuration'
 
     configuration = ForeignKeyField(
@@ -72,7 +72,7 @@ class TerminalConfiguration(_TerminalContent):
 class TerminalMenu(_TerminalContent):
     """Association of a menu with a terminal."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'terminal_menu'
 
     menu = ForeignKeyField(Menu, column_name='menu', on_delete='CASCADE')
