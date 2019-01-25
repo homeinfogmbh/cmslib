@@ -1,11 +1,11 @@
 """Common functions."""
 
 from contextlib import suppress
-from functools import partial
+from functools import lru_cache, partial
 from itertools import chain
 from logging import getLogger
 
-from functoolsplus import cached_method, coerce     # pylint: disable=E0401
+from functoolsplus import coerce    # pylint: disable=E0401
 
 from cmslib import dom  # pylint: disable=E0611
 from cmslib.exceptions import AmbiguousBaseChart
@@ -87,7 +87,7 @@ class PresentationMixin:
             & (BaseChart.trashed == 0)).order_by(GroupBaseChart.index)
 
     @property
-    @cached_method()
+    @lru_cache()
     @coerce(frozenset)
     def _groups(self):
         """Yields all groups in a breadth-first search."""
@@ -96,7 +96,7 @@ class PresentationMixin:
                 yield group
 
     @property
-    @cached_method()
+    @lru_cache()
     @coerce(frozenset)
     def _menus(self):
         """Yields the accumulated menus of this object."""
@@ -109,7 +109,7 @@ class PresentationMixin:
         return chain(self.playlist, self.menu_charts)
 
     @property
-    @cached_method()
+    @lru_cache()
     @coerce(frozenset)
     def files(self):
         """Yields the presentation's used file IDs."""
@@ -149,7 +149,7 @@ class PresentationMixin:
             level = frozenset(group.parent for group in level if group.parent)
 
     @property
-    @cached_method()
+    @lru_cache()
     @coerce(resolve_charts)
     def menu_charts(self):
         """Yields charts of the object's menu."""
@@ -169,7 +169,7 @@ class PresentationMixin:
         return sorted(merge(items), key=indexify)
 
     @property
-    @cached_method()
+    @lru_cache()
     @coerce(resolve_charts)
     def playlist(self):
         """Yields the playlist."""
