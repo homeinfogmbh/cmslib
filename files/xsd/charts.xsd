@@ -482,6 +482,20 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
+                    <xs:element name="font_size_quote" type="xs:nonNegativeInteger">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Textfarbe des Zitats.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="font_size_author" type="xs:nonNegativeInteger">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Textfarbe des Autors.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
