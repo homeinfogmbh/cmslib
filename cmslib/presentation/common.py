@@ -112,8 +112,7 @@ class PresentationMixin:
     @coerce(partial(uniquesort, key=identify))
     def charts(self):
         """Yields all charts for this object."""
-        yield from self.playlist
-        yield from self.menu_charts
+        return chain(self.playlist, self.menu_charts)
 
     @property
     @cached_method()
@@ -160,7 +159,7 @@ class PresentationMixin:
     @coerce(charts)
     def menu_charts(self):
         """Yields charts of the object's menu."""
-        yield from BaseChart.select().join(MenuItemChart).join(MenuItem).where(
+        return BaseChart.select().join(MenuItemChart).join(MenuItem).where(
             (BaseChart.trashed == 0) & (MenuItem.menu << self._menus))
 
     @property
