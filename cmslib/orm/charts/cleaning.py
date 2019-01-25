@@ -22,7 +22,7 @@ class Mode(Enum):
 class Cleaning(Chart):
     """Cleaning chart."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_cleaning'
 
     title = CharField(255, null=True)

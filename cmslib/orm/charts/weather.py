@@ -14,7 +14,7 @@ __all__ = ['Weather', 'Image']
 class Weather(Chart):
     """Weather data."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_weather'
 
     location = CharField(255)
@@ -90,7 +90,7 @@ class Weather(Chart):
 class Image(DSCMS4Model):
     """Image for an ImageTextChart."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_weather_image'
 
     chart = ForeignKeyField(

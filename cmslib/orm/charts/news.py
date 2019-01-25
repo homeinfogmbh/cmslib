@@ -12,7 +12,7 @@ __all__ = ['News']
 class News(Chart):
     """Chart to display news."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_news'
 
     font_size_title = SmallIntegerField(default=8)

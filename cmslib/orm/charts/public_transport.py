@@ -10,7 +10,7 @@ __all__ = ['PublicTransport']
 class PublicTransport(Chart):
     """Public transport chart."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_public_transport'
 
     def to_dom(self, brief=False):

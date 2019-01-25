@@ -19,7 +19,7 @@ __all__ = ['ImageText', 'Image', 'Text']
 class ImageText(Chart):
     """A chart that may contain images and text."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_image_text'
 
     title = CharField(255)
@@ -106,7 +106,7 @@ class ImageText(Chart):
 class Image(DSCMS4Model):
     """Image for an ImageText chart."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_image_text_image'
 
     chart = ForeignKeyField(
@@ -129,7 +129,7 @@ class Image(DSCMS4Model):
 class Text(DSCMS4Model):
     """Text for an ImageText chart."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_image_text_text'
 
     chart = ForeignKeyField(

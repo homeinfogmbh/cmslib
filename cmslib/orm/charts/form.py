@@ -21,7 +21,7 @@ class Mode(Enum):
 class Form(Chart):
     """A form chart."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_form'
 
     mode = EnumField(Mode, column_name='mode')

@@ -28,7 +28,7 @@ class Format(Enum):
 class Blackboard(Chart):
     """A chart that may contain images."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_blackboard'
 
     @classmethod
@@ -90,7 +90,7 @@ class Blackboard(Chart):
 class Image(DSCMS4Model):
     """Image for an ImageText chart."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_blackboard_image'
 
     chart = ForeignKeyField(

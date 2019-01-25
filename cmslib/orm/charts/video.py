@@ -13,7 +13,7 @@ __all__ = ['Video']
 class Video(Chart):
     """A chart that may contain images and texts."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_video'
 
     video = IntegerField(null=True)

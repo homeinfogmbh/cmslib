@@ -10,7 +10,7 @@ __all__ = ['GarbageCollection']
 class GarbageCollection(Chart):
     """Chart for garbage collection."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_garbage_collection'
 
     def to_dom(self, brief=False):

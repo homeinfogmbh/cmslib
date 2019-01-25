@@ -24,7 +24,7 @@ class PollMode(Enum):
 class Poll(Chart):
     """Chart to display a poll."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_poll'
 
     text = TextField()
@@ -87,7 +87,7 @@ class Poll(Chart):
 class Option(DSCMS4Model):
     """An option for a poll."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'poll_option'
 
     poll = ForeignKeyField(

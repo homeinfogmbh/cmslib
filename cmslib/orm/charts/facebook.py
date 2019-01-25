@@ -17,7 +17,7 @@ __all__ = ['Facebook', 'Account']
 class Facebook(Chart):
     """Facebook data chart."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_facebook'
 
     font_size = SmallIntegerField(default=26)
@@ -86,7 +86,7 @@ class Facebook(Chart):
 class Account(DSCMS4Model):
     """Facebook account settings."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'facebook_account'
 
     chart = ForeignKeyField(

@@ -40,7 +40,7 @@ class IdTypes(Enum):
 class RealEstates(Chart):
     """Chart for real estate displaying."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_real_estates'
 
     display_format = EnumField(
@@ -320,7 +320,7 @@ class RealEstates(Chart):
 class IdFilter(DSCMS4Model):
     """Filter for the object IDs."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'filter_id'
 
     chart = ForeignKeyField(
@@ -362,7 +362,7 @@ class IdFilter(DSCMS4Model):
 class ZipCodeFilter(DSCMS4Model):
     """Filter for real estate ZIP codes."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'filter_zip_code'
 
     chart = ForeignKeyField(

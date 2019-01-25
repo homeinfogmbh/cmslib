@@ -13,7 +13,7 @@ __all__ = ['RSS']
 class RSS(Chart):
     """A chart for RSS feeds."""
 
-    class Meta:     # pylint: disable=C0111
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_rss'
 
     title_color = IntegerField(default=0x000000)
