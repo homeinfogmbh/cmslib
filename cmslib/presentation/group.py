@@ -1,17 +1,6 @@
 """Content accumulation for groups."""
 
-from functoolsplus import cached_method, coerce    # pylint: disable=E0401
-
-from cmslib.exceptions import AmbiguousConfigurationsError
 from cmslib.exceptions import NoConfigurationFound
-from cmslib.orm.charts import BaseChart
-from cmslib.orm.configuration import Configuration
-from cmslib.orm.content.group import GroupBaseChart
-from cmslib.orm.content.group import GroupConfiguration
-from cmslib.orm.content.group import GroupMenu
-from cmslib.orm.menu import Menu
-from cmslib.presentation.common import charts
-from cmslib.presentation.common import indexify
 from cmslib.presentation.common import PresentationMixin
 
 
@@ -32,58 +21,23 @@ class Presentation(PresentationMixin):
         return self.group.customer
 
     @property
-    @cached_method()
-    @coerce(frozenset)
-    def groups(self):
-        """Yields all groups in a breadth-first search."""
-        parent = self.group
-
-        while parent:
-            yield parent
-            parent = parent.parent
-
-    @property
-    def groupconfigs(self):
-        """Returns a configuration for the terminal's groups."""
-        for index, group in enumerate(self.groups):
-            group_configs = Configuration.select().join(
-                GroupConfiguration).where(GroupConfiguration.group == group)
-
-            try:
-                configuration, *superfluous = group_configs
-            except ValueError:
-                continue
-
-            if superfluous:
-                raise AmbiguousConfigurationsError((group,), index)
-
-            yield configuration
-
-        raise NoConfigurationFound()
-
-    @property
-    def configuration(self):
-        """Returns the terminal's configuration."""
-        for configuration in self.groupconfigs:
-            return configuration
-
-        raise NoConfigurationFound()
-
-    @property
-    @cached_method()
-    @coerce(frozenset)
-    def menus(self):
-        """Yields menus of this terminal."""
-        yield from Menu.select().join(GroupMenu).where(
-            GroupMenu.group << self.groups)
-    @property
-    @cached_method()
-    @coerce(charts)
-    def playlist(self):
+    def direct_base_charts(self):
         """Yields the terminal's base charts."""
-        gbcs = GroupBaseChart.select().join(BaseChart).where(
-            (GroupBaseChart.group << self.groups)
-            & (BaseChart.trashed == 0)).order_by(GroupBaseChart.index)
+        return ()   # Handled by group_base_charts.
 
-        for base_chart_mapping in sorted(gbcs, key=indexify):
-            yield base_chart_mapping.base_chart
+    @property
+    def direct_configuration(self):
+        """Returns the group's direct configuratioin."""
+        raise NoConfigurationFound()    # Handled by groupconfigs.
+
+    @property
+    def direct_groups(self):
+        """Yields all groups in a breadth-first search."""
+        # Need to start with itself to include the
+        # group itself in all group-related methods.
+        yield self.group
+
+    @property
+    def direct_menus(self):
+        """Yields menus of this terminal."""
+        return ()   # Handled by group_menus.

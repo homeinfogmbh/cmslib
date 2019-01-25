@@ -8,15 +8,25 @@ from logging import getLogger
 from functoolsplus import cached_method, coerce     # pylint: disable=E0401
 
 from cmslib import dom  # pylint: disable=E0611
-from cmslib.exceptions import AmbiguousBaseChart, OrphanedBaseChart
+from cmslib.exceptions import AmbiguousBaseChart
+from cmslib.exceptions import AmbiguousConfigurationsError
+from cmslib.exceptions import NoConfigurationFound
+from cmslib.exceptions import OrphanedBaseChart
 from cmslib.menutree import merge, MenuTreeItem
 from cmslib.orm.charts import BaseChart, ChartMode
+from cmslib.orm.content.group import GroupBaseChart, GroupMenu
 from cmslib.orm.configuration import Configuration
 from cmslib.orm.content.group import GroupConfiguration
-from cmslib.orm.menu import MenuItem, MenuItemChart
+from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
 
 
-__all__ = ['charts', 'identify', 'indexify', 'level_configs', 'uniquesort']
+__all__ = [
+    'charts',
+    'identify',
+    'indexify',
+    'level_configs',
+    'uniquesort',
+    'PresentationMixin']
 
 
 LOGGER = getLogger(__file__)
@@ -65,18 +75,11 @@ class PresentationMixin:
     """Common presentation mixin."""
 
     @property
-    @cached_method()
-    @coerce(charts)
-    def menu_charts(self):
-        """Yields charts of the terminal's menu."""
-        yield from BaseChart.select().join(MenuItemChart).join(MenuItem).where(
-            (BaseChart.trashed == 0) & (MenuItem.menu << self.menus))
-
-    @property
-    def menutree(self):
-        """Returns the merged menu tree."""
-        items = chain(*(MenuTreeItem.from_menu(menu) for menu in self.menus))
-        return sorted(merge(items), key=indexify)
+    def group_base_charts(self):
+        """Charts attached to groups, the object is a member of."""
+        return GroupBaseChart.select().join(BaseChart).where(
+            (GroupBaseChart.group << self.groups)
+            & (BaseChart.trashed == 0)).order_by(GroupBaseChart.index)
 
     @property
     @coerce(partial(uniquesort, key=identify))
@@ -84,6 +87,17 @@ class PresentationMixin:
         """Yields all charts for this terminal."""
         yield from self.playlist
         yield from self.menu_charts
+
+    @property
+    def configuration(self):
+        """Returns the terminal's configuration."""
+        with suppress(NoConfigurationFound):
+            return self.direct_configuration
+
+        for configuration in self.groupconfigs:
+            return configuration
+
+        raise NoConfigurationFound()
 
     @property
     @cached_method()
@@ -99,6 +113,77 @@ class PresentationMixin:
                 continue
 
             yield from files
+
+    @property
+    def groupconfigs(self):
+        """Returns a configuration for the terminal's groups."""
+        for index, level in enumerate(self.grouplevels):
+            try:
+                configuration, *superfluous = level_configs(level)
+            except ValueError:
+                continue
+
+            if superfluous:
+                raise AmbiguousConfigurationsError(level, index)
+
+            yield configuration
+
+        raise NoConfigurationFound()
+
+    @property
+    def grouplevels(self):
+        """Yields group levels in a breadth-first search."""
+        level = frozenset(self.direct_groups)
+
+        while level:
+            yield level
+            level = frozenset(group.parent for group in level if group.parent)
+
+    @property
+    @cached_method()
+    @coerce(frozenset)
+    def groups(self):
+        """Yields all groups in a breadth-first search."""
+        for level in self.grouplevels:
+            for group in level:
+                yield group
+
+    @property
+    @cached_method()
+    @coerce(charts)
+    def menu_charts(self):
+        """Yields charts of the terminal's menu."""
+        yield from BaseChart.select().join(MenuItemChart).join(MenuItem).where(
+            (BaseChart.trashed == 0) & (MenuItem.menu << self.menus))
+
+    @property
+    def group_menus(self):
+        """Yields menus attached to groups the object is a member of."""
+        return Menu.select().join(GroupMenu).where(
+            GroupMenu.group << self.groups)
+
+    @property
+    @cached_method()
+    @coerce(frozenset)
+    def menus(self):
+        """Yields menus of this terminal."""
+        return chain(self.direct_menus, self.group_menus)
+
+    @property
+    def menutree(self):
+        """Returns the merged menu tree."""
+        items = chain(*(MenuTreeItem.from_menu(menu) for menu in self.menus))
+        return sorted(merge(items), key=indexify)
+
+    @property
+    @cached_method()
+    @coerce(charts)
+    def playlist(self):
+        """Yields the playlist."""
+        base_charts = chain(self.group_base_charts, self.direct_base_charts)
+
+        for base_chart_mapping in sorted(base_charts, key=indexify):
+            yield base_chart_mapping.base_chart
 
     def to_dom(self):
         """Returns an XML dom presentation."""

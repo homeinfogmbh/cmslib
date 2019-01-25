@@ -1,23 +1,13 @@
 """Content accumulation for terminals."""
 
-from itertools import chain
-
-from functoolsplus import cached_method, coerce    # pylint: disable=E0401
-
-from cmslib.exceptions import AmbiguousConfigurationsError
 from cmslib.exceptions import NoConfigurationFound
 from cmslib.orm.charts import BaseChart
 from cmslib.orm.configuration import Configuration
 from cmslib.orm.content.terminal import TerminalBaseChart
 from cmslib.orm.content.terminal import TerminalConfiguration
 from cmslib.orm.content.terminal import TerminalMenu
-from cmslib.orm.content.group import GroupBaseChart
-from cmslib.orm.content.group import GroupMenu
 from cmslib.orm.group import GroupMemberTerminal
 from cmslib.orm.menu import Menu
-from cmslib.presentation.common import charts
-from cmslib.presentation.common import indexify
-from cmslib.presentation.common import level_configs
 from cmslib.presentation.common import PresentationMixin
 
 
@@ -33,90 +23,35 @@ class Presentation(PresentationMixin):
         self.cache = {}
 
     @property
-    def _direct_groups(self):
+    def customer(self):
+        """Returns the respective customer."""
+        return self.terminal.customer
+
+    @property
+    def direct_base_charts(self):
+        """Yields charts directy attached to the terminal."""
+        return TerminalBaseChart.select().join(BaseChart).where(
+            (TerminalBaseChart.terminal == self.terminal)
+            & (BaseChart.trashed == 0)).order_by(TerminalBaseChart.index)
+
+    @property
+    def direct_configuration(self):
+        """Returns the terminal's configuration."""
+        try:
+            return Configuration.select().join(TerminalConfiguration).where(
+                TerminalConfiguration.terminal == self.terminal).get()
+        except Configuration.DoesNotExist:
+            raise NoConfigurationFound()
+
+    @property
+    def direct_groups(self):
         """Yields groups this terminal is a member of."""
         for gmt in GroupMemberTerminal.select().where(
                 GroupMemberTerminal.terminal == self.terminal):
             yield gmt.group
 
     @property
-    def customer(self):
-        """Returns the respective customer."""
-        return self.terminal.customer
-
-    @property
-    def grouplevels(self):
-        """Yields group levels in a breadth-first search."""
-        level = frozenset(self._direct_groups)
-
-        while level:
-            yield level
-            level = frozenset(group.parent for group in level if group.parent)
-
-    @property
-    @cached_method()
-    @coerce(frozenset)
-    def groups(self):
-        """Yields all groups in a breadth-first search."""
-        for level in self.grouplevels:
-            for group in level:
-                yield group
-
-    @property
-    def groupconfigs(self):
-        """Returns a configuration for the terminal's groups."""
-        for index, level in enumerate(self.grouplevels):
-            try:
-                configuration, *superfluous = level_configs(level)
-            except ValueError:
-                continue
-
-            if superfluous:
-                raise AmbiguousConfigurationsError(level, index)
-
-            yield configuration
-
-        raise NoConfigurationFound()
-
-    @property
-    def configuration(self):
-        """Returns the terminal's configuration."""
-        for configuration in Configuration.select().join(
-                TerminalConfiguration).where(
-                    TerminalConfiguration.terminal == self.terminal):
-            return configuration
-
-        for configuration in self.groupconfigs:
-            return configuration
-
-        raise NoConfigurationFound()
-
-    @property
-    @cached_method()
-    @coerce(frozenset)
-    def menus(self):
+    def direct_menus(self):
         """Yields menus of this terminal."""
-        # Menus directly attached to the terminal.
         yield from Menu.select().join(TerminalMenu).where(
             TerminalMenu.terminal == self.terminal)
-
-        # Menus attached to groups the terminal is a member of.
-        yield from Menu.select().join(GroupMenu).where(
-            GroupMenu.group << self.groups)
-
-    @property
-    @cached_method()
-    @coerce(charts)
-    def playlist(self):
-        """Yields the terminal's base charts."""
-        # Charts directy attached to the terminal.
-        tbcs = TerminalBaseChart.select().join(BaseChart).where(
-            (TerminalBaseChart.terminal == self.terminal)
-            & (BaseChart.trashed == 0)).order_by(TerminalBaseChart.index)
-        # Charts attached to groups, the terminal is a member of.
-        gbcs = GroupBaseChart.select().join(BaseChart).where(
-            (GroupBaseChart.group << self.groups)
-            & (BaseChart.trashed == 0)).order_by(GroupBaseChart.index)
-
-        for base_chart_mapping in sorted(chain(tbcs, gbcs), key=indexify):
-            yield base_chart_mapping.base_chart
