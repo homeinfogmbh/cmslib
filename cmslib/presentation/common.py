@@ -76,7 +76,7 @@ class PresentationMixin:
 
     @property
     def _configuration(self):
-        """Returns the terminal's configuration."""
+        """Returns the accumulated object's configuration."""
         with suppress(NoConfigurationFound):
             return self.configuration
 
@@ -105,13 +105,13 @@ class PresentationMixin:
     @cached_method()
     @coerce(frozenset)
     def _menus(self):
-        """Yields menus of this terminal."""
+        """Yields the accumulated menus of this object."""
         return chain(self.menus, self.group_menus)
 
     @property
     @coerce(partial(uniquesort, key=identify))
     def charts(self):
-        """Yields all charts for this terminal."""
+        """Yields all charts for this object."""
         yield from self.playlist
         yield from self.menu_charts
 
@@ -132,7 +132,7 @@ class PresentationMixin:
 
     @property
     def groupconfigs(self):
-        """Returns a configuration for the terminal's groups."""
+        """Returns a configuration for the object's groups."""
         for index, level in enumerate(self.grouplevels):
             try:
                 configuration, *superfluous = level_configs(level)
@@ -159,7 +159,7 @@ class PresentationMixin:
     @cached_method()
     @coerce(charts)
     def menu_charts(self):
-        """Yields charts of the terminal's menu."""
+        """Yields charts of the object's menu."""
         yield from BaseChart.select().join(MenuItemChart).join(MenuItem).where(
             (BaseChart.trashed == 0) & (MenuItem.menu << self._menus))
 
@@ -189,10 +189,6 @@ class PresentationMixin:
         """Returns an XML dom presentation."""
         xml = dom.presentation()
         xml.customer = self.customer.id
-
-        with suppress(AttributeError):
-            xml.tid = self.terminal.tid
-
         xml.configuration = self._configuration.to_dom()
         xml.playlist = [chart.to_dom(brief=True) for chart in self.playlist]
         xml.menu_item = [item.to_dom() for item in self.menutree]
@@ -201,7 +197,7 @@ class PresentationMixin:
 
     def to_json(self):
         """Returns a JSON presentation."""
-        json = {
+        return {
             'customer': self.customer.id,
             'configuration': self._configuration.to_json(cascade=True),
             'playlist': [
@@ -209,8 +205,3 @@ class PresentationMixin:
                 for chart in self.playlist],
             'menuItems': [item.to_json() for item in self.menutree],
             'charts': [chart.to_json() for chart in self.charts]}
-
-        with suppress(AttributeError):
-            json['tid'] = self.terminal.tid
-
-        return json

@@ -55,3 +55,15 @@ class Presentation(PresentationMixin):
         """Yields menus of this terminal."""
         yield from Menu.select().join(TerminalMenu).where(
             TerminalMenu.terminal == self.terminal)
+
+    def to_dom(self):
+        """Returns an XML DOM."""
+        xml = super().to_dom()
+        xml.tid = self.terminal.tid
+        return xml
+
+    def to_json(self):
+        """Returns a JSON-ish dict."""
+        json = super().to_json()
+        json['tid'] = self.terminal.tid
+        return json

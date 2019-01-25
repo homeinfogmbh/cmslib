@@ -66,6 +66,20 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="account" type="xs:string">
+            <xs:annotation>
+                <xs:documentation xml:lang="de">
+                    String representation of a ComCat account's UUID.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="group" type="xs:integer">
+            <xs:annotation>
+                <xs:documentation xml:lang="de">
+                    The respective group's ID.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="tid" type="xs:positiveInteger">
             <xs:annotation>
                 <xs:documentation xml:lang="de">

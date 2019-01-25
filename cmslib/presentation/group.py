@@ -41,3 +41,15 @@ class Presentation(PresentationMixin):
     def menus(self):
         """Yields menus of this terminal."""
         return ()   # Handled by group_menus.
+
+    def to_dom(self):
+        """Returns an XML DOM."""
+        xml = super().to_dom()
+        xml.group = self.group.id
+        return xml
+
+    def to_json(self):
+        """Returns a JSON-ish dict."""
+        json = super().to_json()
+        json['group'] = self.group.id
+        return json

@@ -55,3 +55,15 @@ class Presentation(PresentationMixin):
         """Yields menus of this account."""
         return Menu.select().join(AccountMenu).where(
             AccountMenu.account == self.account)
+
+    def to_dom(self):
+        """Returns an XML DOM."""
+        xml = super().to_dom()
+        xml.account = self.account.uuid.hex
+        return xml
+
+    def to_json(self):
+        """Returns a JSON-ish dict."""
+        json = super().to_json()
+        json['account'] = self.account.uuid.hex
+        return json
