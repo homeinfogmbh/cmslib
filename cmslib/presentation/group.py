@@ -21,23 +21,23 @@ class Presentation(PresentationMixin):
         return self.group.customer
 
     @property
-    def direct_base_charts(self):
+    def base_charts(self):
         """Yields the terminal's base charts."""
         return ()   # Handled by group_base_charts.
 
     @property
-    def direct_configuration(self):
+    def configuration(self):
         """Returns the group's direct configuratioin."""
         raise NoConfigurationFound()    # Handled by groupconfigs.
 
     @property
-    def direct_groups(self):
+    def groups(self):
         """Yields all groups in a breadth-first search."""
         # Need to start with itself to include the
         # group itself in all group-related methods.
         yield self.group
 
     @property
-    def direct_menus(self):
+    def menus(self):
         """Yields menus of this terminal."""
         return ()   # Handled by group_menus.

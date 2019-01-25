@@ -28,14 +28,14 @@ class Presentation(PresentationMixin):
         return self.terminal.customer
 
     @property
-    def direct_base_charts(self):
+    def base_charts(self):
         """Yields charts directy attached to the terminal."""
         return TerminalBaseChart.select().join(BaseChart).where(
             (TerminalBaseChart.terminal == self.terminal)
             & (BaseChart.trashed == 0)).order_by(TerminalBaseChart.index)
 
     @property
-    def direct_configuration(self):
+    def configuration(self):
         """Returns the terminal's configuration."""
         try:
             return Configuration.select().join(TerminalConfiguration).where(
@@ -44,14 +44,14 @@ class Presentation(PresentationMixin):
             raise NoConfigurationFound()
 
     @property
-    def direct_groups(self):
+    def groups(self):
         """Yields groups this terminal is a member of."""
         for gmt in GroupMemberTerminal.select().where(
                 GroupMemberTerminal.terminal == self.terminal):
             yield gmt.group
 
     @property
-    def direct_menus(self):
+    def menus(self):
         """Yields menus of this terminal."""
         yield from Menu.select().join(TerminalMenu).where(
             TerminalMenu.terminal == self.terminal)

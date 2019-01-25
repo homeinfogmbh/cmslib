@@ -75,11 +75,38 @@ class PresentationMixin:
     """Common presentation mixin."""
 
     @property
-    def group_base_charts(self):
+    def _configuration(self):
+        """Returns the terminal's configuration."""
+        with suppress(NoConfigurationFound):
+            return self.configuration
+
+        for configuration in self.groupconfigs:
+            return configuration
+
+        raise NoConfigurationFound()
+
+    @property
+    def _group_base_charts(self):
         """Charts attached to groups, the object is a member of."""
         return GroupBaseChart.select().join(BaseChart).where(
-            (GroupBaseChart.group << self.groups)
+            (GroupBaseChart.group << self._groups)
             & (BaseChart.trashed == 0)).order_by(GroupBaseChart.index)
+
+    @property
+    @cached_method()
+    @coerce(frozenset)
+    def _groups(self):
+        """Yields all groups in a breadth-first search."""
+        for level in self.grouplevels:
+            for group in level:
+                yield group
+
+    @property
+    @cached_method()
+    @coerce(frozenset)
+    def _menus(self):
+        """Yields menus of this terminal."""
+        return chain(self.menus, self.group_menus)
 
     @property
     @coerce(partial(uniquesort, key=identify))
@@ -89,22 +116,11 @@ class PresentationMixin:
         yield from self.menu_charts
 
     @property
-    def configuration(self):
-        """Returns the terminal's configuration."""
-        with suppress(NoConfigurationFound):
-            return self.direct_configuration
-
-        for configuration in self.groupconfigs:
-            return configuration
-
-        raise NoConfigurationFound()
-
-    @property
     @cached_method()
     @coerce(frozenset)
     def files(self):
         """Yields the presentation's used file IDs."""
-        yield from self.configuration.files
+        yield from self._configuration.files
 
         for chart in self.charts:
             try:
@@ -133,7 +149,7 @@ class PresentationMixin:
     @property
     def grouplevels(self):
         """Yields group levels in a breadth-first search."""
-        level = frozenset(self.direct_groups)
+        level = frozenset(self.groups)
 
         while level:
             yield level
@@ -141,38 +157,22 @@ class PresentationMixin:
 
     @property
     @cached_method()
-    @coerce(frozenset)
-    def groups(self):
-        """Yields all groups in a breadth-first search."""
-        for level in self.grouplevels:
-            for group in level:
-                yield group
-
-    @property
-    @cached_method()
     @coerce(charts)
     def menu_charts(self):
         """Yields charts of the terminal's menu."""
         yield from BaseChart.select().join(MenuItemChart).join(MenuItem).where(
-            (BaseChart.trashed == 0) & (MenuItem.menu << self.menus))
+            (BaseChart.trashed == 0) & (MenuItem.menu << self._menus))
 
     @property
     def group_menus(self):
         """Yields menus attached to groups the object is a member of."""
         return Menu.select().join(GroupMenu).where(
-            GroupMenu.group << self.groups)
-
-    @property
-    @cached_method()
-    @coerce(frozenset)
-    def menus(self):
-        """Yields menus of this terminal."""
-        return chain(self.direct_menus, self.group_menus)
+            GroupMenu.group << self._groups)
 
     @property
     def menutree(self):
         """Returns the merged menu tree."""
-        items = chain(*(MenuTreeItem.from_menu(menu) for menu in self.menus))
+        items = chain(*(MenuTreeItem.from_menu(menu) for menu in self._menus))
         return sorted(merge(items), key=indexify)
 
     @property
@@ -180,7 +180,7 @@ class PresentationMixin:
     @coerce(charts)
     def playlist(self):
         """Yields the playlist."""
-        base_charts = chain(self.group_base_charts, self.direct_base_charts)
+        base_charts = chain(self._group_base_charts, self.base_charts)
 
         for base_chart_mapping in sorted(base_charts, key=indexify):
             yield base_chart_mapping.base_chart
@@ -193,7 +193,7 @@ class PresentationMixin:
         with suppress(AttributeError):
             xml.tid = self.terminal.tid
 
-        xml.configuration = self.configuration.to_dom()
+        xml.configuration = self._configuration.to_dom()
         xml.playlist = [chart.to_dom(brief=True) for chart in self.playlist]
         xml.menu_item = [item.to_dom() for item in self.menutree]
         xml.chart = [chart.to_dom() for chart in self.charts]
@@ -203,7 +203,7 @@ class PresentationMixin:
         """Returns a JSON presentation."""
         json = {
             'customer': self.customer.id,
-            'configuration': self.configuration.to_json(cascade=True),
+            'configuration': self._configuration.to_json(cascade=True),
             'playlist': [
                 chart.to_json(mode=ChartMode.BRIEF)
                 for chart in self.playlist],

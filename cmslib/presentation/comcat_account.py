@@ -28,14 +28,14 @@ class Presentation(PresentationMixin):
         return self.account.customer
 
     @property
-    def direct_base_charts(self):
+    def base_charts(self):
         """Yields the account's base charts."""
         return AccountBaseChart.select().join(BaseChart).where(
             (AccountBaseChart.account == self.account)
             & (BaseChart.trashed == 0)).order_by(AccountBaseChart.index)
 
     @property
-    def direct_configuration(self):
+    def configuration(self):
         """Returns the account's configuration."""
         try:
             return Configuration.select().join(AccountConfiguration).where(
@@ -44,14 +44,14 @@ class Presentation(PresentationMixin):
             raise NoConfigurationFound()
 
     @property
-    def direct_groups(self):
+    def groups(self):
         """Yields groups this account is a member of."""
         for gmt in GroupMemberAccount.select().where(
                 GroupMemberAccount.account == self.account):
             yield gmt.group
 
     @property
-    def direct_menus(self):
+    def menus(self):
         """Yields menus of this account."""
         return Menu.select().join(AccountMenu).where(
             AccountMenu.account == self.account)
