@@ -192,9 +192,12 @@ class PresentationMixin:
         """Returns a JSON presentation."""
         return {
             'customer': self.customer.id,
-            'configuration': self._configuration.to_json(cascade=True),
+            'configuration': self._configuration.to_json(
+                cascade=True, fk_fields=False),
             'playlist': [
-                chart.to_json(mode=ChartMode.BRIEF)
+                chart.to_json(mode=ChartMode.BRIEF, fk_fields=False)
                 for chart in self.playlist],
-            'menuItems': [item.to_json() for item in self.menutree],
-            'charts': [chart.to_json() for chart in self.charts]}
+            'menuItems': [
+                item.to_json(fk_fields=False) for item in self.menutree],
+            'charts': [
+                chart.to_json(fk_fields=False) for chart in self.charts]}
