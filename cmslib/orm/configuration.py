@@ -162,7 +162,7 @@ class Configuration(CustomerModel):
 
         if cascade:
             json['colors'] = self.colors.to_json(
-                autofields=False, fk_fields=False, **kwargs)
+                autofields=False, fk_fields=False)
             json['tickers'] = [
                 ticker.to_json(autofields=False, fk_fields=False)
                 for ticker in self.tickers]
