@@ -5,9 +5,8 @@ from logging import getLogger
 from configlib import loadcfg
 
 
-__all__ = ['CONFIG', 'LOG_FORMAT', 'LOGGER']
+__all__ = ['CONFIG', 'LOGGER']
 
 
 CONFIG = loadcfg('cmslib.conf')
-LOG_FORMAT = '[%(levelname)s] %(name)s: %(message)s'
 LOGGER = getLogger('cmslib')
