@@ -262,16 +262,18 @@ class Chart(DSCMS4Model, metaclass=MetaChart):
         super().patch_json(json, **kwargs)
         return Transaction(self)
 
-    def to_json(self, mode=ChartMode.FULL, **kwargs):
+    def to_json(self, mode=ChartMode.FULL, fk_fields=True, **kwargs):
         """Returns a JSON-ish dictionary."""
         if mode == ChartMode.FULL:
             json = super().to_json(**kwargs)
-            json['base'] = self.base.to_json(autofields=False)
+            json['base'] = self.base.to_json(
+                autofields=False, fk_fields=fk_fields)
         elif mode == ChartMode.BRIEF:
             json = {'id': self.id}
         elif mode == ChartMode.ANON:
             json = super().to_json(skip=('id',), **kwargs)
-            json['base'] = self.base.to_json(autofields=False)
+            json['base'] = self.base.to_json(
+                autofields=False, fk_fields=fk_fields)
             return json
 
         json['type'] = type(self).__name__
