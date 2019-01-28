@@ -1,8 +1,6 @@
 """Hooks for filedb actions."""
 
-from logging import INFO, basicConfig, getLogger
-
-from cmslib.config import LOG_FORMAT
+from cmslib.config import LOGGER as _LOGGER
 from cmslib.orm.charts.blackboard import Image as BlackboardChartImage
 from cmslib.orm.charts.image_text import Image as ImageTextChartImage
 from cmslib.orm.charts.video import Video
@@ -13,8 +11,7 @@ from cmslib.orm.configuration import Configuration
 __all__ = ['on_delete']
 
 
-LOGGER = getLogger('cmslib.file_hooks')
-basicConfig(level=INFO, format=LOG_FORMAT)
+LOGGER = _LOGGER.getChild('file_hooks')
 
 
 def _remove_bc_images(ident):
