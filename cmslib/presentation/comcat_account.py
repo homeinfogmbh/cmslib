@@ -46,9 +46,9 @@ class Presentation(PresentationMixin):
     @property
     def groups(self):
         """Yields groups this account is a member of."""
-        for gmt in GroupMemberAccount.select().where(
+        for gma in GroupMemberAccount.select().where(
                 GroupMemberAccount.account == self.account):
-            yield gmt.group
+            yield gma.group
 
     @property
     def menus(self):
