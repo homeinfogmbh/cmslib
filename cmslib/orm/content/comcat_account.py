@@ -2,7 +2,7 @@
 
 from peewee import ForeignKeyField, IntegerField
 
-from comcat import Account
+from comcatlib import Account
 
 from cmslib.orm.charts import ChartMode, BaseChart
 from cmslib.orm.common import DSCMS4Model
