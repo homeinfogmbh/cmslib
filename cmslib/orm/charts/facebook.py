@@ -1,5 +1,8 @@
 """Facebook charts and associated data."""
 
+from datetime import datetime, timedelta
+
+from ferengi.facebook import FACEBOOK
 from peewee import BooleanField
 from peewee import CharField
 from peewee import ForeignKeyField
@@ -104,6 +107,13 @@ class Account(DSCMS4Model):
         account = super().from_json(json, **kwargs)
         account.chart = chart
         return account
+
+    @property
+    def posts(self):
+        """Yields posts."""
+        since = datetime.now() - timedelta(days=self.recent_days)
+        return FACEBOOK.get_posts(
+            self.facebook_id, limit=self.max_posts, since=since)
 
     def to_dom(self):
         """Returns an XML DOM of this model."""
