@@ -109,11 +109,15 @@ class Account(DSCMS4Model):
         return account
 
     @property
+    def since(self):
+        """Returns the datetime of the first post."""
+        return datetime.now() - timedelta(days=self.recent_days)
+
+    @property
     def posts(self):
         """Yields posts."""
-        since = datetime.now() - timedelta(days=self.recent_days)
         return FACEBOOK.get_posts(
-            self.facebook_id, limit=self.max_posts, since=since)
+            self.facebook_id, limit=self.max_posts, since=self.since)
 
     def to_dom(self):
         """Returns an XML DOM of this model."""
