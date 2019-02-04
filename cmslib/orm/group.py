@@ -14,7 +14,6 @@ __all__ = [
     'group_fk',
     'Group',
     'GroupMemberTerminal',
-    'GroupMemberAccount',
     'GROUP_MEMBERS',
     'MODELS']
 
@@ -171,7 +170,7 @@ class GroupMember(DSCMS4Model):
 class GroupMemberTerminal(GroupMember):
     """Terminals as members in groups."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'group_member_terminal'
 
     group = group_fk('terminals')
@@ -187,4 +186,4 @@ class GroupMemberTerminal(GroupMember):
 
 
 GROUP_MEMBERS = {'terminal': GroupMemberTerminal}
-MODELS = (Group, GroupMemberTerminal, GroupMemberAccount)
+MODELS = (Group, GroupMemberTerminal)
