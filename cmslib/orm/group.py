@@ -2,7 +2,6 @@
 
 from peewee import CharField, ForeignKeyField, IntegerField, TextField
 
-from comcatlib import Account
 from his.messages.data import MISSING_KEY_ERROR, INVALID_KEYS
 from terminallib import Terminal
 
@@ -187,30 +186,5 @@ class GroupMemberTerminal(GroupMember):
             'index': self.index}
 
 
-class GroupMemberAccount(GroupMember):
-    """ComCat accounts as group members."""
-
-    class Meta:
-        table_name = 'group_member_account'
-
-    group = group_fk('accounts')
-    member = ForeignKeyField(
-        Account, column_name='account', on_delete='CASCADE')
-
-    def to_dom(self):
-        """Returns an XML DOM."""
-        raise NotImplementedError()
-
-    def to_json(self):
-        """Returns a JSON-ish dict."""
-        return {
-            'member': self.id,
-            'account': self.member.id,
-            'index': self.index}
-
-
-GROUP_MEMBERS = {
-    'terminal': GroupMemberTerminal,
-    'account': GroupMemberAccount}
-
+GROUP_MEMBERS = {'terminal': GroupMemberTerminal}
 MODELS = (Group, GroupMemberTerminal, GroupMemberAccount)
