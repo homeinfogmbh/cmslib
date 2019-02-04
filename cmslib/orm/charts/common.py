@@ -256,6 +256,13 @@ class Chart(DSCMS4Model, metaclass=MetaChart):
         chart.base = BaseChart.from_json(base_dict)
         return Transaction(chart)
 
+    @classmethod
+    def isinstance(cls, obj):
+        """Determines whether the object is
+        an instance of this very chart type.
+        """
+        return type(obj) is cls     # pylint: disable=C0123
+
     def patch_json(self, json, **kwargs):
         """Pathes the chart with the provided dictionary."""
         self.base.patch_json(json.pop('base', {}))  # Generate new UUID.
