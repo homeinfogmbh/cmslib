@@ -2,12 +2,13 @@
 
 from datetime import datetime, timedelta
 
-from ferengi.facebook import FACEBOOK
 from peewee import BooleanField
 from peewee import CharField
 from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import SmallIntegerField
+
+from ferengi.facebook import FACEBOOK
 
 from cmslib import dom
 from cmslib.orm.charts.common import ChartMode, Chart
