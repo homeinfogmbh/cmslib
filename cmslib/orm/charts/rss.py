@@ -4,6 +4,7 @@ from peewee import CharField, IntegerField, SmallIntegerField
 from requests import get
 
 from cmslib import dom
+from cmslib.exceptions import FeedReadError
 from cmslib.orm.charts.common import Chart
 
 
@@ -30,7 +31,7 @@ class RSS(Chart):
         if response.status_code == 200:
             return response.text
 
-        return None
+        raise FeedReadError(response)
 
     def to_dom(self, brief=False):
         """Returns an XML DOM of this chart."""
