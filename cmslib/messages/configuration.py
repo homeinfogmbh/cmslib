@@ -1,6 +1,6 @@
 """Configuration related messages."""
 
-from cmslib.messages.facility import DSCMS4_MESSAGE
+from wsgilib import JSONMessage
 
 
 __all__ = [
@@ -10,10 +10,9 @@ __all__ = [
     'CONFIGURATION_DELETED']
 
 
-NO_SUCH_CONFIGURATION = DSCMS4_MESSAGE('No such configuration.', status=404)
-CONFIGURATION_ADDED = DSCMS4_MESSAGE(
-    'Configuration has been added.', status=201)
-CONFIGURATION_PATCHED = DSCMS4_MESSAGE(
+NO_SUCH_CONFIGURATION = JSONMessage('No such configuration.', status=404)
+CONFIGURATION_ADDED = JSONMessage('Configuration has been added.', status=201)
+CONFIGURATION_PATCHED = JSONMessage(
     'Configuration has been patched.', status=200)
-CONFIGURATION_DELETED = DSCMS4_MESSAGE(
+CONFIGURATION_DELETED = JSONMessage(
     'Configuration has been deleted.', status=200)

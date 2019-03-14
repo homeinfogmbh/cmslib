@@ -1,9 +1,9 @@
 """Charts related messages."""
 
-from cmslib.messages.facility import DSCMS4_MESSAGE
+from wsgilib import JSONMessage
 
 
 __all__ = ['SETTINGS_SAVED']
 
 
-SETTINGS_SAVED = DSCMS4_MESSAGE('Settings saved.', status=200)
+SETTINGS_SAVED = JSONMessage('Settings saved.', status=200)

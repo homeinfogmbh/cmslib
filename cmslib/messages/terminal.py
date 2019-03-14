@@ -1,10 +1,10 @@
 """Terminal related messages."""
 
-from cmslib.messages.facility import DSCMS4_MESSAGE
+from wsgilib import JSONMessage
 
 
 __all__ = ['NO_SUCH_TERMINAL']
 
 
-NO_SUCH_TERMINAL = DSCMS4_MESSAGE(
+NO_SUCH_TERMINAL = JSONMessage(
     'The specified terminal does not exist.', status=404)

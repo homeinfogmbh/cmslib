@@ -1,12 +1,12 @@
 """Presentation related messages."""
 
-from cmslib.messages.facility import DSCMS4_MESSAGE
+from wsgilib import JSONMessage
 
 
 __all__ = ['AMBIGUOUS_CONFIGURATIONS', 'NO_CONFIGURATION_ASSIGNED']
 
 
-AMBIGUOUS_CONFIGURATIONS = DSCMS4_MESSAGE(
+AMBIGUOUS_CONFIGURATIONS = JSONMessage(
     'Ambiguous assignment of configurations.', status=400)
-NO_CONFIGURATION_ASSIGNED = DSCMS4_MESSAGE(
+NO_CONFIGURATION_ASSIGNED = JSONMessage(
     'No configuration assigned.', status=400)
