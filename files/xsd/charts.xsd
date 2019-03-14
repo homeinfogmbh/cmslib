@@ -709,6 +709,49 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
     </xs:complexType>
 
 
+    <xs:complexType name="SoccerTable">
+        <xs:annotation>
+            <xs:documentation xml:lang="de">
+                Bundesligatabelle.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="Chart">
+                <xs:sequence>
+                    <xs:element name="font_size_title" type="xs:unsignedShort">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Schriftgröße des Titles.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="title_color" type="xs:nonNegativeInteger">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Titelfarbe.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="font_size_text" type="xs:unsignedShort">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Schriftgröße des Texts.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="text_color" type="xs:nonNegativeInteger">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Textfarbe.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
     <xs:complexType name="Video">
         <xs:annotation>
             <xs:documentation xml:lang="de">
