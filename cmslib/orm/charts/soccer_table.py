@@ -13,7 +13,7 @@ class SoccerTable(Chart):
     """Chart to display news."""
 
     class Meta:     # pylint: disable=C0111,R0903
-        table_name = 'chart_news'
+        table_name = 'chart_soccer_table'
 
     font_size_title = SmallIntegerField(default=8)
     title_color = IntegerField(default=0x000000)
