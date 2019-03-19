@@ -161,9 +161,9 @@ class GroupMemberTerminal(GroupMember):
 
     def to_json(self):
         """Returns a JSON-ish dict."""
-        dictionary = super().to_json()
-        dictionary['terminal'] = self.member.tid
-        return dictionary
+        json = super().to_json()
+        json['terminal'] = self.member.tid
+        return json
 
 
 MODELS = (Group, GroupMemberTerminal)
