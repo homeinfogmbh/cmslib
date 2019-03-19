@@ -15,6 +15,7 @@ setup(
         'mdb', 'peewee', 'peeweeplus', 'pyxb', 'terminallib'],
     packages=[
         'cmslib',
+        'cmslib.functions',
         'cmslib.messages',
         'cmslib.orm',
         'cmslib.orm.charts',
