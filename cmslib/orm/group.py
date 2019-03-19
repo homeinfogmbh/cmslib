@@ -6,16 +6,11 @@ from his.messages.data import MISSING_KEY_ERROR, INVALID_KEYS
 from terminallib import Terminal
 
 from cmslib.messages.data import CIRCULAR_REFERENCE
-from cmslib.messages.group import NO_SUCH_MEMBER_TYPE, NO_SUCH_MEMBER
+from cmslib.messages.group import NO_SUCH_MEMBER
 from cmslib.orm.common import DSCMS4Model, CustomerModel
 
 
-__all__ = [
-    'group_fk',
-    'Group',
-    'GroupMemberTerminal',
-    'GROUP_MEMBERS',
-    'MODELS']
+__all__ = ['MODELS', 'group_fk', 'Group', 'GroupMember', 'GroupMemberTerminal']
 
 
 def group_fk(backref):
@@ -57,13 +52,6 @@ class Group(CustomerModel):
         for child in self.children:
             for childs_child in child.childrens_children:
                 yield childs_child
-
-    @property
-    def members(self):
-        """Yields the group's members."""
-        for typ, model in GROUP_MEMBERS.items():
-            records = model.select().where(model.group == self)
-            yield (typ, records)
 
     @property
     def json_tree(self):
@@ -123,26 +111,15 @@ class GroupMember(DSCMS4Model):
 
     index = IntegerField(default=0)
 
-    @staticmethod
-    def from_json(json, group, **_):
+    @classmethod
+    def from_json(cls, json, group, **_):
         """Creates a member for the given group
         from the respective JSON-ish dictionary.
         """
-        try:
-            member_type = json.pop('type')
-        except KeyError:
-            raise MISSING_KEY_ERROR.update(key='type')
-
-        # The remaining key/value pairs are record identifiers.
         if not json:
             raise MISSING_KEY_ERROR.update(key='<identifiers>')
 
-        try:
-            member_mapping_class = GROUP_MEMBERS[member_type]
-        except KeyError:
-            raise NO_SUCH_MEMBER_TYPE
-
-        member_class = member_mapping_class.member.rel_model
+        member_class = cls.member.rel_model
         # Make sure to filter for the respective customer.
         select = member_class.customer == group.customer
         invalid_keys = set()
@@ -164,7 +141,12 @@ class GroupMember(DSCMS4Model):
         except member_class.DoesNotExist:
             raise NO_SUCH_MEMBER
 
-        return member_mapping_class(group=group, member=member)
+        index = json.get('index', 0)
+        return cls(group=group, member=member, index=index)
+
+    def to_json(self):
+        """Returns a JSON-ish dict."""
+        return {'id': self.id, 'member': self.member.id, 'index': self.index}
 
 
 class GroupMemberTerminal(GroupMember):
@@ -179,11 +161,9 @@ class GroupMemberTerminal(GroupMember):
 
     def to_json(self):
         """Returns a JSON-ish dict."""
-        return {
-            'id': self.id,
-            'terminal': self.member.tid,
-            'index': self.index}
+        dictionary = super().to_json()
+        dictionary['terminal'] = self.member.tid
+        return dictionary
 
 
-GROUP_MEMBERS = {'terminal': GroupMemberTerminal}
 MODELS = (Group, GroupMemberTerminal)
