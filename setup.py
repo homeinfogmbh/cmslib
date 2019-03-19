@@ -11,8 +11,8 @@ setup(
     maintainer='Richard Neumann',
     maintainer_email='<r dot neumann at homeinfo period de>',
     requires=[
-        'comcatlib', 'configlib', 'flask', 'functoolsplus', 'his', 'hisfs',
-        'mdb', 'peewee', 'peeweeplus', 'pyxb', 'terminallib'],
+        'configlib', 'flask', 'functoolsplus', 'his', 'hisfs', 'mdb',
+        'peewee', 'peeweeplus', 'pyxb', 'terminallib'],
     packages=[
         'cmslib',
         'cmslib.functions',
