@@ -211,7 +211,12 @@ class BaseChart(CustomerModel):
         xml.duration = self.duration
         xml.display_from = self.display_from
         xml.display_until = self.display_until
-        xml.transition = self.transition.value
+
+        if self.transition is None:
+            xml.transition = None
+        else:
+            xml.transition = self.transition.value
+
         xml.created = self.created
         xml.trashed = self.trashed
 
