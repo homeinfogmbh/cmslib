@@ -10,16 +10,7 @@ from cmslib.messages.group import NO_SUCH_MEMBER
 from cmslib.orm.common import DSCMS4Model, CustomerModel
 
 
-__all__ = ['MODELS', 'group_fk', 'Group', 'GroupMember', 'GroupMemberTerminal']
-
-
-def group_fk(backref):
-    """Factory to generate a foreign key field to Group
-    for group members with the respective backref.
-    """
-
-    return ForeignKeyField(
-        Group, column_name='group', on_delete='CASCADE', backref=backref)
+__all__ = ['MODELS', 'Group', 'GroupMember', 'GroupMemberTerminal']
 
 
 class Group(CustomerModel):
@@ -155,7 +146,7 @@ class GroupMemberTerminal(GroupMember):
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'group_member_terminal'
 
-    group = group_fk('terminals')
+    group = ForeignKeyField(Group, column_name='group', on_delete='CASCADE')
     member = ForeignKeyField(
         Terminal, column_name='terminal', on_delete='CASCADE')
 
