@@ -85,8 +85,8 @@ def get_chart(ident, type=CHART_TYPE):  # pylint: disable=W0622
     try:
         return type.select().join(BaseChart).where(
             (BaseChart.customer == CUSTOMER.id)
-            & (CHART_TYPE.id == ident)).get()
-    except CHART_TYPE.DoesNotExist:
+            & (type.id == ident)).get()
+    except type.DoesNotExist:
         raise NO_SUCH_CHART
 
 
