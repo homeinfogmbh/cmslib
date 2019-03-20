@@ -107,33 +107,24 @@ class GroupMember(DSCMS4Model):
         """Creates a member for the given group
         from the respective JSON-ish dictionary.
         """
-        if not json:
-            raise MISSING_KEY_ERROR.update(key='<identifiers>')
+        try:
+            member_id = json.pop('id')
+        except KeyError:
+            raise MISSING_KEY_ERROR.update(keys=['id'])
 
         member_class = cls.member.rel_model
-        # Make sure to filter for the respective customer.
-        select = member_class.customer == group.customer
-        invalid_keys = set()
-
-        # Add filters for all key/value pairs.
-        for key, value in json.items():
-            try:
-                field = getattr(member_class, key)
-            except AttributeError:
-                invalid_keys.add(key)
-            else:
-                select &= field == value
-
-        if invalid_keys:
-            raise INVALID_KEYS.update(keys=invalid_keys)
 
         try:
-            member = member_class.get(select)
+            member = member_class[member_id]
         except member_class.DoesNotExist:
             raise NO_SUCH_MEMBER
 
-        index = json.get('index', 0)
-        return cls(group=group, member=member, index=index)
+        index = json.pop('index', 0)
+
+        if json:
+            raise INVALID_KEYS.update(keys=tuple(json))
+
+        return cls(member=member, group=group, index=index)
 
     def to_json(self):
         """Returns a JSON-ish dict."""
