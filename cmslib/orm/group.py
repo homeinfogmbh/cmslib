@@ -119,7 +119,7 @@ class GroupMember(DSCMS4Model):
         for key, value in json.items():
             try:
                 field = getattr(member_class, key)
-            except KeyError:
+            except AttributeError:
                 invalid_keys.add(key)
             else:
                 select &= field == value
