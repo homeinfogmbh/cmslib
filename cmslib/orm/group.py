@@ -128,7 +128,11 @@ class GroupMember(DSCMS4Model):
 
     def to_json(self):
         """Returns a JSON-ish dict."""
-        return {'id': self.id, 'member': self.member.id, 'index': self.index}
+        return {
+            'id': self.id,
+            'member': self.member_id,
+            'index': self.index,
+            'group': self.group_id}
 
 
 class GroupMemberTerminal(GroupMember):
