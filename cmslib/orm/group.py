@@ -132,7 +132,7 @@ class GroupMember(DSCMS4Model):
             'id': self.id,
             'member': self.member_id,
             'index': self.index,
-            'group': self.group_id}
+            'group': self.group.id}
 
 
 class GroupMemberTerminal(GroupMember):
