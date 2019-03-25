@@ -130,7 +130,7 @@ class GroupMember(DSCMS4Model):
         """Returns a JSON-ish dict."""
         return {
             'id': self.id,
-            'member': self.member_id,
+            'member': self.member.id,
             'index': self.index,
             'group': self.group.id}
 
