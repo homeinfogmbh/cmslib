@@ -100,7 +100,6 @@ class Transitions(Enum):
     MOSAIK = 'mosaik'
     SLIDE_IN = 'slide-in'
     RANDOM = 'random'
-    NONE = None
 
 
 class ChartMode(Enum):
@@ -122,7 +121,7 @@ class BaseChart(CustomerModel):
     duration = SmallIntegerField(default=10)
     display_from = DateTimeField(null=True)
     display_until = DateTimeField(null=True)
-    transition = EnumField(Transitions)
+    transition = EnumField(Transitions, null=True)
     created = DateTimeField(default=datetime.now)
     trashed = BooleanField(default=False)
     log = BooleanField(default=False)
