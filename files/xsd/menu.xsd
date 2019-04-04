@@ -67,6 +67,13 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                 </xs:annotation>
             </xs:element>
         </xs:sequence>
+        <xs:attribute name="uuid" type="xs:string">
+            <xs:annotation>
+                <xs:documentation xml:lang="de">
+                    UUID des Menüelements.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
     </xs:complexType>
 
 

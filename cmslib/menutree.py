@@ -3,6 +3,7 @@
 from collections import defaultdict
 from itertools import chain
 from json import dumps
+from uuid import uuid4
 
 from cmslib import dom  # pylint: disable=E0611
 
@@ -45,12 +46,13 @@ class MenuTreeItem:
     """Menu item for tree structure."""
 
     __slots__ = (
-        'name', 'icon', 'text_color', 'background_color', 'index',
+        'uuid', 'name', 'icon', 'text_color', 'background_color', 'index',
         'menu_item_charts', 'children')
 
     def __init__(self, name, icon, text_color, background_color, index,
                  menu_item_charts, children):
         """Sets the referenced menu item."""
+        self.uuid = uuid4()
         self.name = name
         self.icon = icon
         self.text_color = text_color
@@ -84,8 +86,7 @@ class MenuTreeItem:
     @classmethod
     def from_menu_item(cls, menu_item):
         """Creates a menu item tree from the given menu item."""
-        children = [
-            cls.from_menu_item(child) for child in menu_item.children]
+        children = [cls.from_menu_item(child) for child in menu_item.children]
         menu_item_charts = list(menu_item.menu_item_charts)
         return cls(
             menu_item.name, menu_item.icon, menu_item.text_color,
@@ -105,6 +106,7 @@ class MenuTreeItem:
     def to_json(self):
         """Returns a nested JSON-ish dict."""
         return {
+            'uuid': self.uuid.hex,
             'name': self.name,
             'icon': self.icon,
             'textColor': self.text_color,
@@ -121,6 +123,7 @@ class MenuTreeItem:
     def to_dom(self):
         """Returns an XML DOM of the model."""
         xml = dom.MenuItem()
+        xml.uuid = self.uuid.hex
         xml.name = self.name
         xml.icon = self.icon
         xml.text_color = self.text_color
