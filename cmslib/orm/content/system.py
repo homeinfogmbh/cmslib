@@ -1,8 +1,8 @@
-"""Content assigned to Terminals."""
+"""Content assigned to Systems."""
 
 from peewee import ForeignKeyField, IntegerField
 
-from terminallib import Terminal
+from terminallib import System
 
 from cmslib.orm.charts import ChartMode, BaseChart
 from cmslib.orm.common import DSCMS4Model
@@ -11,34 +11,33 @@ from cmslib.orm.menu import Menu
 
 
 __all__ = [
-    'TerminalBaseChart',
-    'TerminalConfiguration',
-    'TerminalMenu',
+    'SystemBaseChart',
+    'SystemConfiguration',
+    'SystemMenu',
     'MODELS']
 
 
-class _TerminalContent(DSCMS4Model):
+class _SystemContent(DSCMS4Model):
     """Common abstract content mapping."""
 
-    terminal = ForeignKeyField(
-        Terminal, column_name='terminal', on_delete='CASCADE')
+    system = ForeignKeyField(System, column_name='system', on_delete='CASCADE')
 
 
-class TerminalBaseChart(_TerminalContent):
-    """Association of a base chart with a terminal."""
+class SystemBaseChart(_SystemContent):
+    """Association of a base chart with a System."""
 
     class Meta:     # pylint: disable=C0111,R0903
-        table_name = 'terminal_base_chart'
+        table_name = 'system_base_chart'
 
     base_chart = ForeignKeyField(
         BaseChart, column_name='base_chart', on_delete='CASCADE')
     index = IntegerField(default=0)
 
     @classmethod
-    def from_json(cls, json, terminal, base_chart, **kwargs):
+    def from_json(cls, json, System, base_chart, **kwargs):
         """Creates a new group base chart."""
         record = super().from_json(json, **kwargs)
-        record.terminal = terminal
+        record.System = System
         record.base_chart = base_chart
         return record
 
@@ -55,11 +54,11 @@ class TerminalBaseChart(_TerminalContent):
             'index': self.index}
 
 
-class TerminalConfiguration(_TerminalContent):
-    """Association of a configuration with a terminal."""
+class SystemConfiguration(_SystemContent):
+    """Association of a configuration with a System."""
 
     class Meta:     # pylint: disable=C0111,R0903
-        table_name = 'terminal_configuration'
+        table_name = 'system_configuration'
 
     configuration = ForeignKeyField(
         Configuration, column_name='configuration', on_delete='CASCADE')
@@ -69,11 +68,11 @@ class TerminalConfiguration(_TerminalContent):
         return {'id': self.id, 'configuration': self.configuration_id}
 
 
-class TerminalMenu(_TerminalContent):
-    """Association of a menu with a terminal."""
+class SystemMenu(_SystemContent):
+    """Association of a menu with a System."""
 
     class Meta:     # pylint: disable=C0111,R0903
-        table_name = 'terminal_menu'
+        table_name = 'system_menu'
 
     menu = ForeignKeyField(Menu, column_name='menu', on_delete='CASCADE')
 
@@ -82,4 +81,4 @@ class TerminalMenu(_TerminalContent):
         return {'id': self.id, 'menu': self.menu_id}
 
 
-MODELS = (TerminalBaseChart, TerminalConfiguration, TerminalMenu)
+MODELS = (SystemBaseChart, SystemConfiguration, SystemMenu)

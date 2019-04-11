@@ -5,14 +5,14 @@ from uuid import uuid4
 from peewee import ForeignKeyField, UUIDField
 
 from his import CUSTOMER
-from terminallib import Terminal
+from terminallib import System
 
 from cmslib.messages.preview import NO_SUCH_OBJECT
 from cmslib.orm.common import DSCMS4Model
 from cmslib.orm.group import Group
 
 
-__all__ = ['TYPES', 'TerminalPreviewToken', 'GroupPreviewToken']
+__all__ = ['TYPES', 'SystemPreviewToken', 'GroupPreviewToken']
 
 
 class _PreviewToken(DSCMS4Model):
@@ -46,18 +46,17 @@ class _PreviewToken(DSCMS4Model):
             return token
 
 
-class TerminalPreviewToken(_PreviewToken):
-    """Preview tokens for terminals."""
+class SystemPreviewToken(_PreviewToken):
+    """Preview tokens for systems."""
 
     class Meta:     # pylint: disable=C0111,R0903
-        table_name = 'terminal_preview_token'
+        table_name = 'system_preview_token'
 
-    obj = ForeignKeyField(
-        Terminal, column_name='terminal', on_delete='CASCADE')
+    obj = ForeignKeyField(System, column_name='system', on_delete='CASCADE')
 
     @staticmethod
     def identify(model, ident):
-        """Identifies the terminal by TID."""
+        """Identifies the system by TID."""
         return model.tid == ident
 
 
@@ -75,5 +74,5 @@ class GroupPreviewToken(_PreviewToken):
         return model.id == ident
 
 
-MODELS = (TerminalPreviewToken, GroupPreviewToken)
-TYPES = {'terminal': TerminalPreviewToken, 'group': GroupPreviewToken}
+MODELS = (SystemPreviewToken, GroupPreviewToken)
+TYPES = {'system': SystemPreviewToken, 'group': GroupPreviewToken}

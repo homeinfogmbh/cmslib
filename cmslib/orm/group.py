@@ -3,14 +3,14 @@
 from peewee import CharField, ForeignKeyField, IntegerField, TextField
 
 from his.messages.data import MISSING_KEY_ERROR, INVALID_KEYS
-from terminallib import Terminal
+from terminallib import System
 
 from cmslib.messages.data import CIRCULAR_REFERENCE
 from cmslib.messages.group import NO_SUCH_MEMBER
 from cmslib.orm.common import DSCMS4Model, CustomerModel
 
 
-__all__ = ['MODELS', 'Group', 'GroupMember', 'GroupMemberTerminal']
+__all__ = ['MODELS', 'Group', 'GroupMember', 'GroupMemberSystem']
 
 
 class Group(CustomerModel):
@@ -135,21 +135,20 @@ class GroupMember(DSCMS4Model):
             'group': self.group.id}
 
 
-class GroupMemberTerminal(GroupMember):
-    """Terminals as members in groups."""
+class GroupMemberSystem(GroupMember):
+    """Systems as members in groups."""
 
     class Meta:     # pylint: disable=C0111,R0903
-        table_name = 'group_member_terminal'
+        table_name = 'group_member_system'
 
     group = ForeignKeyField(Group, column_name='group', on_delete='CASCADE')
-    member = ForeignKeyField(
-        Terminal, column_name='terminal', on_delete='CASCADE')
+    system = ForeignKeyField(System, column_name='system', on_delete='CASCADE')
 
     def to_json(self):
         """Returns a JSON-ish dict."""
         json = super().to_json()
-        json['terminal'] = self.member.tid
+        json['system'] = self.system.id
         return json
 
 
-MODELS = (Group, GroupMemberTerminal)
+MODELS = (Group, GroupMemberSystem)

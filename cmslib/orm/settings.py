@@ -14,7 +14,7 @@ class Settings(CustomerModel):
     All fields should have default values.
     """
 
-    show_testing_terminals = BooleanField(default=False)
+    show_testing_locations = BooleanField(default=False)
 
     @classmethod
     def for_customer(cls, customer):

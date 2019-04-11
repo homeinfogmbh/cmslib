@@ -49,7 +49,7 @@ class AmbiguousBaseChart(AmbiguityError):
 
 
 class AmbiguousConfigurationsError(AmbiguityError):
-    """Indicates that ambiguous configurations are defined for a terminal."""
+    """Indicates that ambiguous configurations are defined for an object."""
 
     def __init__(self, level, index):
         """Sets the level and its index."""

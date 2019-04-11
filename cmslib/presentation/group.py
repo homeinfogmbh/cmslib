@@ -22,7 +22,7 @@ class Presentation(PresentationMixin):
 
     @property
     def base_charts(self):
-        """Yields the terminal's base charts."""
+        """Yields the group's base charts."""
         return ()   # Handled by group_base_charts.
 
     @property
@@ -39,7 +39,7 @@ class Presentation(PresentationMixin):
 
     @property
     def menus(self):
-        """Yields menus of this terminal."""
+        """Yields menus of this group."""
         return ()   # Handled by group_menus.
 
     def to_dom(self):
