@@ -245,11 +245,25 @@ class MenuItemChart(DSCMS4Model):
         copy.menu_item = menu_item or self.menu_item
         return copy
 
-    def to_json(self):
+    def to_json(self, menu_item=True, base_chart=True, cascade=False):
         """Returns a JSON-ish dictionary."""
-        chart = self.base_chart.chart
-        json = chart.to_json(mode=ChartMode.BRIEF)
-        json['index'] = self.index
+        if menu_item and base_chart and not cascade:
+            return super().to_json()
+
+        skip = set()
+
+        if not menu_item:
+            skip.add('menu_item')
+
+        if not base_chart:
+            skip.add('base_chart')
+
+        json = super().to_json(skip=skip)
+
+        if cascade:
+            chart = self.base_chart.chart
+            json['chart'] = chart.to_json(mode=ChartMode.BRIEF)
+
         return json
 
     def to_dom(self):
