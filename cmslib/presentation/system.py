@@ -25,7 +25,7 @@ class Presentation(PresentationMixin):
     @property
     def customer(self):
         """Returns the respective customer."""
-        return self.system.location.customer
+        return self.system.deployment.customer
 
     @property
     def base_charts(self):
