@@ -22,7 +22,7 @@ __all__ = [
     'NO_SUCH_MENU_ITEM_CHART',
     'MENU_ITEM_CHART_ADDED',
     'MENU_ITEM_CHART_DELETED',
-    'MENU_ITEM_CHARTS_SORTED',
+    'MENU_ITEM_CHART_PATCHED',
     'DIFFERENT_MENU_ITEMS',
     'MENU_XOR_PARENT']
 
@@ -50,8 +50,8 @@ MENU_ITEM_CHART_ADDED = JSONMessage(
     'The menu item chart has been added.', status=201)
 MENU_ITEM_CHART_DELETED = JSONMessage(
     'The menu item chart has been deleted.', status=200)
-MENU_ITEM_CHARTS_SORTED = JSONMessage(
-    'The menu item charts have been sorted.', status=200)
+MENU_ITEM_CHART_PATCHED = JSONMessage(
+    'The menu item chart has been patched.', status=200)
 DIFFERENT_MENU_ITEMS = JSONMessage(
     'The menu item charts are members of different menu items.', status=400)
 MENU_XOR_PARENT = JSONMessage(
