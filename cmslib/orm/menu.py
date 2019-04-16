@@ -65,7 +65,8 @@ class Menu(CustomerModel):
         if items:
             json['items'] = [
                 item.to_json(charts=True, children=True, fk_fields=False)
-                for item in self.root_items.order_by(MenuItem.index)]
+                for item in self.root_items.order_by(MenuItem.index)
+            ]
 
         return json
 
@@ -205,14 +206,18 @@ class MenuItem(DSCMS4Model):
 
         if charts:
             json['charts'] = [
-                menu_item_chart.to_json() for menu_item_chart
-                in self.menu_item_charts.order_by(MenuItemChart.index)
-                if not menu_item_chart.base_chart.trashed]
+                menu_item_chart.to_json(
+                    menu_item=False, base_chart=False, chart=True)
+                for menu_item_chart in self.menu_item_charts.order_by(
+                    MenuItemChart.index)
+                if not menu_item_chart.base_chart.trashed
+            ]
 
         if children:
             json['items'] = [
                 item.to_json(charts=charts, children=children, **kwargs)
-                for item in self.children]
+                for item in self.children
+            ]
 
         return json
 
@@ -245,9 +250,9 @@ class MenuItemChart(DSCMS4Model):
         copy.menu_item = menu_item or self.menu_item
         return copy
 
-    def to_json(self, menu_item=True, base_chart=True, cascade=False):
+    def to_json(self, menu_item=True, base_chart=True, chart=False):
         """Returns a JSON-ish dictionary."""
-        if menu_item and base_chart and not cascade:
+        if menu_item and base_chart and not chart:
             return super().to_json()
 
         skip = set()
@@ -260,7 +265,7 @@ class MenuItemChart(DSCMS4Model):
 
         json = super().to_json(skip=skip)
 
-        if cascade:
+        if chart:
             chart = self.base_chart.chart
             json['chart'] = chart.to_json(mode=ChartMode.BRIEF)
 
