@@ -102,35 +102,10 @@ class GroupMember(DSCMS4Model):
 
     index = IntegerField(default=0)
 
-    @classmethod
-    def from_json(cls, json, group, **_):
-        """Creates a member for the given group
-        from the respective JSON-ish dictionary.
-        """
-        try:
-            member_id = json.pop('id')
-        except KeyError:
-            raise MISSING_KEY_ERROR.update(keys=['id'])
-
-        member_class = cls.member.rel_model
-
-        try:
-            member = member_class[member_id]
-        except member_class.DoesNotExist:
-            raise NO_SUCH_MEMBER
-
-        index = json.pop('index', 0)
-
-        if json:
-            raise INVALID_KEYS.update(keys=tuple(json))
-
-        return cls(member=member, group=group, index=index)
-
     def to_json(self):
         """Returns a JSON-ish dict."""
         return {
             'id': self.id,
-            'member': self.member.id,
             'index': self.index,
             'group': self.group.id}
 
