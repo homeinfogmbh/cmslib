@@ -5,8 +5,8 @@ from peewee import CharField, ForeignKeyField, IntegerField, TextField
 from his.messages.data import MISSING_KEY_ERROR, INVALID_KEYS
 from terminallib import System
 
+from cmslib.functions.system import get_system
 from cmslib.messages.data import CIRCULAR_REFERENCE
-from cmslib.messages.group import NO_SUCH_MEMBER
 from cmslib.orm.common import DSCMS4Model, CustomerModel
 
 
@@ -118,6 +118,24 @@ class GroupMemberSystem(GroupMember):
 
     group = ForeignKeyField(Group, column_name='group', on_delete='CASCADE')
     system = ForeignKeyField(System, column_name='system', on_delete='CASCADE')
+
+    @classmethod
+    def from_json(cls, json, group):
+        """Creates a member for the given group
+        from the respective JSON-ish dictionary.
+        """
+        try:
+            system = json.pop('system')
+        except KeyError:
+            raise MISSING_KEY_ERROR.update(keys=['system'])
+
+        system = get_system(system)
+        index = json.pop('index', 0)
+
+        if json:
+            raise INVALID_KEYS.update(keys=tuple(json))
+
+        return cls(system=system, group=group, index=index)
 
     def to_json(self):
         """Returns a JSON-ish dict."""
