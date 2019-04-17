@@ -34,10 +34,10 @@ class SystemBaseChart(_SystemContent):
     index = IntegerField(default=0)
 
     @classmethod
-    def from_json(cls, json, System, base_chart, **kwargs):
+    def from_json(cls, json, system, base_chart, **kwargs):
         """Creates a new group base chart."""
         record = super().from_json(json, **kwargs)
-        record.System = System
+        record.system = system
         record.base_chart = base_chart
         return record
 
