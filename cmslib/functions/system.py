@@ -1,7 +1,7 @@
 """Digital signage systems-related functions."""
 
 from his import CUSTOMER
-from terminallib import Location, System
+from terminallib import Deployment, System
 
 from cmslib.messages.system import NO_SUCH_SYSTEM
 
@@ -13,8 +13,8 @@ def get_system(ident):
     """Returns the respective system."""
 
     try:
-        return System.select().join(Location).where(
-            (System.id == ident) & (Location.customer == CUSTOMER.id)).get()
+        return System.select().join(Deployment).where(
+            (System.id == ident) & (Deployment.customer == CUSTOMER.id)).get()
     except System.DoesNotExist:
         raise NO_SUCH_SYSTEM
 
