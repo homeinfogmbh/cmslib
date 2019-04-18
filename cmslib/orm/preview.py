@@ -21,11 +21,6 @@ class _PreviewToken(DSCMS4Model):
     token = UUIDField(default=uuid4)
     obj = None
 
-    @staticmethod
-    def identify(model, ident):
-        """Returns a selector to identify the respective model."""
-        raise NotImplementedError()
-
     @classmethod
     def generate(cls, ident):
         """Returns a token for the respective resource."""
@@ -33,7 +28,7 @@ class _PreviewToken(DSCMS4Model):
 
         try:
             record = model.get(
-                cls.identify(model, ident) & (model.customer == CUSTOMER.id))
+                (model.id == ident) & (model.customer == CUSTOMER.id))
         except model.DoesNotExist:
             raise NO_SUCH_OBJECT.update(type=model.__name__)
 
@@ -54,11 +49,6 @@ class SystemPreviewToken(_PreviewToken):
 
     obj = ForeignKeyField(System, column_name='system', on_delete='CASCADE')
 
-    @staticmethod
-    def identify(model, ident):
-        """Identifies the system by TID."""
-        return model.tid == ident
-
 
 class GroupPreviewToken(_PreviewToken):
     """Preview tokens for groups."""
@@ -67,11 +57,6 @@ class GroupPreviewToken(_PreviewToken):
         table_name = 'group_preview_token'
 
     obj = ForeignKeyField(Group, column_name='group', on_delete='CASCADE')
-
-    @staticmethod
-    def identify(model, ident):
-        """Identifies the group by its ID."""
-        return model.id == ident
 
 
 MODELS = (SystemPreviewToken, GroupPreviewToken)
