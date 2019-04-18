@@ -5,7 +5,7 @@ from uuid import uuid4
 from peewee import ForeignKeyField, UUIDField
 
 from his import CUSTOMER
-from terminallib import System
+from terminallib import Deployment, System
 
 from cmslib.messages.preview import NO_SUCH_OBJECT
 from cmslib.orm.common import DSCMS4Model
@@ -21,14 +21,18 @@ class _PreviewToken(DSCMS4Model):
     token = UUIDField(default=uuid4)
     obj = None
 
+    @staticmethod
+    def get_record(model, ident):
+        """Returns the respective record."""
+        raise NotImplementedError()
+
     @classmethod
     def generate(cls, ident):
         """Returns a token for the respective resource."""
         model = cls.obj.rel_model
 
         try:
-            record = model.get(
-                (model.id == ident) & (model.customer == CUSTOMER.id))
+            record = cls.get_record(model, ident)
         except model.DoesNotExist:
             raise NO_SUCH_OBJECT.update(type=model.__name__)
 
@@ -49,6 +53,12 @@ class SystemPreviewToken(_PreviewToken):
 
     obj = ForeignKeyField(System, column_name='system', on_delete='CASCADE')
 
+    @staticmethod
+    def get_record(model, ident):
+        """Safely returns the respective system."""
+        return model.select().join(Deployment).where(
+            (model.id == ident) & (Deployment.customer == CUSTOMER.id)).get()
+
 
 class GroupPreviewToken(_PreviewToken):
     """Preview tokens for groups."""
@@ -57,6 +67,12 @@ class GroupPreviewToken(_PreviewToken):
         table_name = 'group_preview_token'
 
     obj = ForeignKeyField(Group, column_name='group', on_delete='CASCADE')
+
+    @staticmethod
+    def get_record(model, ident):
+        """Safely returns the respective group."""
+        return model.get(
+            (model.id == ident) & (model.customer == CUSTOMER.id))
 
 
 MODELS = (SystemPreviewToken, GroupPreviewToken)
