@@ -8,7 +8,9 @@ from peewee import ForeignKeyField, CharField, IntegerField
 from cmslib import dom
 from cmslib.exceptions import OrphanedBaseChart, AmbiguousBaseChart
 from cmslib.messages.data import CIRCULAR_REFERENCE
-from cmslib.messages.menu import NO_MENU_SPECIFIED, DIFFERENT_MENUS
+from cmslib.messages.menu import DIFFERENT_MENUS
+from cmslib.messages.menu import NO_MENU_SPECIFIED
+from cmslib.messages.menu import NO_SUCH_MENU_ITEM
 from cmslib.orm.common import UNCHANGED, CustomerModel, DSCMS4Model
 from cmslib.orm.charts import ChartMode, BaseChart
 
@@ -74,7 +76,7 @@ class Menu(CustomerModel):
 class MenuItem(DSCMS4Model):
     """A menu item."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'menu_item'
 
     menu = ForeignKeyField(
@@ -152,7 +154,11 @@ class MenuItem(DSCMS4Model):
     def move(self, *, menu=UNCHANGED, parent=UNCHANGED, customer=None):
         """Moves the menu item to another menu and / or parent."""
         menu = self._get_menu(menu, customer=customer)
-        parent = self._get_parent(parent, customer=customer)
+
+        try:
+            parent = self._get_parent(parent, customer=customer)
+        except self.DoesNotExist:
+            raise NO_SUCH_MENU_ITEM
 
         if parent is not None:
             if parent.menu != menu:
@@ -225,7 +231,7 @@ class MenuItem(DSCMS4Model):
 class MenuItemChart(DSCMS4Model):
     """Mapping in-between menu items and base charts."""
 
-    class Meta:
+    class Meta:     # pylint: disable=C0111,R0903
         table_name = 'menu_item_chart'
 
     menu_item = ForeignKeyField(
