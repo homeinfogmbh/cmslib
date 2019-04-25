@@ -51,7 +51,7 @@ def indexify(item):
     return item.index
 
 
-@coerce(frozenset)
+@coerce(set)
 def level_configs(level):
     """Yields all configurations of a certain group level."""
 
@@ -62,7 +62,7 @@ def level_configs(level):
 def uniquesort(iterable, *, key=None, reverse=False):
     """Uniquely sorts an iterable."""
 
-    return sorted(frozenset(iterable), key=key, reverse=reverse)
+    return sorted(set(iterable), key=key, reverse=reverse)
 
 
 class PresentationMixin:
@@ -88,7 +88,7 @@ class PresentationMixin:
 
     @property
     @lru_cache()
-    @coerce(frozenset)
+    @coerce(set)
     def _groups(self):
         """Yields all groups in a breadth-first search."""
         for level in self.grouplevels:
@@ -97,7 +97,7 @@ class PresentationMixin:
 
     @property
     @lru_cache()
-    @coerce(frozenset)
+    @coerce(set)
     def _menus(self):
         """Yields the accumulated menus of this object."""
         return chain(self.menus, self.group_menus)
@@ -110,7 +110,7 @@ class PresentationMixin:
 
     @property
     @lru_cache()
-    @coerce(frozenset)
+    @coerce(set)
     def files(self):
         """Yields the presentation's used file IDs."""
         yield from self._configuration.files
@@ -142,11 +142,11 @@ class PresentationMixin:
     @property
     def grouplevels(self):
         """Yields group levels in a breadth-first search."""
-        level = frozenset(self.groups)
+        level = set(self.groups)
 
         while level:
             yield level
-            level = frozenset(group.parent for group in level if group.parent)
+            level = set(group.parent for group in level if group.parent)
 
     @property
     @lru_cache()
