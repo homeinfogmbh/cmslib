@@ -27,5 +27,19 @@ class ChartType(CustomerModel):
                 self.chart_type = name
                 break
 
+    @classmethod
+    def can_use(cls, customer, chart_class):
+        """Determines whether the respective
+        user may use the given chart class.
+        """
+        try:
+            cls.get(
+                (cls.customer == customer)
+                & (cls.chart_type == chart_class.__name__))
+        except cls.DoesNotExist:
+            return False
+
+        return True
+
 
 MODELS = (ChartType,)

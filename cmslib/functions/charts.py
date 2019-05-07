@@ -10,7 +10,7 @@ from cmslib.messages.charts import INVALID_CHART_TYPE
 from cmslib.messages.charts import NO_CHART_TYPE_SPECIFIED
 from cmslib.messages.charts import NO_SUCH_CHART
 from cmslib.orm.charts import ChartMode, BaseChart, Chart
-#from cmslib.orm.customer_charts import CustomerChart
+#from cmslib.orm.chart_types import ChartType
 
 
 __all__ = ['CHART_TYPES', 'CHART_TYPE', 'get_charts', 'get_chart', 'get_mode']
@@ -36,7 +36,7 @@ def _filter_chart_types():
     """Yields filtered chart types."""
 
     for chart_type in _get_chart_types():
-        #if CustomerChart.can_use(CUSTOMER.id, chart_type):
+        #if ChartType.can_use(CUSTOMER.id, chart_type):
         #    yield chart_type
         yield chart_type    # XXX: Disable customer chart checking for now.
 
@@ -57,7 +57,7 @@ def _get_chart_type():
     except KeyError:
         raise INVALID_CHART_TYPE
 
-    #if CustomerChart.can_use(CUSTOMER.id, chart_type):
+    #if ChartType.can_use(CUSTOMER.id, chart_type):
     #    return chart_type
     return chart_type   # XXX: Disable customer chart checking for now.
 
