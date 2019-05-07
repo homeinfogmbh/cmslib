@@ -10,6 +10,7 @@ from cmslib.messages.charts import INVALID_CHART_TYPE
 from cmslib.messages.charts import NO_CHART_TYPE_SPECIFIED
 from cmslib.messages.charts import NO_SUCH_CHART
 from cmslib.orm.charts import ChartMode, BaseChart, Chart
+from cmslib.orm.customer_charts import CustomerChart
 
 
 __all__ = ['CHART_TYPES', 'CHART_TYPE', 'get_charts', 'get_chart', 'get_mode']
@@ -31,7 +32,17 @@ def _get_chart_types():
             raise INVALID_CHART_TYPE
 
 
-CHART_TYPES = LocalProxy(_get_chart_types)
+def _filter_chart_types():
+    """Yields filtered chart types."""
+
+    for chart_type in _get_chart_types():
+        if CustomerChart.can_use(CUSTOMER.id, chart_type):
+            yield chart_type
+        else:
+            raise INVALID_CHART_TYPE
+
+
+CHART_TYPES = LocalProxy(_filter_chart_types)
 
 
 def _get_chart_type():
@@ -43,9 +54,14 @@ def _get_chart_type():
         raise NO_CHART_TYPE_SPECIFIED
 
     try:
-        return Chart.types[chart_type]
+        chart_type = Chart.types[chart_type]
     except KeyError:
         raise INVALID_CHART_TYPE
+
+    if CustomerChart.can_use(CUSTOMER.id, chart_type):
+        return chart_type
+
+    raise INVALID_CHART_TYPE
 
 
 CHART_TYPE = LocalProxy(_get_chart_type)

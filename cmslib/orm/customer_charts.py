@@ -4,6 +4,8 @@ customers to use the respective charts.
 
 from peewee import CharField
 
+from his import ACCOUNT
+
 from cmslib.orm.charts import Chart
 from cmslib.orm.common import CustomerModel
 
@@ -25,6 +27,9 @@ class CustomerChart(CustomerModel):
     @classmethod
     def can_use(cls, customer, chart):
         """Determines whether the customer can use the respective chart."""
+        if ACCOUNT.root:
+            return True
+
         try:
             cls.get((cls.customer == customer) & (cls.chart == chart.__name__))
         except cls.DoesNotExist:
