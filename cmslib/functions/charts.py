@@ -38,8 +38,6 @@ def _filter_chart_types():
     for chart_type in _get_chart_types():
         if CustomerChart.can_use(CUSTOMER.id, chart_type):
             yield chart_type
-        else:
-            raise INVALID_CHART_TYPE
 
 
 CHART_TYPES = LocalProxy(_filter_chart_types)
