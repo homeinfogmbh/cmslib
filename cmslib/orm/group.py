@@ -10,7 +10,7 @@ from cmslib.messages.data import CIRCULAR_REFERENCE
 from cmslib.orm.common import DSCMS4Model, CustomerModel
 
 
-__all__ = ['MODELS', 'Group', 'GroupMember', 'GroupMemberSystem']
+__all__ = ['MODELS', 'Group', 'GroupMemberSystem']
 
 
 class Group(CustomerModel):
@@ -97,20 +97,7 @@ class Group(CustomerModel):
         return super().delete_instance(*args, **kwargs)
 
 
-class GroupMember(DSCMS4Model):
-    """An abstract group member model."""
-
-    index = IntegerField(default=0)
-
-    def to_json(self):
-        """Returns a JSON-ish dict."""
-        return {
-            'id': self.id,
-            'index': self.index,
-            'group': self.group.id}
-
-
-class GroupMemberSystem(GroupMember):
+class GroupMemberSystem(DSCMS4Model):
     """Systems as members in groups."""
 
     class Meta:     # pylint: disable=C0111,R0903
@@ -118,6 +105,7 @@ class GroupMemberSystem(GroupMember):
 
     group = ForeignKeyField(Group, column_name='group', on_delete='CASCADE')
     system = ForeignKeyField(System, column_name='system', on_delete='CASCADE')
+    index = IntegerField(default=0)
 
     @classmethod
     def from_json(cls, json, group):
@@ -135,13 +123,15 @@ class GroupMemberSystem(GroupMember):
         if json:
             raise INVALID_KEYS.update(keys=tuple(json))
 
-        return cls(system=system, group=group, index=index)
+        return cls(group=group, system=system, index=index)
 
     def to_json(self):
         """Returns a JSON-ish dict."""
-        json = super().to_json()
-        json['system'] = self.system.id
-        return json
+        return {
+            'id': self.id,
+            'index': self.index,
+            'group': self.group.id,
+            'system': self.system.id}
 
 
 MODELS = (Group, GroupMemberSystem)
