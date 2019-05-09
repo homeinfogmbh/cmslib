@@ -24,8 +24,10 @@ class Facebook(Chart):
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_facebook'
 
-    font_size = SmallIntegerField(default=26)
+    font_size_title = SmallIntegerField(default=26)
     title_color = IntegerField(default=0x000000)
+    font_size_text = SmallIntegerField(default=26)
+    text_color = IntegerField(default=0x000000)
     ken_burns = BooleanField(default=False)
 
     @classmethod
@@ -80,8 +82,10 @@ class Facebook(Chart):
             return super().to_dom(dom.BriefChart)
 
         xml = super().to_dom(dom.Facebook)
-        xml.font_size = self.font_size
+        xml.font_size_title = self.font_size_title
         xml.title_color = self.title_color
+        xml.font_size_text = self.font_size_text
+        xml.text_color = self.text_color
         xml.ken_burns = self.ken_burns
         xml.account = [account.to_dom() for account in self.accounts]
         return xml
