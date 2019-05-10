@@ -3,8 +3,9 @@
 from peewee import CharField, ForeignKeyField, IntegerField, TextField
 
 from his.messages.data import MISSING_KEY_ERROR, INVALID_KEYS
-from terminallib import System
+from terminallib import Deployment, System
 
+from cmslib.functions.deployment import get_deployment
 from cmslib.functions.system import get_system
 from cmslib.messages.data import CIRCULAR_REFERENCE
 from cmslib.orm.common import DSCMS4Model, CustomerModel
@@ -97,6 +98,44 @@ class Group(CustomerModel):
         return super().delete_instance(*args, **kwargs)
 
 
+class GroupMemberDeployment(DSCMS4Model):
+    """Systems as members in groups."""
+
+    class Meta:     # pylint: disable=C0111,R0903
+        table_name = 'group_member_deployment'
+
+    group = ForeignKeyField(Group, column_name='group', on_delete='CASCADE')
+    deployment = ForeignKeyField(
+        Deployment, column_name='deployment', on_delete='CASCADE')
+    index = IntegerField(default=0)
+
+    @classmethod
+    def from_json(cls, json, group):
+        """Creates a member for the given group
+        from the respective JSON-ish dictionary.
+        """
+        try:
+            deployment = json.pop('deployment')
+        except KeyError:
+            raise MISSING_KEY_ERROR.update(keys=['deployment'])
+
+        deployment = get_deployment(deployment)
+        index = json.pop('index', 0)
+
+        if json:
+            raise INVALID_KEYS.update(keys=tuple(json))
+
+        return cls(group=group, deployment=deployment, index=index)
+
+    def to_json(self):
+        """Returns a JSON-ish dict."""
+        return {
+            'id': self.id,
+            'index': self.index,
+            'group': self.group.id,
+            'deployment': self.deployment.id}
+
+
 class GroupMemberSystem(DSCMS4Model):
     """Systems as members in groups."""
 
@@ -134,4 +173,4 @@ class GroupMemberSystem(DSCMS4Model):
             'system': self.system.id}
 
 
-MODELS = (Group, GroupMemberSystem)
+MODELS = (Group, GroupMemberDeployment, GroupMemberSystem)

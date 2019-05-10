@@ -5,14 +5,14 @@ from uuid import uuid4
 from peewee import ForeignKeyField, UUIDField
 
 from his import CUSTOMER
-from terminallib import Deployment, System
+from terminallib import Deployment
 
 from cmslib.messages.preview import NO_SUCH_OBJECT
 from cmslib.orm.common import DSCMS4Model
 from cmslib.orm.group import Group
 
 
-__all__ = ['TYPES', 'SystemPreviewToken', 'GroupPreviewToken']
+__all__ = ['TYPES', 'GroupPreviewToken']
 
 
 class _PreviewToken(DSCMS4Model):
@@ -21,18 +21,14 @@ class _PreviewToken(DSCMS4Model):
     token = UUIDField(default=uuid4)
     obj = None
 
-    @staticmethod
-    def get_record(model, ident):
-        """Returns the respective record."""
-        raise NotImplementedError()
-
     @classmethod
     def generate(cls, ident):
         """Returns a token for the respective resource."""
         model = cls.obj.rel_model
 
         try:
-            record = cls.get_record(model, ident)
+            record = model.get(
+                (model.id == ident) & (model.customer == CUSTOMER.id))
         except model.DoesNotExist:
             raise NO_SUCH_OBJECT.update(type=model.__name__)
 
@@ -45,19 +41,14 @@ class _PreviewToken(DSCMS4Model):
             return token
 
 
-class SystemPreviewToken(_PreviewToken):
-    """Preview tokens for systems."""
+class DeploymentPreviewToken(_PreviewToken):
+    """Preview tokens for deployments."""
 
     class Meta:     # pylint: disable=C0111,R0903
-        table_name = 'system_preview_token'
+        table_name = 'deployment_preview_token'
 
-    obj = ForeignKeyField(System, column_name='system', on_delete='CASCADE')
-
-    @staticmethod
-    def get_record(model, ident):
-        """Safely returns the respective system."""
-        return model.select().join(Deployment).where(
-            (model.id == ident) & (Deployment.customer == CUSTOMER.id)).get()
+    obj = ForeignKeyField(
+        Deployment, column_name='deployment', on_delete='CASCADE')
 
 
 class GroupPreviewToken(_PreviewToken):
@@ -68,12 +59,6 @@ class GroupPreviewToken(_PreviewToken):
 
     obj = ForeignKeyField(Group, column_name='group', on_delete='CASCADE')
 
-    @staticmethod
-    def get_record(model, ident):
-        """Safely returns the respective group."""
-        return model.get(
-            (model.id == ident) & (model.customer == CUSTOMER.id))
 
-
-MODELS = (SystemPreviewToken, GroupPreviewToken)
-TYPES = {'system': SystemPreviewToken, 'group': GroupPreviewToken}
+MODELS = (DeploymentPreviewToken, GroupPreviewToken)
+TYPES = {'deployment': DeploymentPreviewToken, 'group': GroupPreviewToken}
