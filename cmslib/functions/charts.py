@@ -3,7 +3,7 @@
 from flask import request
 from werkzeug.local import LocalProxy
 
-from his import CUSTOMER
+from his import ACCOUNT, CUSTOMER
 from his.messages.data import INVALID_DATA, NOT_AN_INTEGER
 
 from cmslib.messages.charts import INVALID_CHART_TYPE
@@ -36,7 +36,7 @@ def _filter_chart_types():
     """Yields filtered chart types."""
 
     for chart_type in _get_chart_types():
-        if ChartType.can_use(CUSTOMER.id, chart_type):
+        if ACCOUNT.root or ChartType.can_use(CUSTOMER.id, chart_type):
             yield chart_type
 
 
@@ -56,7 +56,7 @@ def _get_chart_type():
     except KeyError:
         raise INVALID_CHART_TYPE
 
-    if ChartType.can_use(CUSTOMER.id, chart_type):
+    if ACCOUNT.root or ChartType.can_use(CUSTOMER.id, chart_type):
         return chart_type
 
     raise INVALID_CHART_TYPE
