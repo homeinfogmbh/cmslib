@@ -3,15 +3,14 @@
 from peewee import CharField, ForeignKeyField, IntegerField, TextField
 
 from his.messages.data import MISSING_KEY_ERROR, INVALID_KEYS
-from terminallib import Deployment, System
+from terminallib import Deployment
 
 from cmslib.functions.deployment import get_deployment
-from cmslib.functions.system import get_system
 from cmslib.messages.data import CIRCULAR_REFERENCE
 from cmslib.orm.common import DSCMS4Model, CustomerModel
 
 
-__all__ = ['MODELS', 'Group', 'GroupMemberSystem']
+__all__ = ['MODELS', 'Group', 'GroupMemberDeployment']
 
 
 class Group(CustomerModel):
@@ -99,7 +98,7 @@ class Group(CustomerModel):
 
 
 class GroupMemberDeployment(DSCMS4Model):
-    """Systems as members in groups."""
+    """Deployments as members in groups."""
 
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'group_member_deployment'
@@ -136,41 +135,4 @@ class GroupMemberDeployment(DSCMS4Model):
             'deployment': self.deployment.id}
 
 
-class GroupMemberSystem(DSCMS4Model):
-    """Systems as members in groups."""
-
-    class Meta:     # pylint: disable=C0111,R0903
-        table_name = 'group_member_system'
-
-    group = ForeignKeyField(Group, column_name='group', on_delete='CASCADE')
-    system = ForeignKeyField(System, column_name='system', on_delete='CASCADE')
-    index = IntegerField(default=0)
-
-    @classmethod
-    def from_json(cls, json, group):
-        """Creates a member for the given group
-        from the respective JSON-ish dictionary.
-        """
-        try:
-            system = json.pop('system')
-        except KeyError:
-            raise MISSING_KEY_ERROR.update(keys=['system'])
-
-        system = get_system(system)
-        index = json.pop('index', 0)
-
-        if json:
-            raise INVALID_KEYS.update(keys=tuple(json))
-
-        return cls(group=group, system=system, index=index)
-
-    def to_json(self):
-        """Returns a JSON-ish dict."""
-        return {
-            'id': self.id,
-            'index': self.index,
-            'group': self.group.id,
-            'system': self.system.id}
-
-
-MODELS = (Group, GroupMemberDeployment, GroupMemberSystem)
+MODELS = (Group, GroupMemberDeployment)
