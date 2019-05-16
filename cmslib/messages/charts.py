@@ -15,7 +15,8 @@ __all__ = [
     'CHART_DELETED',
     'CHART_PATCHED',
     'CHART_TYPE_ADDED',
-    'CHART_TYPE_DELETED']
+    'CHART_TYPE_DELETED',
+    'NO_SUCH_CHART_TYPE']
 
 
 CHART_DATA_INCOMPLETE = JSONMessage('Chart data is incomplete.', status=400)
@@ -32,3 +33,5 @@ CHART_PATCHED = JSONMessage('The chart has been patched.', status=200)
 CHART_TYPE_ADDED = JSONMessage('The chart type has been added.', status=201)
 CHART_TYPE_DELETED = JSONMessage(
     'The chart type has been deleted.', status=200)
+NO_SUCH_CHART_TYPE = JSONMessage(
+    'The specified chart type does not exist.', status=404)
