@@ -8,7 +8,7 @@ from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import SmallIntegerField
 
-from ferengi.facebook import FACEBOOK
+from ferengi.facebook import Facebook as FacebookClient
 
 from cmslib import dom
 from cmslib.orm.charts.common import ChartMode, Chart
@@ -121,7 +121,8 @@ class Account(DSCMS4Model):
     @property
     def posts(self):
         """Yields posts."""
-        return FACEBOOK.get_posts(
+        facebook = FacebookClient.default_instance()
+        return facebook.get_posts(
             self.facebook_id, limit=self.max_posts, since=self.since)
 
     def to_dom(self):
