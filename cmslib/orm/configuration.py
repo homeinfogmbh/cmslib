@@ -39,7 +39,7 @@ def percentage(value):
     if 0 <= value <= 100:
         return value
 
-    raise ValueError('Invalid percentage: {}.'.format(value))
+    raise ValueError(f'Invalid percentage: {value}.')
 
 
 class Font(Enum):

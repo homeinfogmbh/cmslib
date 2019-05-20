@@ -40,7 +40,8 @@ class DSCMS4Model(JSONModel):
 
     def __str__(self):
         """Returns the models's ID and class."""
-        return '{}@{}'.format(self.id, type(self).__name__)
+        cls = type(self)
+        return f'{self.id}@{cls.__name__}'
 
 
 class CustomerModel(DSCMS4Model):

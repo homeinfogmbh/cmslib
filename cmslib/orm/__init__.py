@@ -30,5 +30,5 @@ def create_tables(fail_silently=True):
         try:
             model.create_table(fail_silently=fail_silently)
         except Exception as error:  # pylint: disable=W0703
-            print('Could not create table for model "{}":\n{}.'.format(
-                model, error), file=stderr)
+            print(f'Could not create table for model "{model}":\n{error}.',
+                  file=stderr)

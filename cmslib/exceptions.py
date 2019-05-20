@@ -23,7 +23,7 @@ class OrphanedBaseChart(CMSLibError):
 
     def __str__(self):
         """Returns an appropriate message."""
-        return 'Base chart {} is orphaned.'.format(self.base_chart.id)
+        return f'Base chart {self.base_chart.id} is orphaned.'
 
 
 class AmbiguityError(CMSLibError):
@@ -43,9 +43,8 @@ class AmbiguousBaseChart(AmbiguityError):
 
     def __str__(self):
         """Returns an appropriate message."""
-        return 'Base chart #{} is ambiguous: {}.'.format(
-            self.base_chart.id, ', '.join(
-                str(chart) for chart in self.references))
+        charts = ', '.join(str(chart) for chart in self.references)
+        return f'Base chart #{self.base_chart.id} is ambiguous: {charts}.'
 
 
 class AmbiguousConfigurationsError(AmbiguityError):
