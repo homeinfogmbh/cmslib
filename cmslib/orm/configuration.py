@@ -58,6 +58,7 @@ class Design(Enum):
     THREE_D = '3d'
     NEWS = 'news'
     FLAT = 'flat'
+    HD = 'hd'
 
 
 class TickerTypes(Enum):
