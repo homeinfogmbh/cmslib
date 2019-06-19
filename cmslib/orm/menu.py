@@ -1,7 +1,7 @@
 """Menus, menu items and chart members."""
 
-from collections import namedtuple
 from logging import getLogger
+from typing import Iterable, NamedTuple
 
 from peewee import ForeignKeyField, CharField, IntegerField
 
@@ -20,23 +20,6 @@ __all__ = ['Menu', 'MenuItem', 'MODELS']
 
 LOGGER = getLogger('Menu')
 COPY_SUFFIX = ' (Kopie)'
-
-
-class MenuItemGroup(namedtuple(
-        'MenuItemGroup', ('menu_item', 'childrens_children'))):
-    """A group of menu items."""
-
-    @property
-    def id(self):   # pylint: disable=C0103
-        """Returns the menu items's ID."""
-        return self.menu_item.id
-
-    def save(self):
-        """Saves all menu items."""
-        for menu_item in self.childrens_children:
-            menu_item.save()
-
-        self.menu_item.save()
 
 
 class Menu(CustomerModel):
@@ -107,8 +90,8 @@ class MenuItem(DSCMS4Model):
     def childrens_children(self):
         """Recursively yields all submenus."""
         for child in self.children.order_by(type(self).index):
-            for childrens_child in child.childrens_children:
-                yield childrens_child
+            yield child
+            yield from child.childrens_children
 
     @property
     def charts(self):
@@ -285,6 +268,25 @@ class MenuItemChart(DSCMS4Model):
         xml.type = type(chart).__name__
         xml.index = self.index
         return xml
+
+
+class MenuItemGroup(NamedTuple):
+    """A group of menu items."""
+
+    menu_item: MenuItem
+    children: Iterable[MenuItem]
+
+    @property
+    def id(self):   # pylint: disable=C0103
+        """Returns the menu items's ID."""
+        return self.menu_item.id
+
+    def save(self):
+        """Saves all menu items."""
+        for child in self.children:
+            child.save()
+
+        self.menu_item.save()
 
 
 MODELS = (Menu, MenuItem, MenuItemChart)
