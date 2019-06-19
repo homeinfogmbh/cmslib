@@ -3,7 +3,8 @@
 from collections import defaultdict
 from itertools import chain
 from json import dumps
-from uuid import uuid4
+from typing import Iterable, NamedTuple
+from uuid import uuid4, UUID
 
 from cmslib import dom  # pylint: disable=E0611
 
@@ -42,24 +43,17 @@ def get_index(menu_item):
     return menu_item.index
 
 
-class MenuTreeItem:
+class MenuTreeItem(NamedTuple):
     """Menu item for tree structure."""
 
-    __slots__ = (
-        'uuid', 'name', 'icon', 'text_color', 'background_color', 'index',
-        'menu_item_charts', 'children')
-
-    def __init__(self, name, icon, text_color, background_color, index,
-                 menu_item_charts, children):
-        """Sets the referenced menu item."""
-        self.uuid = uuid4()
-        self.name = name
-        self.icon = icon
-        self.text_color = text_color
-        self.background_color = background_color
-        self.index = index
-        self.menu_item_charts = menu_item_charts
-        self.children = children
+    uuid: UUID
+    name: str
+    icon: str
+    text_color: int
+    background_color: int
+    index: int
+    menu_item_charts: Iterable
+    children: Iterable
 
     def __str__(self):
         """Returns a nested JSON object."""
@@ -79,16 +73,24 @@ class MenuTreeItem:
                 base_charts.add(mic.base_chart_id)
                 menu_item_charts.add(mic)
 
-        return type(self)(
+        return type(self).new(
             self.name, self.icon, self.text_color, self.background_color,
             self.index, menu_item_charts, children)
+
+    @classmethod
+    def new(cls, name, icon, text_color, background_color, index,
+            menu_item_charts, children):
+        """Creates a new MenuTreeItem with a unique UUID."""
+        return cls(
+            uuid4(), name, icon, text_color, background_color, index,
+            menu_item_charts, children)
 
     @classmethod
     def from_menu_item(cls, menu_item):
         """Creates a menu item tree from the given menu item."""
         children = [cls.from_menu_item(child) for child in menu_item.children]
         menu_item_charts = list(menu_item.menu_item_charts)
-        return cls(
+        return cls.new(
             menu_item.name, menu_item.icon, menu_item.text_color,
             menu_item.background_color, menu_item.index, menu_item_charts,
             children)
