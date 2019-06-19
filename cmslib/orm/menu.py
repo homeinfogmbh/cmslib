@@ -49,8 +49,7 @@ class Menu(CustomerModel):
         if items:
             json['items'] = [
                 item.to_json(charts=True, children=True, fk_fields=False)
-                for item in self.root_items.order_by(MenuItem.index)
-            ]
+                for item in self.root_items.order_by(MenuItem.index)]
 
         return json
 
@@ -274,7 +273,7 @@ class MenuItemGroup(tuple):
 
     @property
     def id(self):   # pylint: disable=C0103
-        """Returns the menu items's ID."""
+        """Returns the first menu items's ID."""
         return self[0].id
 
     def save(self):
