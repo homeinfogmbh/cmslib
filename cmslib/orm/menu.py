@@ -1,7 +1,6 @@
 """Menus, menu items and chart members."""
 
 from logging import getLogger
-from typing import Iterable, NamedTuple
 
 from peewee import ForeignKeyField, CharField, IntegerField
 
@@ -87,11 +86,12 @@ class MenuItem(DSCMS4Model):
         return self.menu is not None
 
     @property
-    def childrens_children(self):
+    def tree(self):
         """Recursively yields all submenus."""
+        yield self
+
         for child in self.children.order_by(type(self).index):
-            yield child
-            yield from child.childrens_children
+            yield from child.tree
 
     @property
     def charts(self):
@@ -147,18 +147,17 @@ class MenuItem(DSCMS4Model):
             if parent.menu != menu:
                 raise DIFFERENT_MENUS
 
-            if parent in self.childrens_children:
+            if parent in self.tree:
                 raise CIRCULAR_REFERENCE
 
-        self.menu = menu
         self.parent = parent
-        childrens_children = []
+        menu_items = []
 
-        for child in self.childrens_children:
-            child.menu = menu
-            childrens_children.append(child)
+        for menu_item in self.tree:
+            menu_item.menu = menu
+            menu_items.append(menu_item)
 
-        return MenuItemGroup(self, childrens_children)
+        return MenuItemGroup(menu_items)
 
     def copy(self, menu=None, parent=None):
         """Copies this menu item."""
@@ -270,23 +269,18 @@ class MenuItemChart(DSCMS4Model):
         return xml
 
 
-class MenuItemGroup(NamedTuple):
+class MenuItemGroup(tuple):
     """A group of menu items."""
-
-    menu_item: MenuItem
-    children: Iterable[MenuItem]
 
     @property
     def id(self):   # pylint: disable=C0103
         """Returns the menu items's ID."""
-        return self.menu_item.id
+        return self[0].id
 
     def save(self):
         """Saves all menu items."""
-        for child in self.children:
-            child.save()
-
-        self.menu_item.save()
+        for menu_item in self:
+            menu_item.save()
 
 
 MODELS = (Menu, MenuItem, MenuItemChart)
