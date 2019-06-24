@@ -50,6 +50,7 @@ class Font(Enum):
     LATO = 'lato'
     SPARKASSE = 'sparkasse'
     NETTOO = 'nettoo'
+    MUSEO = 'museo'
 
 
 class Design(Enum):
