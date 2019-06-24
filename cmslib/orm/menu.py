@@ -153,6 +153,7 @@ class MenuItem(DSCMS4Model):
         menu_items = []
 
         for menu_item in self.tree:
+            print('DEBUG: Moving', menu_item, 'to', menu)
             menu_item.menu = menu
             menu_items.append(menu_item)
 
