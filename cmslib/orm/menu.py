@@ -89,6 +89,9 @@ class MenuItem(DSCMS4Model):
         """Recursively yields all submenus."""
         yield self
 
+        if not self.id:
+            return  # Fix #351.
+
         for child in self.children.order_by(type(self).index):
             yield from child.tree
 
