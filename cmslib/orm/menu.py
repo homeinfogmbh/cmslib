@@ -64,7 +64,7 @@ class MenuItem(DSCMS4Model):
         Menu, column_name='menu', on_delete='CASCADE', backref='items')
     parent = ForeignKeyField(
         'self', column_name='parent', null=True, on_delete='CASCADE',
-        backref='children')
+        backref='_children')
     name = CharField(255)
     icon = CharField(255, null=True)
     text_color = IntegerField(default=0x000000)
@@ -85,12 +85,17 @@ class MenuItem(DSCMS4Model):
         return self.menu is not None
 
     @property
+    def children(self):
+        """Returns the children."""
+        if self.id is None:     # Fix #351.
+            return ()
+
+        return self._children
+
+    @property
     def tree(self):
         """Recursively yields all submenus."""
         yield self
-
-        if not self.id:
-            return  # Fix #351.
 
         for child in self.children.order_by(type(self).index):
             yield from child.tree
