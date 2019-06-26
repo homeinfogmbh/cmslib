@@ -19,7 +19,7 @@ class Group(CustomerModel):
     name = CharField(255)
     description = TextField(null=True)
     parent = ForeignKeyField(
-        'self', column_name='parent', null=True, backref='children')
+        'self', column_name='parent', null=True, backref='_children')
     index = IntegerField(default=0)
 
     @classmethod
@@ -36,13 +36,22 @@ class Group(CustomerModel):
         return self.parent is None
 
     @property
-    def childrens_children(self):
+    def children(self):
+        """Yields the children in order."""
+        if self.id is None:
+            return ()
+
+        return self._children.order_by(type(self).index)
+
+    @property
+    def tree(self):
         """Recursively yields this group's
         children in a depth-first search.
         """
+        yield self
+
         for child in self.children:
-            for childs_child in child.childrens_children:
-                yield childs_child
+            yield from child.tree
 
     @property
     def json_tree(self):
@@ -56,7 +65,7 @@ class Group(CustomerModel):
         if parent is not None:
             parent = self.get_peer(parent)
 
-            if parent == self or parent in self.childrens_children:
+            if parent == self or parent in self.tree:
                 raise CIRCULAR_REFERENCE
 
         self.parent = parent
