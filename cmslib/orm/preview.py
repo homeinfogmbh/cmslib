@@ -22,7 +22,7 @@ class _PreviewToken(DSCMS4Model):
     obj = None
 
     @classmethod
-    def generate(cls, ident):
+    def generate(cls, ident, force=False):
         """Returns a token for the respective resource."""
         model = cls.obj.rel_model
 
@@ -32,13 +32,13 @@ class _PreviewToken(DSCMS4Model):
         except model.DoesNotExist:
             raise NO_SUCH_OBJECT.update(type=model.__name__)
 
+        if force:
+            return cls(obj=record)
+
         try:
             return cls.get(cls.obj == record)
         except cls.DoesNotExist:
-            token = cls()
-            token.obj = record
-            token.save()
-            return token
+            return cls(obj=record)
 
 
 class DeploymentPreviewToken(_PreviewToken):
