@@ -588,6 +588,63 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
+                    <!-- Further colors. -->
+                    <xs:element name="data" type="xs:nonNegativeInteger">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Schriftfarbe.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="background_data" type="xs:nonNegativeInteger">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Farbe Hintergrund Daten.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="values" type="xs:nonNegativeInteger">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Farbe Werte.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="background_values" type="xs:nonNegativeInteger">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Farbe Hintergrund Werte.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="amenities_background_even" type="xs:nonNegativeInteger">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Farbe Ausstattungen Hintergrund gerade.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="amenities_text_even" type="xs:nonNegativeInteger">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Farbe Ausstattungen Text gerade.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="amenities_background_uneven" type="xs:nonNegativeInteger">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Farbe Ausstattungen Hintergrund ungerade.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="amenities_text_uneven" type="xs:nonNegativeInteger">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Farbe Ausstattungen Text ungerade.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
                     <!-- Data fields. -->
                     <xs:element name="amenities" type="xs:boolean"/>
                     <xs:element name="construction" type="xs:boolean"/>

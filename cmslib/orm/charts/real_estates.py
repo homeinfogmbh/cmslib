@@ -53,6 +53,15 @@ class RealEstates(Chart):
     contact_picture = BooleanField(default=True)
     font_size = SmallIntegerField(default=8)
     font_color = IntegerField(default=0x000000)
+    # Further colors:
+    data = IntegerField(default=0x000000)
+    background_data = IntegerField(default=0x000000)
+    values = IntegerField(default=0x000000)
+    background_values = IntegerField(default=0x000000)
+    amenities_background_even = IntegerField(default=0x000000)
+    amenities_text_even = IntegerField(default=0x000000)
+    amenities_background_uneven = IntegerField(default=0x000000)
+    amenities_text_uneven = IntegerField(default=0x000000)
     # Data field selections:
     amenities = BooleanField(default=True)
     construction = BooleanField(default=True)
@@ -234,6 +243,15 @@ class RealEstates(Chart):
         xml.contact_picture = self.contact_picture
         xml.font_size = self.font_size
         xml.font_color = self.font_color
+        # Further colors:
+        xml.data = self.data
+        xml.background_data = self.background_data
+        xml.values = self.values
+        xml.background_values = self.background_values
+        xml.amenities_background_even = self.amenities_background_even
+        xml.amenities_text_even = self.amenities_text_even
+        xml.amenities_background_uneven = self.amenities_background_uneven
+        xml.amenities_text_uneven = self.amenities_text_uneven
         # Data field selections:
         xml.amenities = self.amenities
         xml.construction = self.construction
