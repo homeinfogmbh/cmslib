@@ -217,7 +217,7 @@ class RealEstates(Chart):
 
     def filter(self, real_estates):
         """Yields filtered real estates."""
-        return filter(self.match_real_estate, real_estates)
+        return filter(self.match, real_estates)
 
     def to_json(self, mode=ChartMode.FULL, **kwargs):
         """Returns a JSON-ish dictionary of the record's properties."""
