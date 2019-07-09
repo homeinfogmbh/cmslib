@@ -166,8 +166,8 @@ class RealEstates(Chart):
         """Creates a new chart from the respective dictionary."""
         filters = json.pop('filters', {})
         transaction = super().from_json(json, **kwargs)
-        _add_many_to_transaction(IdFilter, filters.get('id'), transaction)
-        _add_many_to_transaction(
+        _update_json_transaction(IdFilter, filters.get('id'), transaction)
+        _update_json_transaction(
             ZipCodeFilter, filters.get('zip_code'), transaction)
         return transaction
 
