@@ -21,6 +21,27 @@ from cmslib.orm.charts.common import ChartMode, Chart
 __all__ = ['RealEstates', 'IdFilter', 'ZipCodeFilter']
 
 
+def _add_to_transaction(model, json, transaction):
+    """Adds a model for the given JSON data to a transaction."""
+
+    record = model.from_json(json, transaction.chart)
+    transaction.add(record)
+
+
+def _update_json_transaction(model, json_list, transaction, delete=None):
+    """Adds models for the given JSON data to a transaction."""
+
+    if delete:
+        for record in delete:
+            transaction.delete(record)
+
+    if not json_list:
+        return
+
+    for json in json_list:
+        _add_to_transaction(model, json, transaction)
+
+
 class DisplayFormat(Enum):
     """Display formats."""
 
@@ -143,19 +164,11 @@ class RealEstates(Chart):
     @classmethod
     def from_json(cls, json, **kwargs):
         """Creates a new chart from the respective dictionary."""
-        print('DEBUG:', cls, type(cls), json, type(json), kwargs, flush=True)
         filters = json.pop('filters', {})
         transaction = super().from_json(json, **kwargs)
-
-        for id_filter in filters.get('id', ()):
-            id_filter = IdFilter.from_json(transaction.chart, id_filter)
-            transaction.add(id_filter)
-
-        for zip_code_filter in filters.get('zip_code', ()):
-            zip_code_filter = ZipCodeFilter.from_json(
-                transaction.chart, zip_code_filter)
-            transaction.add(zip_code_filter)
-
+        _add_many_to_transaction(IdFilter, filters.get('id'), transaction)
+        _add_many_to_transaction(
+            ZipCodeFilter, filters.get('zip_code'), transaction)
         return transaction
 
     @property
@@ -189,6 +202,30 @@ class RealEstates(Chart):
             filters['zip_code'].append(fltr.to_json(skip=skip))
 
         return filters
+
+    def patch_json(self, json, **kwargs):
+        """Creates a new chart from the respective dictionary."""
+        filters = json.pop('filters', {})
+        transaction = super().patch_json(json, **kwargs)
+
+        try:
+            id_filters = filters['id']
+        except KeyError:
+            pass
+        else:
+            _update_json_transaction(
+                IdFilter, id_filters, transaction, delete=self.id_filters)
+
+        try:
+            zip_code_filters = filters['zip_code']
+        except KeyError:
+            pass
+        else:
+            _update_json_transaction(
+                ZipCodeFilter, zip_code_filters, transaction,
+                delete=self.zip_code_filters)
+
+        return transaction
 
     def match(self, real_estate):
         """Matches the respective real estate
