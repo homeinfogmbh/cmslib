@@ -143,6 +143,7 @@ class RealEstates(Chart):
     @classmethod
     def from_json(cls, json, **kwargs):
         """Creates a new chart from the respective dictionary."""
+        print('DEBUG:', cls, type(cls), json, type(json), kwargs, flush=True)
         filters = json.pop('filters', {})
         transaction = super().from_json(json, **kwargs)
 
