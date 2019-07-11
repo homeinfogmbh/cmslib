@@ -199,7 +199,7 @@ class RealEstates(Chart):
             filters['id'].append(fltr.to_json(skip=skip))
 
         for fltr in ZipCodeFilter.select().where(ZipCodeFilter.chart == self):
-            filters['zip_code'].append(fltr.to_json(skip=skip))
+            filters['zipCode'].append(fltr.to_json(skip=skip))
 
         return filters
 
