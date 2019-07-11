@@ -21,13 +21,6 @@ from cmslib.orm.charts.common import ChartMode, Chart
 __all__ = ['RealEstates', 'IdFilter', 'ZipCodeFilter']
 
 
-def _add_to_transaction(model, json, transaction):
-    """Adds a model for the given JSON data to a transaction."""
-
-    record = model.from_json(json, transaction.chart)
-    transaction.add(record)
-
-
 def _update_json_transaction(model, json_list, transaction, delete=None):
     """Adds models for the given JSON data to a transaction."""
 
@@ -39,7 +32,8 @@ def _update_json_transaction(model, json_list, transaction, delete=None):
         return
 
     for json in json_list:
-        _add_to_transaction(model, json, transaction)
+        record = model.from_json(json, transaction.chart)
+        transaction.add(record)
 
 
 class DisplayFormat(Enum):
