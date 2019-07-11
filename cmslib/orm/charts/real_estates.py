@@ -168,7 +168,7 @@ class RealEstates(Chart):
         transaction = super().from_json(json, **kwargs)
         _update_json_transaction(IdFilter, filters.get('id'), transaction)
         _update_json_transaction(
-            ZipCodeFilter, filters.get('zip_code'), transaction)
+            ZipCodeFilter, filters.get('zipCode'), transaction)
         return transaction
 
     @property
@@ -217,7 +217,7 @@ class RealEstates(Chart):
                 IdFilter, id_filters, transaction, delete=self.id_filters)
 
         try:
-            zip_code_filters = filters['zip_code']
+            zip_code_filters = filters['zipCode']
         except KeyError:
             pass
         else:
