@@ -379,17 +379,17 @@ class IdFilter(DSCMS4Model):
         RealEstates, column_name='chart', backref='id_filters',
         on_delete='CASCADE')
     value = CharField(255)
-    type_ = EnumField(IdTypes, column_name='type')
+    type = EnumField(IdTypes)
 
     def __call__(self, real_estate):
         """Checks the filter against the respective real estate."""
-        if self.typ == IdTypes.INTERN:
+        if self.type == IdTypes.INTERN:
             return self.value == real_estate.objektnr_intern
 
-        if self.typ == IdTypes.EXTERN:
+        if self.type == IdTypes.EXTERN:
             return self.value == real_estate.objektnr_extern
 
-        if self.typ == IdTypes.OPENIMMO:
+        if self.type == IdTypes.OPENIMMO:
             return self.value == real_estate.openimmo_obid
 
         raise ValueError('Unexpected ID type.')
@@ -407,7 +407,7 @@ class IdFilter(DSCMS4Model):
         """Returns an XML DOM of this model."""
         xml = dom.IdFilter()
         xml.value_ = self.value
-        xml.type = self.type_.value
+        xml.type = self.type.value
         return xml
 
 
