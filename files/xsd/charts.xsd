@@ -724,6 +724,8 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                     <xs:element name="sale" type="xs:boolean"/>
                     <!-- Filters -->
                     <xs:element name="filter" type="Filter" minOccurs="0" maxOccurs="unbounded"/>
+                    <!-- Contacts -->
+                    <xs:element name="contact" type="RealEstateContact" minOccurs="0" maxOccurs="unbounded"/>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>

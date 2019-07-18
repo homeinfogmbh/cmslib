@@ -115,6 +115,31 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
     </xs:complexType>
 
 
+    <xs:complexType name="RealEstateContact">
+        <xs:annotation>
+            <xs:documentation xml:lang="de">
+                Kontaktperson einer Immobilie.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Der Name der Kontaktperson. Dieser muss mit dem Feld "name" aus OpenImmo übereinstimmen.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="image" type="Attachment" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Das zugehörige Bild.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+
     <xs:complexType name="PollOption">
         <xs:annotation>
             <xs:documentation xml:lang="de">

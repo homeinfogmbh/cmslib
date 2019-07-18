@@ -14,6 +14,7 @@ from openimmodb import Immobilie
 from peeweeplus import EnumField
 
 from cmslib import dom
+from cmslib.domutil import attachment_dom
 from cmslib.orm.common import DSCMS4Model
 from cmslib.orm.charts.common import ChartMode, Chart
 
@@ -364,6 +365,7 @@ class RealEstates(Chart):
         xml.filter = [
             filter.to_dom() for filter in chain(
                 self.id_filters, self.zip_code_filters)]
+        xml.contact = [contact.to_dom() for contact in self.contacts]
         return xml
 
 
@@ -451,4 +453,36 @@ class ZipCodeFilter(DSCMS4Model):
         xml = dom.ZipCodeFilter()
         xml.zip_code = self.zip_code
         xml.blacklist = self.blacklist
+        return xml
+
+
+class Contact(DSCMS4Model):
+    """Represents a real estate contact."""
+
+    class Meta:     # pylint: disable=C0111,R0903
+        table_name = 'real_estate_contact'
+
+    chart = ForeignKeyField(
+        RealEstates, column_name='chart', backref='contacts',
+        on_delete='CASCADE')
+    name = CharField(255)
+    image = IntegerField()
+
+    @classmethod
+    def from_json(cls, json, chart):
+        """Creates a new record from the respective dictionary."""
+        record = super().from_json(json)
+        record.chart = chart
+        return record
+
+    @property
+    def files(self):
+        """Returns a set of files."""
+        return {self.image}
+
+    def to_dom(self):
+        """Returns an XML DOM of this model."""
+        xml = dom.RealEstateContact()
+        xml.name = self.name
+        xml.image = attachment_dom(self.image)
         return xml
