@@ -22,6 +22,9 @@ from cmslib.orm.charts.common import ChartMode, Chart
 __all__ = ['RealEstates', 'IdFilter', 'ZipCodeFilter']
 
 
+UNCHANGED = object()
+
+
 def _update_json_transaction(model, json_list, transaction, delete=None):
     """Adds models for the given JSON data to a transaction."""
 
@@ -160,10 +163,12 @@ class RealEstates(Chart):
     def from_json(cls, json, **kwargs):
         """Creates a new chart from the respective dictionary."""
         filters = json.pop('filters', {})
+        contacts = json.pop('contacts', ())
         transaction = super().from_json(json, **kwargs)
         _update_json_transaction(IdFilter, filters.get('id'), transaction)
         _update_json_transaction(
             ZipCodeFilter, filters.get('zipCode'), transaction)
+        _update_json_transaction(Contact, contacts, transaction)
         return transaction
 
     @property
@@ -198,9 +203,15 @@ class RealEstates(Chart):
 
         return filters
 
+    @property
+    def files(self):
+        """Returns the used files."""
+        return {contact.image for contact in self.contacts}
+
     def patch_json(self, json, **kwargs):
         """Creates a new chart from the respective dictionary."""
         filters = json.pop('filters', {})
+        contacts = json.pop('contacts', UNCHANGED)
         transaction = super().patch_json(json, **kwargs)
 
         try:
@@ -219,6 +230,10 @@ class RealEstates(Chart):
             _update_json_transaction(
                 ZipCodeFilter, zip_code_filters, transaction,
                 delete=self.zip_code_filters)
+
+        if contacts is not UNCHANGED:
+            _update_json_transaction(
+                Contact, contacts, transaction, delete=self.contacts)
 
         return transaction
 
@@ -258,6 +273,7 @@ class RealEstates(Chart):
 
         if mode == ChartMode.FULL:
             json['filters'] = self.filters_dictionary
+            json['contacts'] = [contact.to_json() for contact in self.contacts]
 
         return json
 
@@ -474,11 +490,6 @@ class Contact(DSCMS4Model):
         record = super().from_json(json)
         record.chart = chart
         return record
-
-    @property
-    def files(self):
-        """Returns a set of files."""
-        return {self.image}
 
     def to_dom(self):
         """Returns an XML DOM of this model."""
