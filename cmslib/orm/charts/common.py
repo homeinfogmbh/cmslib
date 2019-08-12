@@ -27,29 +27,32 @@ from cmslib.exceptions import OrphanedBaseChart, AmbiguousBaseChart
 from cmslib.orm.common import DSCMS4Model, CustomerModel
 
 
-__all__ = ['BaseChart', 'Chart']
+__all__ = ['BaseChart', 'Chart', 'ChartPIN']
 
 
 LOGGER = getLogger(__file__)
 CheckResult = namedtuple('CheckResult', ('orphans', 'ambiguous'))
 
 
-class Transaction(namedtuple('Transaction', ('chart', 'related'))):
-    """Stores chart and related records."""
+class Transaction(list):
+    """Handles a list of records in-order for atomic transactions."""
 
-    __slots__ = ()
+    @property
+    def chart(self):
+        """Returns the first chart."""
+        for _, item in self:
+            if isinstance(item, Chart):
+                return item
 
-    def __new__(cls, chart):
-        """Creates a new transaction."""
-        return super().__new__(cls, chart, [])
+        return None
 
     def add(self, record):
         """Adds the record as to be added."""
-        self.related.append((True, record))
+        self.append((True, record))
 
     def delete(self, record):
         """Adds the record as to be deleted."""
-        self.related.append((False, record))
+        self.append((False, record))
 
     def resolve_refs(self, model, records, json_objects, *,
                      record_identifier=lambda record: record.id,
@@ -80,13 +83,8 @@ class Transaction(namedtuple('Transaction', ('chart', 'related'))):
         return self
 
     def commit(self):
-        """Saves the base chart, chart and
-        related record in preserved order.
-        """
-        self.chart.base.save()
-        self.chart.save()
-
-        for save, record in self.related:
+        """Saves / deletes the respective records."""
+        for save, record in self:
             if save:
                 record.save()
             else:
@@ -132,9 +130,17 @@ class BaseChart(CustomerModel):
         """Creates a base chart from a JSON-ish dictionary."""
         skip_default = ('uuid',)
         skip = tuple(chain(skip_default, skip)) if skip else skip_default
+        pins = json.pop('pins', None) or ()
         record = super().from_json(json, skip=skip, **kwargs)
         record.uuid = uuid4() if record.log else None
-        return record
+        transaction = Transaction()
+        transaction.add(record)
+
+        for pin in pins:
+            chart_pin = ChartPIN(base_chart=record, pin=pin)
+            transaction.add(chart_pin)
+
+        return transaction
 
     @classmethod
     def check(cls, verbose=False):
@@ -192,15 +198,30 @@ class BaseChart(CustomerModel):
 
     def patch_json(self, json, **kwargs):
         """Patches the base chart."""
+        pins = json.pop('pins', None)
         super().patch_json(json, **kwargs)
         self.uuid = uuid4() if self.log else None
+        transaction = Transaction()
+        transaction.add(self)
+
+        if pins is not None:
+            for chart_pin in self.pins:
+                transaction.delete(chart_pin)
+
+            for pin in pins:
+                chart_pin = ChartPIN(self, pin)
+                transaction.add(chart_pin)
+
+        return transaction
 
     def to_json(self, brief=False, **kwargs):
         """Returns a JSON-ish dictionary."""
         if brief:
             return {'title': self.title}
 
-        return super().to_json(**kwargs)
+        json = super().to_json(**kwargs)
+        json['pins'] = [pin.pin for pin in self.pins]
+        return json
 
     def to_dom(self):
         """Returns an XML DOM of the base chart."""
@@ -222,6 +243,7 @@ class BaseChart(CustomerModel):
         if self.uuid:
             xml.uuid = self.uuid.hex
 
+        xml.pin = [pin.pin for pin in self.pins]
         return xml
 
 
@@ -257,14 +279,16 @@ class Chart(DSCMS4Model, metaclass=MetaChart):
             raise MISSING_DATA.update(key='base')
 
         chart = super().from_json(json, **kwargs)
-        chart.base = BaseChart.from_json(base_dict)
-        return Transaction(chart)
+        transaction = BaseChart.from_json(base_dict)
+        transaction.add(chart)
+        return transaction
 
     def patch_json(self, json, **kwargs):
         """Pathes the chart with the provided dictionary."""
-        self.base.patch_json(json.pop('base', {}))  # Generate new UUID.
+        transaction = self.base.patch_json(json.pop('base', {}))
         super().patch_json(json, **kwargs)
-        return Transaction(self)
+        transaction.add(self)
+        return transaction
 
     def to_json(self, mode=ChartMode.FULL, fk_fields=True, **kwargs):
         """Returns a JSON-ish dictionary."""
@@ -298,3 +322,15 @@ class Chart(DSCMS4Model, metaclass=MetaChart):
     def delete_instance(self):
         """Deletes the base chart and thus (CASCADE) this chart."""
         return self.base.delete_instance()
+
+
+class ChartPIN(DSCMS4Model):
+    """PINs to lock a chart."""
+
+    class Meta:     # pylint: disable=C0111,R0903
+        table_name = 'chart_pin'
+
+    base_chart = ForeignKeyField(
+        BaseChart, column_name='base_chart', backref='pins',
+        on_delete='CASCADE', on_update='CASCADE')
+    pin = CharField(8)
