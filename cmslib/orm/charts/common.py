@@ -38,6 +38,15 @@ class Transaction(list):
     """Handles a list of records in-order for atomic transactions."""
 
     @property
+    def base_chart(self):
+        """Returns the first chart."""
+        for _, item in self:
+            if isinstance(item, BaseChart):
+                return item
+
+        return None
+
+    @property
     def chart(self):
         """Returns the first chart."""
         for _, item in self:
@@ -279,7 +288,8 @@ class Chart(DSCMS4Model, metaclass=MetaChart):
             raise MISSING_DATA.update(key='base')
 
         chart = super().from_json(json, **kwargs)
-        chart.base, *_ = transaction = BaseChart.from_json(base_dict)
+        transaction = BaseChart.from_json(base_dict)
+        chart.base = transaction.base_chart
         transaction.add(chart)
         return transaction
 
