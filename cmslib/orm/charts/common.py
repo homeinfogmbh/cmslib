@@ -279,7 +279,7 @@ class Chart(DSCMS4Model, metaclass=MetaChart):
             raise MISSING_DATA.update(key='base')
 
         chart = super().from_json(json, **kwargs)
-        transaction = BaseChart.from_json(base_dict)
+        chart.base, *_ = transaction = BaseChart.from_json(base_dict)
         transaction.add(chart)
         return transaction
 
