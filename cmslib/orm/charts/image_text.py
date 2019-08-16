@@ -149,8 +149,13 @@ class Text(DSCMS4Model):
     @classmethod
     def from_json(cls, json, chart, **kwargs):
         """Creates the image from a JSON-ish dict."""
-        schedule = json.pop('schedule', None)
-        record = super().from_json(json, **kwargs)
+        if isinstance(json, str):   # Backwards compatibility.
+            schedule = None
+            record = cls(chart=chart, text=json)
+        else:
+            schedule = json.pop('schedule', None)
+            record = super().from_json(json, **kwargs)
+
         record.chart = chart
         yield record
 
