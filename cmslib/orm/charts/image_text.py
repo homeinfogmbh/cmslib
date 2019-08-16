@@ -11,6 +11,7 @@ from cmslib import dom
 from cmslib.domutil import attachment_dom
 from cmslib.orm.charts.common import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
+from cmslib.orm.schedule import Schedule
 
 
 __all__ = ['ImageText', 'Image', 'Text']
@@ -37,12 +38,12 @@ class ImageText(Chart):
         transaction = super().from_json(json, **kwargs)
 
         for image in images:
-            image = Image.from_json(image, chart=transaction.chart)
-            transaction.add(image)
+            for record in Image.from_json(image, chart=transaction.chart):
+                transaction.add(record)
 
         for text in texts:
-            text = Text(chart=transaction.chart, text=text)
-            transaction.add(text)
+            for record in Text.from_json(text, chart=transaction.chart):
+                transaction.add(record)
 
         return transaction
 
@@ -62,16 +63,16 @@ class ImageText(Chart):
                 transaction.delete(image)
 
             for image in images:
-                image = Image.from_json(image, chart=transaction.chart)
-                transaction.add(image)
+                for record in Image.from_json(image, chart=transaction.chart):
+                    transaction.add(record)
 
         if texts is not UNCHANGED:
             for text in self.texts:
                 transaction.delete(text)
 
             for text in texts:
-                text = Text(chart=transaction.chart, text=text)
-                transaction.add(text)
+                for record in Text.from_json(text, chart=transaction.chart):
+                    transaction.add(record)
 
         return transaction
 
@@ -111,15 +112,22 @@ class Image(DSCMS4Model):
 
     chart = ForeignKeyField(
         ImageText, column_name='chart', backref='images', on_delete='CASCADE')
+    schedule = ForeignKeyField(
+        Schedule, null=True, column_name='schedule', on_delete='SET NULL')
     image = IntegerField()
     index = IntegerField(default=0)
 
     @classmethod
     def from_json(cls, json, chart, **kwargs):
         """Creates the image from a JSON-ish dict."""
+        schedule = json.pop('schedule', None)
         record = super().from_json(json, **kwargs)
         record.chart = chart
-        return record
+        yield record
+
+        if schedule:
+            record.schedule = schedule = Schedule.from_json(schedule)
+            yield schedule
 
     def to_dom(self):
         """Returns an XML DOM of this model."""
@@ -134,4 +142,18 @@ class Text(DSCMS4Model):
 
     chart = ForeignKeyField(
         ImageText, column_name='chart', backref='texts', on_delete='CASCADE')
+    schedule = ForeignKeyField(
+        Schedule, null=True, column_name='schedule', on_delete='SET NULL')
     text = TextField()
+
+    @classmethod
+    def from_json(cls, json, chart, **kwargs):
+        """Creates the image from a JSON-ish dict."""
+        schedule = json.pop('schedule', None)
+        record = super().from_json(json, **kwargs)
+        record.chart = chart
+        yield record
+
+        if schedule:
+            record.schedule = schedule = Schedule.from_json(schedule)
+            yield schedule

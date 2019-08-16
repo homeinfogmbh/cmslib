@@ -11,6 +11,7 @@ from cmslib.orm import configuration
 from cmslib.orm import group
 from cmslib.orm import menu
 from cmslib.orm import preview
+from cmslib.orm import schedule
 from cmslib.orm import settings
 
 
@@ -20,7 +21,8 @@ __all__ = ['create_tables']
 # Order matters here!
 MODELS = (
     charts.MODELS + configuration.MODELS + group.MODELS + menu.MODELS
-    + content.MODELS + chart_types.MODELS + preview.MODELS + settings.MODELS)
+    + content.MODELS + chart_types.MODELS + preview.MODELS + schedule.MODELS
+    + settings.MODELS)
 
 
 def create_tables(fail_silently=True):
