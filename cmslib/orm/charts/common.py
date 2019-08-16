@@ -14,7 +14,6 @@ from peewee import BooleanField
 from peewee import CharField
 from peewee import DateTimeField
 from peewee import ForeignKeyField
-from peewee import IntegerField
 from peewee import ModelBase
 from peewee import SmallIntegerField
 from peewee import TextField
@@ -118,15 +117,6 @@ class ChartMode(Enum):
     ANON = 'anon'
 
 
-class IntervalUnits(Enum):
-    """Scedule interval units."""
-
-    DAY = 'day'
-    WEEK = 'week'
-    MONTH = 'month'
-    YEAR = 'year'
-
-
 class BaseChart(CustomerModel):
     """Common basic chart data model."""
 
@@ -138,8 +128,6 @@ class BaseChart(CustomerModel):
     duration = SmallIntegerField(default=10)
     display_from = DateTimeField(null=True)
     display_until = DateTimeField(null=True)
-    interval_value = IntegerField(null=True)
-    interval_unit = EnumField(IntervalUnits, null=True)
     transition = EnumField(Transitions, null=True)
     created = DateTimeField(default=datetime.now)
     trashed = BooleanField(default=False)
@@ -252,8 +240,6 @@ class BaseChart(CustomerModel):
         xml.duration = self.duration
         xml.display_from = self.display_from
         xml.display_until = self.display_until
-        xml.interval_value = self.interval_value
-        xml.interval_unit = self.interval_unit.value
 
         if self.transition is None:
             xml.transition = None
