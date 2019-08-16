@@ -252,6 +252,8 @@ class BaseChart(CustomerModel):
         xml.duration = self.duration
         xml.display_from = self.display_from
         xml.display_until = self.display_until
+        xml.interval_value = self.interval_value
+        xml.interval_unit = self.interval_unit.value
 
         if self.transition is None:
             xml.transition = None
