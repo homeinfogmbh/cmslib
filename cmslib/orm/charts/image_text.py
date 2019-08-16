@@ -81,10 +81,9 @@ class ImageText(Chart):
         json = super().to_json(mode=mode, **kwargs)
 
         if mode == ChartMode.FULL:
-            json['texts'] = [text.text for text in self.texts]
+            json['texts'] = [text.to_json() for text in self.texts]
             json['images'] = [
-                image.to_json(fk_fields=False, autofields=False)
-                for image in self.images.order_by(Image.index)]
+                image.to_json() for image in self.images.order_by(Image.index)]
 
         return json
 
@@ -104,18 +103,8 @@ class ImageText(Chart):
         return xml
 
 
-class Image(DSCMS4Model):
-    """Image for an ImageText chart."""
-
-    class Meta:     # pylint: disable=C0111,R0903
-        table_name = 'chart_image_text_image'
-
-    chart = ForeignKeyField(
-        ImageText, column_name='chart', backref='images', on_delete='CASCADE')
-    schedule = ForeignKeyField(
-        Schedule, null=True, column_name='schedule', on_delete='SET NULL')
-    image = IntegerField()
-    index = IntegerField(default=0)
+class ImageTextAttachment(DSCMS4Model):
+    """Common model for ImageText chart's images and texts."""
 
     @classmethod
     def from_json(cls, json, chart, **kwargs):
@@ -129,12 +118,36 @@ class Image(DSCMS4Model):
             record.schedule = schedule = Schedule.from_json(schedule)
             yield schedule
 
+    def to_json(self):
+        """Returns a JSON-ish dict."""
+        json = super.to_json(fk_fields=False, autofields=False)
+
+        if self.schedule is not None:
+            json['schedule'] = self.schedule.to_json(autofields=False)
+
+        return json
+
+
+class Image(ImageTextAttachment):
+    """Image for an ImageText chart."""
+
+    class Meta:     # pylint: disable=C0111,R0903
+        table_name = 'chart_image_text_image'
+
+    chart = ForeignKeyField(
+        ImageText, column_name='chart', backref='images', on_delete='CASCADE')
+    schedule = ForeignKeyField(
+        Schedule, null=True, column_name='schedule', on_delete='SET NULL')
+    image = IntegerField()
+    index = IntegerField(default=0)
+
     def to_dom(self):
         """Returns an XML DOM of this model."""
-        return attachment_dom(self.image, index=self.index)
+        return attachment_dom(
+            self.image, index=self.index, schedule=self.schedule)
 
 
-class Text(DSCMS4Model):
+class Text(ImageTextAttachment):
     """Text for an ImageText chart."""
 
     class Meta:     # pylint: disable=C0111,R0903
@@ -146,19 +159,11 @@ class Text(DSCMS4Model):
         Schedule, null=True, column_name='schedule', on_delete='SET NULL')
     text = TextField()
 
-    @classmethod
-    def from_json(cls, json, chart, **kwargs):
-        """Creates the image from a JSON-ish dict."""
-        if isinstance(json, str):   # Backwards compatibility.
-            schedule = None
-            record = cls(chart=chart, text=json)
-        else:
-            schedule = json.pop('schedule', None)
-            record = super().from_json(json, **kwargs)
+    def to_dom(self):
+        """Returns an XML DOM of this model."""
+        xml = dom.ScheduledText(text=self.text)
 
-        record.chart = chart
-        yield record
+        if self.schedule is not None:
+            xml.schedule = self.schedule.to_dom()
 
-        if schedule:
-            record.schedule = schedule = Schedule.from_json(schedule)
-            yield schedule
+        return xml

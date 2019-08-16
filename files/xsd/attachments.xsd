@@ -30,6 +30,13 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
+            <xs:element name="schedule" type="Schedule" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Ein optionaler Zeitplan.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
         </xs:sequence>
         <xs:attribute name="id" type="xs:positiveInteger" use="required">
             <xs:annotation>
@@ -59,5 +66,30 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+    </xs:complexType>
+
+
+    <xs:complexType name="ScheduledText">
+        <xs:annotation>
+            <xs:documentation xml:lang="de">
+                Text mit Zeitplan.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="text" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Der Text.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="schedule" type="Schedule" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Ein optionaler Zeitplan.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
     </xs:complexType>
 </xs:schema>

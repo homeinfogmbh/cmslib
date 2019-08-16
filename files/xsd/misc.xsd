@@ -165,7 +165,57 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
+
+
+    <xs:complexType name="Schedule">
+        <xs:annotation>
+            <xs:documentation xml:lang="de">
+                Zeitplan.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="start" type="xs:dateTime">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Datum und Uhrzeit des Beginns des Zeitplans.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="end" type="xs:dateTime" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Datum und Uhrzeit des Endes des Zeitplans.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="duration_value" type="xs:positiveInteger">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Anzeigedauer.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="duration_unit" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Einheit der Anzeigedauer.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="interval_value" type="xs:positiveInteger">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Intervalllänge.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="interval_unit" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Einheit der Intervalllänge.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
 </xs:schema>
-
-
-                              
