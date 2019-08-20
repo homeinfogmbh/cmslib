@@ -739,6 +739,28 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
     </xs:complexType>
 
 
+    <xs:complexType name="Renting">
+        <xs:annotation>
+            <xs:documentation xml:lang="de">
+                Vermietungs-Chart.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="Chart">
+                <xs:sequence>
+                    <xs:element name="rentable" type="xs:positiveInteger" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Datenbank-IDs der Mietobjekte.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
     <xs:complexType name="RSS">
         <xs:annotation>
             <xs:documentation xml:lang="de">

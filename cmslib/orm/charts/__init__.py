@@ -20,6 +20,7 @@ from cmslib.orm.charts.quotes import Quotes
 from cmslib.orm.charts.real_estates import RealEstates
 from cmslib.orm.charts.real_estates import IdFilter
 from cmslib.orm.charts.real_estates import ZipCodeFilter
+from cmslib.orm.charts.renting import Renting, RentableMapping
 from cmslib.orm.charts.rss import RSS
 from cmslib.orm.charts.soccer_table import SoccerTable
 from cmslib.orm.charts.video import Video
@@ -33,4 +34,5 @@ MODELS = (
     BaseChart, ChartPIN, Cleaning, Facebook, Account, Form, GarbageCollection,
     GuessPicture, ImageText, ImageTextImage, Blackboard, BlackboardImage, Text,
     News, Poll, PollOption, PublicTransport, Quotes, RealEstates, IdFilter,
-    ZipCodeFilter, RSS, SoccerTable, Video, Weather, WeatherImage)
+    ZipCodeFilter, Renting, RentableMapping, RSS, SoccerTable, Video, Weather,
+    WeatherImage)
