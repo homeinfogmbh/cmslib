@@ -18,6 +18,9 @@ _UNCHANGED = object()
 class Renting(Chart):
     """Chart for renting."""
 
+    class Meta:     # pylint: disable=C0111,R0903
+        table_name = 'chart_renting'
+
     @classmethod
     def from_json(cls, json, **kwargs):
         """Creates a renting chart from a JSON-ish dict."""
@@ -77,6 +80,9 @@ class Renting(Chart):
 
 class RentableMapping(DSCMS4Model):
     """Many-to-many mapping of rentables and charts."""
+
+    class Meta:     # pylint: disable=C0111,R0903
+        table_name = 'chart_renting_rentable_mapping'
 
     chart = ForeignKeyField(
         Renting, column_name='chart', backref='rentable_map',
