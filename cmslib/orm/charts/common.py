@@ -218,7 +218,7 @@ class BaseChart(CustomerModel):
                 transaction.delete(chart_pin)
 
             for pin in pins:
-                chart_pin = ChartPIN(self, pin)
+                chart_pin = ChartPIN(base_chart=self, pin=pin)
                 transaction.add(chart_pin)
 
         return transaction
