@@ -120,7 +120,7 @@ class ImageTextAttachment(DSCMS4Model):
 
     def to_json(self):
         """Returns a JSON-ish dict."""
-        json = super.to_json(fk_fields=False, autofields=False)
+        json = super().to_json(fk_fields=False, autofields=False)
 
         if self.schedule is not None:
             json['schedule'] = self.schedule.to_json(autofields=False)
