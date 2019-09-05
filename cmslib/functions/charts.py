@@ -9,7 +9,7 @@ from his.messages.data import INVALID_DATA, NOT_AN_INTEGER
 from cmslib.messages.charts import INVALID_CHART_TYPE
 from cmslib.messages.charts import NO_CHART_TYPE_SPECIFIED
 from cmslib.messages.charts import NO_SUCH_CHART
-from cmslib.orm.charts import ChartMode, BaseChart, Chart
+from cmslib.orm.charts import CHARTS, ChartMode, BaseChart
 from cmslib.orm.chart_types import ChartType
 
 
@@ -22,12 +22,12 @@ def _get_chart_types():
     try:
         type_names = request.args['types']
     except KeyError:
-        yield from Chart.types.values()
+        yield from CHARTS.values()
         return
 
     for type_name in type_names.split(','):
         try:
-            yield Chart.types[type_name]
+            yield CHARTS[type_name]
         except KeyError:
             raise INVALID_CHART_TYPE
 
@@ -52,7 +52,7 @@ def _get_chart_type():
         raise NO_CHART_TYPE_SPECIFIED
 
     try:
-        chart_type = Chart.types[chart_type]
+        chart_type = CHARTS[chart_type]
     except KeyError:
         raise INVALID_CHART_TYPE
 

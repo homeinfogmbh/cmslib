@@ -14,7 +14,6 @@ from peewee import BooleanField
 from peewee import CharField
 from peewee import DateTimeField
 from peewee import ForeignKeyField
-from peewee import ModelBase
 from peewee import SmallIntegerField
 from peewee import TextField
 from peewee import UUIDField
@@ -27,10 +26,11 @@ from cmslib.exceptions import OrphanedBaseChart, AmbiguousBaseChart
 from cmslib.orm.common import DSCMS4Model, CustomerModel
 
 
-__all__ = ['BaseChart', 'Chart', 'ChartPIN']
+__all__ = ['CHARTS', 'BaseChart', 'Chart', 'ChartPIN']
 
 
 LOGGER = getLogger(__file__)
+CHARTS = {}
 CheckResult = namedtuple('CheckResult', ('orphans', 'ambiguous'))
 
 
@@ -187,7 +187,7 @@ class BaseChart(CustomerModel):
     @property
     def charts(self):
         """Yields all charts that associate this base chart."""
-        for model in Chart.types.values():
+        for model in CHARTS.values():
             for record in model.select().where(model.base == self):
                 yield record
 
@@ -256,28 +256,14 @@ class BaseChart(CustomerModel):
         return xml
 
 
-class MetaChart(ModelBase):
-    """Metaclass for charts."""
-
-    _implementations = {}
-
-    def __init__(cls, *args, **kwargs):
-        """Registers the different chart types."""
-        super().__init__(*args, **kwargs)
-        cls._implementations[cls.__name__] = cls
-
-    @property
-    def types(cls):
-        """Yields chart types."""
-        return {
-            name: class_ for name, class_ in cls._implementations.items()
-            if class_ is not Chart}
-
-
-class Chart(DSCMS4Model, metaclass=MetaChart):
+class Chart(DSCMS4Model):
     """Abstract basic chart."""
 
     base = ForeignKeyField(BaseChart, column_name='base', on_delete='CASCADE')
+
+    def __init_subclass__(cls):
+        """Registers the subclass as new chart."""
+        CHARTS[cls.__name__] = cls
 
     @classmethod
     def from_json(cls, json, **kwargs):

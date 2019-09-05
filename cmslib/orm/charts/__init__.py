@@ -5,7 +5,7 @@ of the "chart" types of the CMS.
 """
 from cmslib.orm.charts.blackboard import Blackboard, Image as BlackboardImage
 from cmslib.orm.charts.cleaning import Cleaning
-from cmslib.orm.charts.common import ChartMode, BaseChart, Chart, ChartPIN
+from cmslib.orm.charts.common import CHARTS, ChartMode, BaseChart, Chart, ChartPIN
 from cmslib.orm.charts.facebook import Facebook, Account
 from cmslib.orm.charts.form import Form
 from cmslib.orm.charts.garbage_collection import GarbageCollection
@@ -27,7 +27,7 @@ from cmslib.orm.charts.video import Video
 from cmslib.orm.charts.weather import Weather, Image as WeatherImage
 
 
-__all__ = ['MODELS', 'ChartMode', 'BaseChart', 'Chart']
+__all__ = ['CHARTS', 'MODELS', 'ChartMode', 'BaseChart', 'Chart']
 
 
 MODELS = (
