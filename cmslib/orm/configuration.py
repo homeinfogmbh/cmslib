@@ -121,6 +121,7 @@ class Configuration(CustomerModel):
     rotation = SmallIntegerField(default=0)
     email_form = BooleanField()
     volume = SmallIntegerField()
+    text_bg_transparent = BooleanField(default=False)
 
     @classmethod
     def from_json(cls, json, colors, **kwargs):
@@ -193,6 +194,7 @@ class Configuration(CustomerModel):
         xml.rotation = self.rotation
         xml.email_form = self.email_form
         xml.volume = self.volume
+        xml.text_bg_transparent = self.text_bg_transparent
         xml.ticker = [ticker.to_dom() for ticker in self.tickers]
         xml.backlight = [backlight.to_dom() for backlight in self.backlights]
         return xml

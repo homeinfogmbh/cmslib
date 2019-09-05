@@ -143,6 +143,13 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
+            <xs:element name="text_bg_transparent" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Soll die Hintergrundmaske der Textfelder im HD-Design transparent sein?
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="ticker" type="Ticker" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation xml:lang="de">
