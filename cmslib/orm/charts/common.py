@@ -309,7 +309,7 @@ class Chart(DSCMS4Model, metaclass=MetaChart):
         elif mode == ChartMode.BRIEF:
             json = {'id': self.id}
         elif mode == ChartMode.ANON:
-            json = super().to_json(skip=('id',), **kwargs)
+            json = super().to_json(skip={'id'}, **kwargs)
             json['base'] = self.base.to_json(
                 autofields=False, fk_fields=fk_fields)
             return json
