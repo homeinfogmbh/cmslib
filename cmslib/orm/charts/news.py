@@ -1,7 +1,6 @@
 """New charts."""
 
 from peewee import BooleanField
-from peewee import CharField
 from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import SmallIntegerField
@@ -31,7 +30,6 @@ class News(Chart):
     font_size_text = SmallIntegerField(default=8)
     text_color = IntegerField(default=0x000000)
     ken_burns = BooleanField(null=True)
-    token = CharField(36, null=True)
 
     @classmethod
     def from_json(cls, json, **kwargs):
@@ -85,7 +83,8 @@ class News(Chart):
         xml.font_size_text = self.font_size_text
         xml.text_color = self.text_color
         xml.ken_burns = self.ken_burns
-        xml.token = self.token
+        xml.providers = [
+            provider.provider.value for provider in self.providers]
         return xml
 
 
