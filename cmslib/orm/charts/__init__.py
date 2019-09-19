@@ -13,7 +13,7 @@ from cmslib.orm.charts.guess_picture import GuessPicture
 from cmslib.orm.charts.image_text import ImageText
 from cmslib.orm.charts.image_text import Image as ImageTextImage
 from cmslib.orm.charts.image_text import Text
-from cmslib.orm.charts.news import News
+from cmslib.orm.charts.news import News, NewsProvider
 from cmslib.orm.charts.poll import PollMode, Poll, Option as PollOption
 from cmslib.orm.charts.public_transport import PublicTransport
 from cmslib.orm.charts.quotes import Quotes
@@ -33,6 +33,6 @@ __all__ = ['CHARTS', 'MODELS', 'ChartMode', 'BaseChart', 'Chart']
 MODELS = (
     BaseChart, ChartPIN, Cleaning, Facebook, Account, Form, GarbageCollection,
     GuessPicture, ImageText, ImageTextImage, Blackboard, BlackboardImage, Text,
-    News, Poll, PollOption, PublicTransport, Quotes, RealEstates, IdFilter,
-    ZipCodeFilter, Renting, RentableMapping, RSS, SoccerTable, Video, Weather,
-    WeatherImage)
+    News, NewsProvider, Poll, PollOption, PublicTransport, Quotes, RealEstates,
+    IdFilter, ZipCodeFilter, Renting, RentableMapping, RSS, SoccerTable, Video,
+    Weather, WeatherImage)

@@ -14,7 +14,7 @@ from cmslib.orm.charts.common import Chart, ChartMode
 from cmslib.orm.common import DSCMS4Model
 
 
-__all__ = ['News']
+__all__ = ['News', 'NewsProvider']
 
 
 _UNCHANGED = object()
