@@ -1,12 +1,23 @@
 """New charts."""
 
-from peewee import BooleanField, CharField, IntegerField, SmallIntegerField
+from peewee import BooleanField
+from peewee import CharField
+from peewee import ForeignKeyField
+from peewee import IntegerField
+from peewee import SmallIntegerField
+
+from newslib import Provider
+from peeweeplus import EnumField
 
 from cmslib import dom
-from cmslib.orm.charts.common import Chart
+from cmslib.orm.charts.common import Chart, ChartMode
+from cmslib.orm.common import DSCMS4Model
 
 
 __all__ = ['News']
+
+
+_UNCHANGED = object()
 
 
 class News(Chart):
@@ -22,6 +33,47 @@ class News(Chart):
     ken_burns = BooleanField(null=True)
     token = CharField(36, null=True)
 
+    @classmethod
+    def from_json(cls, json, **kwargs):
+        """Creates an new news chart from a JSON-ish dict."""
+        providers = json.pop('providers', None) or ()
+        transaction = super().from_json(json, **kwargs)
+
+        for provider in providers:
+            transaction.add(NewsProvider(
+                chart=transaction.chart, provider=provider))
+
+        return transaction
+
+    def patch_json(self, json, **kwargs):
+        """Patches the chart and related components from a JSON-ish dict."""
+        try:
+            providers = json.pop('providers') or ()
+        except KeyError:
+            providers = _UNCHANGED
+
+        transaction = super().from_json(json, **kwargs)
+
+        if providers is not _UNCHANGED:
+            for provider in self.providers:
+                provider.delete_instance()
+
+            for provider in providers:
+                transaction.add(NewsProvider(
+                    chart=transaction.chart, provider=provider))
+
+        return transaction
+
+    def to_json(self, mode=ChartMode.FULL, **kwargs):
+        """Returns a JSON-ish dict."""
+        json = super().to_json(mode=mode **kwargs)
+
+        if mode == ChartMode.FULL:
+            json['providers'] = [
+                provider.provider.value for provider in self.providers]
+
+        return json
+
     def to_dom(self, brief=False):
         """Returns an XML DOM of this chart."""
         if brief:
@@ -35,3 +87,12 @@ class News(Chart):
         xml.ken_burns = self.ken_burns
         xml.token = self.token
         return xml
+
+
+class NewsProvider(DSCMS4Model):
+    """Mapping between a News chart and news providers."""
+
+    chart = ForeignKeyField(
+        News, column_name='chart', backref='providers', on_delete='CASCADE',
+        on_update='CASCADE')
+    provider = EnumField(Provider)
