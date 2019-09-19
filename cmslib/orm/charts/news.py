@@ -64,7 +64,7 @@ class News(Chart):
 
     def to_json(self, mode=ChartMode.FULL, **kwargs):
         """Returns a JSON-ish dict."""
-        json = super().to_json(mode=mode **kwargs)
+        json = super().to_json(mode=mode, **kwargs)
 
         if mode == ChartMode.FULL:
             json['providers'] = [
