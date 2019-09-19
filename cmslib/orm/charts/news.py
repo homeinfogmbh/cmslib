@@ -92,6 +92,9 @@ class News(Chart):
 class NewsProvider(DSCMS4Model):
     """Mapping between a News chart and news providers."""
 
+    class Meta:     # pylint: disable=C0111,R0903
+        table_name = 'news_provider'
+
     chart = ForeignKeyField(
         News, column_name='chart', backref='providers', on_delete='CASCADE',
         on_update='CASCADE')
