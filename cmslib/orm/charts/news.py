@@ -51,7 +51,7 @@ class News(Chart):
         except KeyError:
             providers = _UNCHANGED
 
-        transaction = super().from_json(json, **kwargs)
+        transaction = super().patch_json(json, **kwargs)
 
         if providers is not _UNCHANGED:
             for provider in self.providers:
