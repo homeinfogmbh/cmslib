@@ -1,12 +1,16 @@
 [Anjuta]
-Geometry=1920x983+26+23
+Maximized=1
+Geometry=1920x983+0+0
+
+[File Loader]
+Files=../../cmslib/presentation/deployment.py#40%%%../../cmslib/presentation/common.py#1%%%../../cmslib/orm/charts/news.py#67%%%../../cmslib/orm/common.py#1%%%../../cmslib/orm/charts/common.py#289%%%../../cmslib/orm/charts/__init__.py#23%%%../../files/xsd/charts.xsd#430%%%../../cmslib/presentation/__init__.py#1%%%../../cmslib/orm/charts/rss.py#1%%%../../cmslib/orm/charts/weather.py#20
+
+[Document Manager]
+bookmarks=<?xml version="1.0" encoding="UTF-8"?>\n<bookmarks/>\n
 
 [Execution]
 Run in terminal=2
 Working directories=../../.
-
-[Document Manager]
-bookmarks=<?xml version="1.0" encoding="UTF-8"?>\n<bookmarks/>\n
 
 [Build]
 Configuration list=1:Default:%%%1:Debug:Debug%%%1:Profiling:Profiling%%%1:Optimized:Optimized
