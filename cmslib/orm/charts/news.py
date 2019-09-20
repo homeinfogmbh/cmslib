@@ -36,11 +36,11 @@ class News(Chart):
         """Creates an new news chart from a JSON-ish dict."""
         providers = json.pop('providers', None) or ()
         transaction = super().from_json(json, **kwargs)
-        providers = [Provider(provider) for provider in providers]
 
         for provider in providers:
-            transaction.add(NewsProvider(
-                chart=transaction.chart, provider=provider))
+            provider = NewsProvider(
+                chart=transaction.chart, provider=Provider(provider))
+            transaction.add(provider)
 
         return transaction
 
@@ -50,8 +50,6 @@ class News(Chart):
             providers = json.pop('providers') or ()
         except KeyError:
             providers = _UNCHANGED
-        else:
-            providers = [Provider(provider) for provider in providers]
 
         transaction = super().from_json(json, **kwargs)
 
@@ -60,8 +58,9 @@ class News(Chart):
                 provider.delete_instance()
 
             for provider in providers:
-                transaction.add(NewsProvider(
-                    chart=transaction.chart, provider=provider))
+                provider = NewsProvider(
+                    chart=transaction.chart, provider=Provider(provider))
+                transaction.add(provider)
 
         return transaction
 
