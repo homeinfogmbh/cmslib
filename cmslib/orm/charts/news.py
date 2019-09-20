@@ -36,6 +36,7 @@ class News(Chart):
         """Creates an new news chart from a JSON-ish dict."""
         providers = json.pop('providers', None) or ()
         transaction = super().from_json(json, **kwargs)
+        providers = [Provider(provider) for provider in providers]
 
         for provider in providers:
             transaction.add(NewsProvider(
@@ -49,6 +50,8 @@ class News(Chart):
             providers = json.pop('providers') or ()
         except KeyError:
             providers = _UNCHANGED
+        else:
+            providers = [Provider(provider) for provider in providers]
 
         transaction = super().from_json(json, **kwargs)
 
