@@ -4,6 +4,7 @@ This package provides ORM models
 of the "chart" types of the CMS.
 """
 from cmslib.orm.charts.blackboard import Blackboard, Image as BlackboardImage
+from cmslib.orm.charts.booking import Booking, BookableMapping
 from cmslib.orm.charts.cleaning import Cleaning
 from cmslib.orm.charts.common import CHARTS, ChartMode, BaseChart, Chart, ChartPIN
 from cmslib.orm.charts.facebook import Facebook, Account
@@ -20,7 +21,6 @@ from cmslib.orm.charts.quotes import Quotes
 from cmslib.orm.charts.real_estates import RealEstates
 from cmslib.orm.charts.real_estates import IdFilter
 from cmslib.orm.charts.real_estates import ZipCodeFilter
-from cmslib.orm.charts.renting import Renting, RentableMapping
 from cmslib.orm.charts.rss import RSS
 from cmslib.orm.charts.soccer_table import SoccerTable
 from cmslib.orm.charts.video import Video
@@ -31,8 +31,8 @@ __all__ = ['CHARTS', 'MODELS', 'ChartMode', 'BaseChart', 'Chart']
 
 
 MODELS = (
-    BaseChart, ChartPIN, Cleaning, Facebook, Account, Form, GarbageCollection,
-    GuessPicture, ImageText, ImageTextImage, Blackboard, BlackboardImage, Text,
-    News, NewsProvider, Poll, PollOption, PublicTransport, Quotes, RealEstates,
-    IdFilter, ZipCodeFilter, Renting, RentableMapping, RSS, SoccerTable, Video,
-    Weather, WeatherImage)
+    BaseChart, ChartPIN, Booking, BookableMapping, Cleaning, Facebook, Account,
+    Form, GarbageCollection, GuessPicture, ImageText, ImageTextImage,
+    Blackboard, BlackboardImage, Text, News, NewsProvider, Poll, PollOption,
+    PublicTransport, Quotes, RealEstates, IdFilter, ZipCodeFilter, RSS,
+    SoccerTable, Video, Weather, WeatherImage)
