@@ -31,8 +31,8 @@ class Booking(Chart):
     @property
     def rentables(self):
         """Yields rentables."""
-        for rentable_mapping in self.rentable_map:
-            yield rentable_mapping.rentable
+        for bookable in self.bookables:
+            yield bookable.bookable
 
     def update_bookables(self, bookables, transaction):
         """Updates the rentables."""
@@ -85,7 +85,7 @@ class BookableMapping(DSCMS4Model):
         table_name = 'chart_booking_bookable_mapping'
 
     chart = ForeignKeyField(
-        Booking, column_name='chart', backref='rentable_map',
+        Booking, column_name='chart', backref='bookables',
         on_delete='CASCADE')
     bookable = ForeignKeyField(
         Bookable, column_name='bookable', on_delete='CASCADE')
