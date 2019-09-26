@@ -29,7 +29,7 @@ class Booking(Chart):
         return transaction.chart.update_rentables(bookables, transaction)
 
     @property
-    def rentables(self):
+    def bookables(self):
         """Yields rentables."""
         for bookable in self.bookables:
             yield bookable.bookable
