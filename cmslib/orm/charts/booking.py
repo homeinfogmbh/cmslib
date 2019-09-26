@@ -85,7 +85,6 @@ class BookableMapping(DSCMS4Model):
         table_name = 'chart_booking_bookable_mapping'
 
     chart = ForeignKeyField(
-        Booking, column_name='chart', backref='bookables',
-        on_delete='CASCADE')
+        Booking, column_name='chart', backref='bookables', on_delete='CASCADE')
     bookable = ForeignKeyField(
         Bookable, column_name='bookable', on_delete='CASCADE')
