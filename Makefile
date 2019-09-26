@@ -20,4 +20,4 @@ push:
 	@ git push
 
 dom:
-	@ pyxbgen -u files/xsd/presentation.xsd -m dom --module-prefix=cmslib
+	@ pyxbgen -u xsd/presentation.xsd -m dom --module-prefix=cmslib

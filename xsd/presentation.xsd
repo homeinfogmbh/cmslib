@@ -87,10 +87,10 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="filePreviewToken" type="xs:string">
+        <xs:attribute name="file_preview_token" type="xs:string">
             <xs:annotation>
                 <xs:documentation xml:lang="de">
-                    Preview token für Dateianhänge.
+                    Temporäres Vorschau Token für Dateianhänge.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
