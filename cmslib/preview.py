@@ -16,17 +16,22 @@ __all__ = ['make_response']
 def make_response(presentation):
     """Creates a response for the respective presentation."""
 
-    headers = FileAccessToken.headers_for_presentation(presentation)
+    file_preview_token = FileAccessToken.token_for_sha256sums(presentation)
 
     if  'application/xml' in ACCEPT or '*/*' in ACCEPT:
         try:
-            return XML(presentation.to_dom(), headers=headers)
+            presentation = presentation.to_dom()
         except AmbiguousConfigurationsError:
             return AMBIGUOUS_CONFIGURATIONS
         except NoConfigurationFound:
             return NO_CONFIGURATION_ASSIGNED
 
+        presentation.file_preview_token = file_preview_token.hex
+        return XML(presentation)
+
     if 'application/json' in ACCEPT:
-        return JSON(presentation.to_json(), headers=headers)
+        json = presentation.to_json()
+        json['filePreviewToken'] = file_preview_token.hex
+        return JSON(json)
 
     return INVALID_CONTENT_TYPE
