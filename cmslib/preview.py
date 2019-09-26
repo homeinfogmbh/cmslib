@@ -16,7 +16,7 @@ __all__ = ['make_response']
 def make_response(presentation):
     """Creates a response for the respective presentation."""
 
-    file_preview_token = FileAccessToken.token_for_sha256sums(presentation)
+    file_preview_token = FileAccessToken.token_for_presentation(presentation)
 
     if  'application/xml' in ACCEPT or '*/*' in ACCEPT:
         try:
