@@ -26,16 +26,16 @@ class Booking(Chart):
         """Creates a booking chart from a JSON-ish dict."""
         bookables = json.pop('bookables', ())
         transaction = super().from_json(json, **kwargs)
-        return transaction.chart.update_rentables(bookables, transaction)
+        return transaction.chart.update_bookables(bookables, transaction)
 
     @property
     def bookables(self):
-        """Yields rentables."""
+        """Yields bookable objects."""
         for bookable in self.bookables:
             yield bookable.bookable
 
     def update_bookables(self, bookables, transaction):
-        """Updates the rentables."""
+        """Updates the bookable objects."""
         if bookables is _UNCHANGED:
             return transaction
 
@@ -53,7 +53,7 @@ class Booking(Chart):
         return transaction
 
     def patch_json(self, json, **kwargs):
-        """Patches the rentable chart."""
+        """Patches the bookable chart."""
         bookables = json.pop('bookables', _UNCHANGED)
         transaction = super().patch_json(json, **kwargs)
         return transaction.chart.update_bookables(bookables, transaction)
