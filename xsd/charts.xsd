@@ -739,7 +739,7 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
     </xs:complexType>
 
 
-    <xs:complexType name="Renting">
+    <xs:complexType name="Booking">
         <xs:annotation>
             <xs:documentation xml:lang="de">
                 Vermietungs-Chart.
@@ -748,7 +748,7 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
         <xs:complexContent>
             <xs:extension base="Chart">
                 <xs:sequence>
-                    <xs:element name="rentable" type="xs:positiveInteger" minOccurs="0" maxOccurs="unbounded">
+                    <xs:element name="bookable" type="xs:positiveInteger" minOccurs="0" maxOccurs="unbounded">
                         <xs:annotation>
                             <xs:documentation xml:lang="de">
                                 Datenbank-IDs der Mietobjekte.
