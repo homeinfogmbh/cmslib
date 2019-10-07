@@ -1,9 +1,9 @@
 [Anjuta]
 Maximized=1
-Geometry=1920x983+0+27
+Geometry=1920x983+0+0
 
 [File Loader]
-Files=../../cmslib/presentation/deployment.py#40%%%../../cmslib/presentation/common.py#125%%%../../cmslib/orm/charts/news.py#59%%%../../cmslib/orm/common.py#1%%%../../cmslib/orm/charts/common.py#289%%%../../cmslib/orm/charts/__init__.py#33%%%../../cmslib/presentation/__init__.py#1%%%../../cmslib/orm/charts/rss.py#1%%%../../cmslib/orm/charts/weather.py#26%%%../../cmslib/messages/__init__.py#1%%%../../cmslib/orm/__init__.py#23%%%../../cmslib/__init__.py#1%%%../../cmslib/orm/configuration.py#1%%%../../cmslib/domutil.py#1%%%../../cmslib/preview.py#13%%%../../cmslib/menutree.py#1%%%../../cmslib/orm/charts/booking.py#77%%%../../xsd/charts.xsd#934
+Files=../../cmslib/presentation/deployment.py#40%%%../../cmslib/presentation/common.py#125%%%../../cmslib/orm/charts/news.py#59%%%../../cmslib/orm/common.py#1%%%../../cmslib/orm/charts/common.py#289%%%../../cmslib/orm/charts/__init__.py#33%%%../../cmslib/presentation/__init__.py#1%%%../../cmslib/orm/charts/rss.py#1%%%../../cmslib/orm/charts/weather.py#26%%%../../cmslib/messages/__init__.py#1%%%../../cmslib/orm/__init__.py#23%%%../../cmslib/__init__.py#1%%%../../cmslib/orm/configuration.py#1%%%../../cmslib/domutil.py#1%%%../../cmslib/preview.py#13%%%../../cmslib/menutree.py#1%%%../../cmslib/orm/charts/booking.py#77%%%../../xsd/charts.xsd#906
 
 [Document Manager]
 bookmarks=<?xml version="1.0" encoding="UTF-8"?>\n<bookmarks/>\n
