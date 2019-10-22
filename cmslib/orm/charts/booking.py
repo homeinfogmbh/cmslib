@@ -1,6 +1,6 @@
 """Booking chart."""
 
-from peewee import ForeignKeyField
+from peewee import BooleanField, ForeignKeyField
 
 from bookings import get_bookable, Bookable
 
@@ -20,6 +20,9 @@ class Booking(Chart):
 
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_booking'
+
+    rentee = BooleanField(null=True)
+    purpose = BooleanField(null=True)
 
     @classmethod
     def from_json(cls, json, **kwargs):
