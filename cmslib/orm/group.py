@@ -65,7 +65,7 @@ class Group(CustomerModel):
         if parent is not None:
             parent = self.get_peer(parent)
 
-            if parent == self or parent in self.tree:
+            if parent in self.tree:
                 raise CIRCULAR_REFERENCE
 
         self.parent = parent
