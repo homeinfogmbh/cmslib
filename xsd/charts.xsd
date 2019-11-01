@@ -755,6 +755,27 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
+                    <xs:element name="rentee" type="xs:boolean" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Schalter für Mieterangabe.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="purpose" type="xs:boolean" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Schalter für Verwendungszweck.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="text" type="xs:string" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Textinhalt.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
