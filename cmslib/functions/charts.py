@@ -8,12 +8,20 @@ from his.messages.data import INVALID_DATA, NOT_AN_INTEGER
 
 from cmslib.messages.charts import INVALID_CHART_TYPE
 from cmslib.messages.charts import NO_CHART_TYPE_SPECIFIED
+from cmslib.messages.charts import NO_SUCH_BASE_CHART
 from cmslib.messages.charts import NO_SUCH_CHART
 from cmslib.orm.charts import CHARTS, ChartMode, BaseChart
 from cmslib.orm.chart_types import ChartType
 
 
-__all__ = ['CHART_TYPES', 'CHART_TYPE', 'get_charts', 'get_chart', 'get_mode']
+__all__ = [
+    'CHART_TYPES',
+    'CHART_TYPE',
+    'get_base_chart',
+    'get_charts',
+    'get_chart',
+    'get_mode'
+]
 
 
 def _get_chart_types():
@@ -82,6 +90,16 @@ def _get_trashed():
         return BaseChart.trashed == 1
 
     return BaseChart.trashed == 0
+
+
+def get_base_chart(ident):
+    """Returns the respective base chart."""
+
+    try:
+        return BaseChart.get(
+            (BaseChart.id == ident) & (BaseChart.customer == CUSTOMER))
+    except BaseChart.DoesNotExist:
+        raise NO_SUCH_BASE_CHART
 
 
 def get_charts():

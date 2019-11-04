@@ -16,7 +16,8 @@ __all__ = [
     'CHART_PATCHED',
     'CHART_TYPE_ADDED',
     'CHART_TYPE_DELETED',
-    'NO_SUCH_CHART_TYPE']
+    'NO_SUCH_CHART_TYPE'
+]
 
 
 CHART_DATA_INCOMPLETE = JSONMessage('Chart data is incomplete.', status=400)
