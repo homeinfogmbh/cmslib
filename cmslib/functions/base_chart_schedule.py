@@ -3,7 +3,7 @@
 from his import CUSTOMER
 
 from cmslib.messages.schedule import NO_SUCH_SCHEDULE
-from cmslib.orm.schedule import BaseChartSchedule
+from cmslib.orm.base_chart_schedule import BaseChartSchedule
 
 
 __all__ = ['get_base_chart_schedule']
