@@ -102,7 +102,20 @@ class ImageText(Chart):
         return xml
 
 
-class Image(DSCMS4Model):
+class _ChartReferencing(DSCMS4Model):
+    """Base class for models referencing the ImageText chart."""
+
+    @classmethod
+    def from_json(cls, json, chart=None, **kwargs):
+        """Creates a new instance from a
+        JSON-ish dict for the given chart.
+        """
+        record = super().from_json(json, **kwargs)
+        record.chart = chart
+        return record
+
+
+class Image(_ChartReferencing):
     """Image for an ImageText chart."""
 
     class Meta:     # pylint: disable=C0111,R0903
@@ -118,7 +131,7 @@ class Image(DSCMS4Model):
         return attachment_dom(self.image, index=self.index)
 
 
-class Text(DSCMS4Model):
+class Text(_ChartReferencing):
     """Text for an ImageText chart."""
 
     class Meta:     # pylint: disable=C0111,R0903
