@@ -18,12 +18,15 @@ from peewee import SmallIntegerField
 from peewee import TextField
 from peewee import UUIDField
 
+from his import CUSTOMER
 from his.messages.data import MISSING_DATA
 from peeweeplus import EnumField    # pylint: disable=E0401
 
 from cmslib import dom  # pylint: disable=E0611
 from cmslib.exceptions import OrphanedBaseChart, AmbiguousBaseChart
-from cmslib.orm.common import DSCMS4Model, CustomerModel
+from cmslib.orm.common import UNCHANGED, DSCMS4Model, CustomerModel
+from cmslib.orm.schedule import Schedule
+from cmslib.orm.transaction import Transaction
 
 
 __all__ = ['CHARTS', 'BaseChart', 'Chart', 'ChartPIN']
@@ -34,34 +37,35 @@ CHARTS = {}
 CheckResult = namedtuple('CheckResult', ('orphans', 'ambiguous'))
 
 
-class Transaction(list):
-    """Handles a list of records in-order for atomic transactions."""
+class Transitions(Enum):
+    """Effects available for chart transition effects."""
+
+    FADE_IN = 'fade-in'
+    MOSAIK = 'mosaik'
+    SLIDE_IN = 'slide-in'
+    RANDOM = 'random'
+
+
+class ChartMode(Enum):
+    """JSON serialization modes."""
+
+    FULL = 'full'
+    BRIEF = 'brief'
+    ANON = 'anon'
+
+
+class ChartTransaction(Transaction):
+    """A chart-related transaction."""
 
     @property
     def base_chart(self):
-        """Returns the first chart."""
-        for _, item in self:
-            if isinstance(item, BaseChart):
-                return item
-
-        return None
+        """Returns the base chart."""
+        return self.get_instance_of(BaseChart)
 
     @property
     def chart(self):
-        """Returns the first chart."""
-        for _, item in self:
-            if isinstance(item, Chart):
-                return item
-
-        return None
-
-    def add(self, record):
-        """Adds the record as to be added."""
-        self.append((True, record))
-
-    def delete(self, record):
-        """Adds the record as to be deleted."""
-        self.append((False, record))
+        """Returns the base chart."""
+        return self.get_instance_of(Chart)
 
     def resolve_refs(self, model, records, json_objects, *,
                      record_identifier=lambda record: record.id,
@@ -91,31 +95,6 @@ class Transaction(list):
 
         return self
 
-    def commit(self):
-        """Saves / deletes the respective records."""
-        for save, record in self:
-            if save:
-                record.save()
-            else:
-                record.delete_instance()
-
-
-class Transitions(Enum):
-    """Effects available for chart transition effects."""
-
-    FADE_IN = 'fade-in'
-    MOSAIK = 'mosaik'
-    SLIDE_IN = 'slide-in'
-    RANDOM = 'random'
-
-
-class ChartMode(Enum):
-    """JSON serialization modes."""
-
-    FULL = 'full'
-    BRIEF = 'brief'
-    ANON = 'anon'
-
 
 class BaseChart(CustomerModel):
     """Common basic chart data model."""
@@ -133,6 +112,8 @@ class BaseChart(CustomerModel):
     trashed = BooleanField(default=False)
     log = BooleanField(default=False)
     uuid = UUIDField(null=True)
+    schedule = ForeignKeyField(
+        Schedule, null=True, column_name='schedule', on_delete='SET NULL')
 
     @classmethod
     def from_json(cls, json, skip=None, **kwargs):
@@ -140,14 +121,19 @@ class BaseChart(CustomerModel):
         skip_default = ('uuid',)
         skip = tuple(chain(skip_default, skip)) if skip else skip_default
         pins = json.pop('pins', None) or ()
+        schedule = json.pop('schedule', None)
         record = super().from_json(json, skip=skip, **kwargs)
         record.uuid = uuid4() if record.log else None
-        transaction = Transaction()
+        transaction = ChartTransaction()
         transaction.add(record)
 
         for pin in pins:
             chart_pin = ChartPIN(base_chart=record, pin=pin)
             transaction.add(chart_pin)
+
+        if schedule:
+            schedule = Schedule.from_json(json, customer=CUSTOMER.id)
+            transaction.add(schedule, left=True)
 
         return transaction
 
@@ -205,22 +191,39 @@ class BaseChart(CustomerModel):
 
         return match
 
-    def patch_json(self, json, **kwargs):
-        """Patches the base chart."""
-        pins = json.pop('pins', None)
-        super().patch_json(json, **kwargs)
-        self.uuid = uuid4() if self.log else None
-        transaction = Transaction()
-        transaction.add(self)
-
-        if pins is not None:
+    def _patch_pins(self, pins, transaction):
+        """Patches the PINs."""
+        if pins is not UNCHANGED:
             for chart_pin in self.pins:
                 transaction.delete(chart_pin)
 
-            for pin in pins:
-                chart_pin = ChartPIN(base_chart=self, pin=pin)
-                transaction.add(chart_pin)
+            if pins:
+                for pin in pins:
+                    chart_pin = ChartPIN(base_chart=self, pin=pin)
+                    transaction.add(chart_pin)
 
+    def _patch_schedule(self, schedule, transaction):
+        """Patches the schedule."""
+        if schedule is UNCHANGED:
+            return
+
+        if self.schedule is None:
+            self.schedule = Schedule.from_json(schedule)
+        else:
+            self.schedule.patch_json(schedule)
+
+        transaction.add(self.schedule, left=True)
+
+    def patch_json(self, json, **kwargs):
+        """Patches the base chart."""
+        pins = json.pop('pins', UNCHANGED)
+        schedule = json.pop('schedule', UNCHANGED)
+        super().patch_json(json, **kwargs)
+        self.uuid = uuid4() if self.log else None
+        transaction = ChartTransaction()
+        transaction.add(self)
+        self._patch_pins(pins, transaction)
+        self._patch_schedule(schedule, transaction)
         return transaction
 
     def to_json(self, brief=False, **kwargs):

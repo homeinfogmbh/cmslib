@@ -8,7 +8,7 @@ from cmslib.dom import Attachment   # pylint: disable=E0401,E0611
 __all__ = ['attachment_dom']
 
 
-def attachment_dom(ident, format=None, index=None, schedule=None):
+def attachment_dom(ident, format=None, index=None):     # pylint: disable=W0622
     """Returns an attachment for the respective file ID."""
 
     if ident is None:
@@ -26,8 +26,4 @@ def attachment_dom(ident, format=None, index=None, schedule=None):
     xml.sha256sum = file.sha256sum
     xml.format = format
     xml.index = index
-
-    if schedule is not None:
-        xml.schedule = schedule.to_dom()
-
     return xml

@@ -11,7 +11,6 @@ from cmslib import dom
 from cmslib.domutil import attachment_dom
 from cmslib.orm.charts.common import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
-from cmslib.orm.schedule import Schedule
 
 
 __all__ = ['ImageText', 'Image', 'Text']
@@ -103,32 +102,7 @@ class ImageText(Chart):
         return xml
 
 
-class ImageTextAttachment(DSCMS4Model):
-    """Common model for ImageText chart's images and texts."""
-
-    @classmethod
-    def from_json(cls, json, chart, **kwargs):
-        """Creates the image from a JSON-ish dict."""
-        schedule = json.pop('schedule', None)
-        record = super().from_json(json, **kwargs)
-        record.chart = chart
-        yield record
-
-        if schedule:
-            record.schedule = schedule = Schedule.from_json(schedule)
-            yield schedule
-
-    def to_json(self):
-        """Returns a JSON-ish dict."""
-        json = super().to_json(fk_fields=False, autofields=False)
-
-        if self.schedule is not None:
-            json['schedule'] = self.schedule.to_json(autofields=False)
-
-        return json
-
-
-class Image(ImageTextAttachment):
+class Image(DSCMS4Model):
     """Image for an ImageText chart."""
 
     class Meta:     # pylint: disable=C0111,R0903
@@ -136,18 +110,15 @@ class Image(ImageTextAttachment):
 
     chart = ForeignKeyField(
         ImageText, column_name='chart', backref='images', on_delete='CASCADE')
-    schedule = ForeignKeyField(
-        Schedule, null=True, column_name='schedule', on_delete='SET NULL')
     image = IntegerField()
     index = IntegerField(default=0)
 
     def to_dom(self):
         """Returns an XML DOM of this model."""
-        return attachment_dom(
-            self.image, index=self.index, schedule=self.schedule)
+        return attachment_dom(self.image, index=self.index)
 
 
-class Text(ImageTextAttachment):
+class Text(DSCMS4Model):
     """Text for an ImageText chart."""
 
     class Meta:     # pylint: disable=C0111,R0903
@@ -155,15 +126,4 @@ class Text(ImageTextAttachment):
 
     chart = ForeignKeyField(
         ImageText, column_name='chart', backref='texts', on_delete='CASCADE')
-    schedule = ForeignKeyField(
-        Schedule, null=True, column_name='schedule', on_delete='SET NULL')
     text = TextField()
-
-    def to_dom(self):
-        """Returns an XML DOM of this model."""
-        xml = dom.ScheduledText(text=self.text)
-
-        if self.schedule is not None:
-            xml.schedule = self.schedule.to_dom()
-
-        return xml
