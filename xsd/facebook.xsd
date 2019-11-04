@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Facebook-related type definitions.
+
+Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
+-->
+
+<xs:schema  xmlns="http://xml.homeinfo.de/schema/dscms4"
+            xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0"
+            targetNamespace="http://xml.homeinfo.de/schema/dscms4">
+    <xs:complexType name="FacebookAccount">
+        <xs:annotation>
+            <xs:documentation xml:lang="de">
+                Ein Facebook Konto.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="facebook_id" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Facebook ID.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="recent_days" type="xs:unsignedShort" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Anzahl der letzten Tage.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="max_posts" type="xs:unsignedShort">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Maximiale Anzahl an Posts.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string">
+            <xs:annotation>
+                <xs:documentation xml:lang="de">
+                    Optionaler Name des Kontos.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+</xs:schema>

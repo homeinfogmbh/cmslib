@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Time schedules.
+
+Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
+-->
+
+<xs:schema  xmlns="http://xml.homeinfo.de/schema/dscms4"
+            xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0"
+            targetNamespace="http://xml.homeinfo.de/schema/dscms4">
+    <xs:complexType name="TimeInterval">
+        <xs:annotation>
+            <xs:documentation xml:lang="de">
+                Ein Zeitintervall.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="value" type="xs:positiveInteger">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Wert des Intervalls.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="unit" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Zeiteinheit des Intervalls.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:complexType name="Schedule">
+        <xs:annotation>
+            <xs:documentation xml:lang="de">
+                Ein Zeitplan.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="start" type="xs:dateTime">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Facebook ID.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="end" type="xs:dateTime" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Anzahl der letzten Tage.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="duration" type="TimeInterval">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Anzeigedauer.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="intervall" type="TimeInterval">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Anzeigeintervall.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
