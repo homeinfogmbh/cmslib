@@ -7,8 +7,8 @@ from peewee import ForeignKeyField, IntegerField, TextField
 from peeweeplus import EnumField
 
 from cmslib import dom
+from cmslib.orm.charts.common import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
-from cmslib.orm.charts.common import Chart
 
 
 __all__ = ['Mode', 'Form']
@@ -57,6 +57,15 @@ class Form(Chart):
             transaction.add(choice)
 
         return transaction
+
+    def to_json(self, mode=ChartMode.FULL, **kwargs):
+        """Returns a JSON-ish dict."""
+        json = super().to_json(mode=mode, **kwargs)
+
+        if mode == ChartMode.FULL:
+            json['choices'] = [choice.to_json() for choice in self.choices]
+
+        return json
 
     def to_dom(self, brief=False):
         """Returns an XML DOM of this chart."""
