@@ -11,6 +11,7 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
             targetNamespace="http://xml.homeinfo.de/schema/dscms4">
     <xs:include schemaLocation="attachments.xsd"/>
     <xs:include schemaLocation="facebook.xsd"/>
+    <xs:include schemaLocation="form.xsd"/>
     <xs:include schemaLocation="poll.xsd"/>
     <xs:include schemaLocation="realestates.xsd"/>
     <xs:include schemaLocation="schedule.xsd"/>
@@ -295,6 +296,13 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                         <xs:annotation>
                             <xs:documentation xml:lang="de">
                                 Typ (Modus) des Formulars.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="choice" type="Choice" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Auswahloptionen.
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>

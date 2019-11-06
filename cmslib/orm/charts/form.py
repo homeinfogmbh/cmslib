@@ -2,9 +2,12 @@
 
 from enum import Enum
 
+from peewee import ForeignKeyField, IntegerField, TextField
+
 from peeweeplus import EnumField
 
 from cmslib import dom
+from cmslib.orm.common import UNCHANGED, DSCMS4Model
 from cmslib.orm.charts.common import Chart
 
 
@@ -26,6 +29,35 @@ class Form(Chart):
 
     mode = EnumField(Mode, column_name='mode')
 
+    @classmethod
+    def from_json(cls, json, **kwargs):
+        """Creates the chart from a JSON-ish dict."""
+        choices = json.pop('choices', None) or ()
+        transaction = super().from_json(json, **kwargs)
+
+        for choice in choices:
+            choice = Choice.from_json(choice, form=transaction.chart)
+            transaction.add(choice)
+
+        return transaction
+
+    def patch_json(self, json, **kwargs):
+        """Patches the chart from a JSON-ish dict."""
+        choices = json.pop('choices', UNCHANGED) or ()
+        transaction = super().from_json(json, **kwargs)
+
+        if choices is UNCHANGED:
+            return transaction
+
+        for choice in self.choices:
+            transaction.delete(choice)
+
+        for choice in choices:
+            choice = Choice.from_json(choice, form=transaction.chart)
+            transaction.add(choice)
+
+        return transaction
+
     def to_dom(self, brief=False):
         """Returns an XML DOM of this chart."""
         if brief:
@@ -33,4 +65,21 @@ class Form(Chart):
 
         xml = super().to_dom(dom.Form)
         xml.mode = self.mode.value
+        xml.choices = [choice.to_dom() for choice in self.choices]
         return xml
+
+
+class Choice(DSCMS4Model):
+    """Choice options for forms."""
+
+    class Meta:     # pylint: disable=C0111,R0903
+        table_name = 'chart_form_choice'
+
+    form = ForeignKeyField(
+        Form, column_name='form', backref='choices', on_delete='CASCADE')
+    text = TextField()
+    index = IntegerField(default=0)
+
+    def to_dom(self):
+        """Returns an XML DOM of this chart."""
+        return dom.Choice(self.text, index=self.index)
