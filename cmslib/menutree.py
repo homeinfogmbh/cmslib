@@ -115,12 +115,17 @@ class MenuTreeItem(NamedTuple):
             'backgroundColor': self.background_color,
             'index': self.index,
             'charts': [
-                menu_item_chart.to_json() for menu_item_chart
-                in sorted(self.menu_item_charts, key=get_index)
-                if not menu_item_chart.base_chart.trashed],
+                menu_item_chart.to_json(
+                    menu_item=False, base_chart=False, charts=True)
+                for menu_item_chart in sorted(
+                    self.menu_item_charts, key=get_index)
+                if not menu_item_chart.base_chart.trashed
+            ],
             'menuItems': [
                 child.to_json() for child in sorted(
-                    self.children, key=get_index)]}
+                    self.children, key=get_index)
+            ]
+        }
 
     def to_dom(self):
         """Returns an XML DOM of the model."""
