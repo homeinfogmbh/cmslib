@@ -46,15 +46,13 @@ class Form(Chart):
         choices = json.pop('choices', UNCHANGED) or ()
         transaction = super().from_json(json, **kwargs)
 
-        if choices is UNCHANGED:
-            return transaction
+        if choices is not UNCHANGED:
+            for choice in self.choices:
+                transaction.delete(choice)
 
-        for choice in self.choices:
-            transaction.delete(choice)
-
-        for choice in choices:
-            choice = Choice.from_json(choice, form=transaction.chart)
-            transaction.add(choice)
+            for choice in choices:
+                choice = Choice.from_json(choice, form=transaction.chart)
+                transaction.add(choice)
 
         return transaction
 
