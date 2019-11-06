@@ -116,7 +116,7 @@ class MenuTreeItem(NamedTuple):
             'index': self.index,
             'charts': [
                 menu_item_chart.to_json(
-                    menu_item=False, base_chart=False, charts=True)
+                    menu_item=False, base_chart=False, chart=True)
                 for menu_item_chart in sorted(
                     self.menu_item_charts, key=get_index)
                 if not menu_item_chart.base_chart.trashed
