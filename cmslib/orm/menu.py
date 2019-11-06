@@ -253,16 +253,15 @@ class MenuItemChart(DSCMS4Model):
         skip = set()
 
         if not menu_item:
-            skip.add('menu_item')
+            skip.add('menuItem')
 
         if not base_chart:
-            skip.add('base_chart')
+            skip.add('baseChart')
 
         json = super().to_json(skip=skip)
 
         if chart:
-            chart = self.base_chart.chart
-            json['chart'] = chart.to_json(mode=ChartMode.BRIEF)
+            json['chart'] = self.base_chart.chart.to_json(mode=ChartMode.BRIEF)
 
         return json
 
