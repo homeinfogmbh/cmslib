@@ -121,7 +121,6 @@ class Configuration(CustomerModel):
     title_size = SmallIntegerField()
     text_size = SmallIntegerField()
     logo = IntegerField(null=True)
-    background = IntegerField(null=True)
     dummy_picture = IntegerField(null=True)
     hide_cursor = BooleanField(default=True)
     rotation = SmallIntegerField(default=0)
