@@ -177,10 +177,10 @@ class Configuration(CustomerModel):
     def update_colors(self, transaction, colors):
         """Updates the respective colors."""
         if colors:
-            if self.colors is None:
-                self.colors = Colors.from_json(colors)
-            else:
+            try:
                 self.colors.patch_json(colors)
+            except Colors.DoesNotExist:
+                self.colors = Colors.from_json(colors)
 
             transaction.add(self.colors)
 
