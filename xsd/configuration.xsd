@@ -101,13 +101,6 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="background" type="Attachment" minOccurs="0">
-                <xs:annotation>
-                    <xs:documentation xml:lang="de">
-                        Hintergrundbild.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
             <xs:element name="dummy_picture" type="Attachment" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="de">
@@ -147,6 +140,13 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                 <xs:annotation>
                     <xs:documentation xml:lang="de">
                         Soll die Hintergrundmaske der Textfelder im HD-Design transparent sein?
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="background" type="Attachment" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Hintergrundbilder.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
