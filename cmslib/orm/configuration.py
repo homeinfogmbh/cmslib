@@ -2,6 +2,7 @@
 settings for the digital signage presentation.
 """
 from contextlib import suppress
+from datetime import datetime
 from enum import Enum
 
 from peewee import BooleanField
@@ -17,6 +18,7 @@ from peeweeplus import EnumField
 from cmslib import dom
 from cmslib.domutil import attachment_dom
 from cmslib.orm.common import DSCMS4Model, CustomerModel
+from cmslib.orm.transaction import Transaction
 
 
 __all__ = [
@@ -24,8 +26,10 @@ __all__ = [
     'MODELS',
     'Colors',
     'Configuration',
+    'Background',
     'Ticker',
-    'Backlight']
+    'Backlight'
+]
 
 
 TIME_FORMAT = '%H:%M'
@@ -124,13 +128,23 @@ class Configuration(CustomerModel):
     text_bg_transparent = BooleanField(default=False)
 
     @classmethod
-    def from_json(cls, json, colors, **kwargs):
+    def from_json(cls, json, **kwargs):
         """Creates a new configuration from the provided
         dictionary for the respective customer.
         """
+        colors = json.pop('colors', None)
+        backgrounds = json.pop('backgrounds', None)
+        tickers = json.pop('tickers', ())
+        backlight = json.pop('backlight', None)
         configuration = super().from_json(json, **kwargs)
-        configuration.colors = colors
-        return configuration
+        transaction = Transaction()
+        transaction.add(configuration)
+        configuration.update_colors(transaction, colors)
+        configuration.update_backgrounds(
+            transaction, backgrounds, delete=False)
+        configuration.update_tickers(transaction, tickers, delete=False)
+        configuration.update_backlights(transaction, backlight, delete=False)
+        return transaction
 
     @property
     def files(self):
@@ -158,6 +172,82 @@ class Configuration(CustomerModel):
                 backlights.update(backlight.to_json())
 
         return backlights
+
+    def update_colors(self, transaction, colors):
+        """Updates the respective colors."""
+        if colors:
+            if self.colors is None:
+                self.colors = Colors.from_json(colors)
+            else:
+                self.colors.patch_json(colors)
+
+            transaction.add(self.colors)
+
+    def update_backgrounds(self, transaction, backgrounds, *, delete):
+        """Updates the related backgrounds."""
+        if delete:
+            for background in self.backgrounds:
+                transaction.delete(background)
+
+        if backgrounds:
+            for background in backgrounds:
+                background = Background.from_json(background, self)
+                transaction.add(background)
+
+    def update_tickers(self, transaction, tickers, *, delete):
+        """Updates the respective ticker records."""
+        if delete:
+            for ticker in self.tickers:
+                transaction.delete(ticker)
+
+        if tickers:
+            for json in tickers:
+                ticker = Ticker.from_json(json, self)
+                transaction.add(ticker)
+
+    def update_backlights(self, transaction, backlights, *, delete):
+        """Updates the respective backlight records."""
+        if delete:
+            for backlight in self.backlights:
+                transaction.delete(backlight)
+
+        if backlights:
+            for time, brightness in backlights.items():
+                time = datetime.strptime(time, TIME_FORMAT).time()
+                json = {'time': time, 'brightness': brightness}
+                backlight = Backlight.from_json(json, self)
+                transaction.add(backlight)
+
+    def patch_json(self, json, **kwargs):
+        """Patches the configuration with a JSON-ish dict."""
+        transaction = Transaction()
+        transaction.add(self)
+
+        try:
+            colors = json.pop('colors')
+        except KeyError:
+            pass
+        else:
+            self.update_colors(transaction, colors)
+
+        try:
+            backgrounds = json.pop('backgrounds')
+        except KeyError:
+            pass
+        else:
+            self.update_backgrounds(transaction, backgrounds, delete=True)
+
+        try:
+            tickers = json.pop('tickers')
+        except KeyError:
+            pass
+        else:
+            self.update_tickers(transaction, tickers, delete=True)
+
+        backlight = json.pop('backlight', None)
+        self.update_backlight(transaction, backlight, delete=True)
+        super().patch_json(json, **kwargs)
+        return transaction
 
     def to_json(self, cascade=False, **kwargs):
         """Converts the configuration into a JSON-like dictionary."""
@@ -205,6 +295,24 @@ class Configuration(CustomerModel):
         result = super().delete_instance()
         colors.delete_instance()
         return result
+
+
+class Background(DSCMS4Model):
+    """Background images for configurations."""
+
+    configuration = ForeignKeyField(
+        Configuration, column_name='configuration', backref='backgrounds',
+        on_delete='CASCADE')
+    image = IntegerField()
+
+    @classmethod
+    def from_json(cls, json, configuration, **kwargs):
+        """Returns a new background from a JSON-ish
+        dict for the respective configuration.
+        """
+        background = super().from_json(json, **kwargs)
+        background.configuration = configuration
+        return background
 
 
 class Ticker(DSCMS4Model):
