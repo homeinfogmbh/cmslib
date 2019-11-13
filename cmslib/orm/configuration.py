@@ -182,7 +182,7 @@ class Configuration(CustomerModel):
             except Colors.DoesNotExist:
                 self.colors = Colors.from_json(colors)
 
-            transaction.add(self.colors)
+            transaction.add(self.colors, left=True)
 
     def update_backgrounds(self, transaction, backgrounds, *, delete):
         """Updates the related backgrounds."""
