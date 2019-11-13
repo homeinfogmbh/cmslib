@@ -55,6 +55,7 @@ class Font(Enum):
     SPARKASSE = 'sparkasse'
     NETTOO = 'nettoo'
     MUSEO = 'museo'
+    SEGOE = 'segoe'
 
 
 class Design(Enum):
@@ -64,6 +65,7 @@ class Design(Enum):
     NEWS = 'news'
     FLAT = 'flat'
     HD = 'hd'
+    AIR = 'air'
 
 
 class TickerTypes(Enum):
