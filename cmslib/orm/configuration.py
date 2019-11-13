@@ -156,8 +156,8 @@ class Configuration(CustomerModel):
         if self.logo is not None:
             files.add(self.logo)
 
-        if self.background is not None:
-            files.add(self.background)
+        for background in self.backgrounds:
+            files.add(background.image)
 
         if self.dummy_picture is not None:
             files.add(self.dummy_picture)
@@ -193,7 +193,7 @@ class Configuration(CustomerModel):
 
         if backgrounds:
             for background in backgrounds:
-                background = Background.from_json(background, self)
+                background = Background(configuration=self, image=background)
                 transaction.add(background)
 
     def update_tickers(self, transaction, tickers, *, delete):
@@ -258,6 +258,8 @@ class Configuration(CustomerModel):
         if cascade:
             json['colors'] = self.colors.to_json(
                 autofields=False, fk_fields=False)
+            json['backgrounds'] = [
+                background.image for background in self.backgrounds]
             json['tickers'] = [
                 ticker.to_json(autofields=False, fk_fields=False)
                 for ticker in self.tickers]
@@ -280,13 +282,15 @@ class Configuration(CustomerModel):
         xml.title_size = self.title_size
         xml.text_size = self.text_size
         xml.logo = attachment_dom(self.logo)
-        xml.background = attachment_dom(self.background)
         xml.dummy_picture = attachment_dom(self.dummy_picture)
         xml.hide_cursor = self.hide_cursor
         xml.rotation = self.rotation
         xml.email_form = self.email_form
         xml.volume = self.volume
         xml.text_bg_transparent = self.text_bg_transparent
+        xml.background = [
+            attachment_dom(background.image)
+            for background in self.backgrounds]
         xml.ticker = [ticker.to_dom() for ticker in self.tickers]
         xml.backlight = [backlight.to_dom() for backlight in self.backlights]
         return xml
@@ -306,15 +310,6 @@ class Background(DSCMS4Model):
         Configuration, column_name='configuration', backref='backgrounds',
         on_delete='CASCADE')
     image = IntegerField()
-
-    @classmethod
-    def from_json(cls, json, configuration, **kwargs):
-        """Returns a new background from a JSON-ish
-        dict for the respective configuration.
-        """
-        background = super().from_json(json, **kwargs)
-        background.configuration = configuration
-        return background
 
 
 class Ticker(DSCMS4Model):
