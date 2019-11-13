@@ -246,7 +246,7 @@ class Configuration(CustomerModel):
             self.update_tickers(transaction, tickers, delete=True)
 
         backlight = json.pop('backlight', None)
-        self.update_backlight(transaction, backlight, delete=True)
+        self.update_backlights(transaction, backlight, delete=True)
         super().patch_json(json, **kwargs)
         return transaction
 
