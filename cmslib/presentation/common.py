@@ -191,13 +191,13 @@ class PresentationMixin:
     def to_json(self):
         """Returns a JSON presentation."""
         return {
-            'customer': self.customer.id,
+            'charts': [
+                chart.to_json(fk_fields=False) for chart in self.charts],
             'configuration': self._configuration.to_json(
                 cascade=True, fk_fields=False),
+            'customer': self.customer.id,
+            'menuItems': [item.to_json() for item in self.menutree],
             'playlist': [
                 chart.to_json(mode=ChartMode.BRIEF, fk_fields=False)
-                for chart in self.playlist],
-            'menuItems': [item.to_json() for item in self.menutree],
-            'charts': [
-                chart.to_json(fk_fields=False) for chart in self.charts]
+                for chart in self.playlist]
         }
