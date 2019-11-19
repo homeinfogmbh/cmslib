@@ -44,7 +44,7 @@ class Form(Chart):
     def patch_json(self, json, **kwargs):
         """Patches the chart from a JSON-ish dict."""
         choices = json.pop('choices', UNCHANGED) or ()
-        transaction = super().from_json(json, **kwargs)
+        transaction = super().patch_json(json, **kwargs)
 
         if choices is not UNCHANGED:
             for choice in self.choices:
