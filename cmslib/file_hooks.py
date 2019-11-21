@@ -1,10 +1,8 @@
 """Hooks for filedb actions."""
 
 from cmslib.config import LOGGER as _LOGGER
-from cmslib.orm.charts.blackboard import Image as BlackboardChartImage
-from cmslib.orm.charts.image_text import Image as ImageTextChartImage
+from cmslib.orm.charts import blackboard, image_text, weather
 from cmslib.orm.charts.video import Video
-from cmslib.orm.charts.weather import Image as WeatherChartImage
 from cmslib.orm.configuration import Configuration
 
 
@@ -17,8 +15,8 @@ LOGGER = _LOGGER.getChild('file_hooks')
 def _remove_bc_images(ident):
     """Removes the respective images of Blackboard charts."""
 
-    for image in BlackboardChartImage.select().where(
-            BlackboardChartImage.image == ident):
+    for image in blackboard.Image.select().where(
+            blackboard.Image.image == ident):
         LOGGER.info(
             'Deleting blackboard.Image %i with image %i.',
             image.id, ident)
@@ -28,22 +26,19 @@ def _remove_bc_images(ident):
 def _remove_itc_images(ident):
     """Removes the respective images of ImageText charts."""
 
-    for image in ImageTextChartImage.select().where(
-            ImageTextChartImage.image == ident):
+    for image in image_text.Image.select().where(
+            image_text.Image.image == ident):
         LOGGER.info(
-            'Deleting image_text.Image %i with image %i.',
-            image.id, ident)
+            'Deleting image_text.Image %i with image %i.', image.id, ident)
         image.delete_instance()
 
 
 def _remove_wc_image(ident):
     """Removes the respective images of Weather charts."""
 
-    for image in WeatherChartImage.select().where(
-            WeatherChartImage.image == ident):
+    for image in weather.Image.select().where(weather.Image.image == ident):
         LOGGER.info(
-            'Deleting weather.Image %i with image %i.',
-            image.id, ident)
+            'Deleting weather.Image %i with image %i.', image.id, ident)
         image.delete_instance()
 
 
