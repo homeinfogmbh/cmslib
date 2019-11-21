@@ -78,7 +78,7 @@ class Booking(Chart):
             return super().to_dom(dom.BriefChart)
 
         xml = super().to_dom(dom.Booking)
-        xml.bookable = [bookable.id for bookable in self.bookables]
+        xml.bookable = [bookable.bookable.id for bookable in self.bookables]
         xml.rentee = self.rentee
         xml.purpose = self.purpose
         xml.text = self.text
