@@ -253,12 +253,12 @@ class Configuration(CustomerModel):
     def to_json(self, cascade=False, **kwargs):
         """Converts the configuration into a JSON-like dictionary."""
         json = super().to_json(**kwargs)
+        json['backgrounds'] = [
+            background.image for background in self.backgrounds]
 
         if cascade:
             json['colors'] = self.colors.to_json(
                 autofields=False, fk_fields=False)
-            json['backgrounds'] = [
-                background.image for background in self.backgrounds]
             json['tickers'] = [
                 ticker.to_json(autofields=False, fk_fields=False)
                 for ticker in self.tickers]
