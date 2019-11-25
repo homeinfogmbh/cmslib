@@ -28,6 +28,7 @@ class Form(Chart):
         table_name = 'chart_form'
 
     mode = EnumField(Mode, column_name='mode')
+    text = TextField(null=True)
 
     @classmethod
     def from_json(cls, json, **kwargs):
