@@ -88,6 +88,13 @@ class Choice(DSCMS4Model):
     text = TextField()
     index = IntegerField(default=0)
 
+    @classmethod
+    def from_json(cls, json, form=None, **kwargs):
+        """Creates a choice from a JSON-ish dict for the given form."""
+        record = super().from_json(json, **kwargs)
+        record.form = form
+        return record
+
     def to_dom(self):
         """Returns an XML DOM of this chart."""
         return dom.Choice(self.text, index=self.index)
