@@ -14,27 +14,19 @@ from cmslib.messages.data import INVALID_REFERENCE
 __all__ = [
     'UNCHANGED',
     'DATABASE',
-    'create_tables',
     'DSCMS4Model',
-    'CustomerModel']
+    'CustomerModel'
+]
 
 
-UNCHANGED = object()
+UNCHANGED = object()    # Sentinel object for unchanged JSON fields.
 DATABASE = MySQLDatabase.from_config(CONFIG['db'])
-
-
-def create_tables(models, fail_silently=True):
-    """Creates the tables for the provided models."""
-
-    for model in models:
-        model.create_table(fail_silently=fail_silently)
 
 
 class DSCMS4Model(JSONModel):
     """Base Model for the DSCMS4 database."""
 
-    class Meta:
-        """Sets database and schema."""
+    class Meta:     # pylint: disable=C0115,R0903
         database = DATABASE
         schema = database.database
 
