@@ -41,6 +41,11 @@ class CustomerModel(DSCMS4Model):
 
     customer = ForeignKeyField(Customer, column_name='customer')
 
+    def __str__(self):
+        """Returns the models's ID and class."""
+        cls = type(self)
+        return f'{self.id}:{self.customer_id}@{cls.__name__}'
+
     @classmethod
     def from_json(cls, json, *, customer=None, **kwargs):
         """Creates a new record from the provided
