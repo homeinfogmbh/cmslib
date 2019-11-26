@@ -129,10 +129,10 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="volume" type="xs:unsignedShort">
+            <xs:element name="volume" type="xs:float">
                 <xs:annotation>
                     <xs:documentation xml:lang="de">
-                        Lautstärke.
+                        Lautstärke als Faktor von 0-1.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>

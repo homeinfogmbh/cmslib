@@ -285,7 +285,7 @@ class Configuration(CustomerModel):
         xml.hide_cursor = self.hide_cursor
         xml.rotation = self.rotation
         xml.email_form = self.email_form
-        xml.volume = self.volume
+        xml.volume = self.volume / 100
         xml.text_bg_transparent = self.text_bg_transparent
         xml.background = [
             attachment_dom(background.image)
