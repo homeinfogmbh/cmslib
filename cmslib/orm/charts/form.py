@@ -73,7 +73,8 @@ class Form(Chart):
 
         xml = super().to_dom(dom.Form)
         xml.mode = self.mode.value
-        xml.choices = [choice.to_dom() for choice in self.choices]
+        xml.text = self.text
+        xml.choice = [choice.to_dom() for choice in self.choices]
         return xml
 
 
