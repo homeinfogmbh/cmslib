@@ -7,7 +7,7 @@ from peewee import ForeignKeyField, IntegerField
 from peeweeplus import EnumField
 
 from cmslib import dom
-from cmslib.domutil import attachment_dom
+from cmslib.attachments import attachment_dom
 from cmslib.orm.charts.common import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
 

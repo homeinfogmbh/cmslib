@@ -3,7 +3,7 @@
 from peewee import IntegerField
 
 from cmslib import dom
-from cmslib.domutil import attachment_dom
+from cmslib.attachments import attachment_dom
 from cmslib.orm.charts.common import Chart
 
 

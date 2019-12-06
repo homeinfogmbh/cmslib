@@ -45,6 +45,13 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="size" type="xs:positiveInteger">
+            <xs:annotation>
+                <xs:documentation xml:lang="de">
+                    Dateigröße in Bytes.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="format" type="xs:string">
             <xs:annotation>
                 <xs:documentation xml:lang="de">

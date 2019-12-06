@@ -8,7 +8,7 @@ from peewee import SmallIntegerField
 from peewee import TextField
 
 from cmslib import dom
-from cmslib.domutil import attachment_dom
+from cmslib.attachments import attachment_dom, attachment_json
 from cmslib.orm.charts.common import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
@@ -129,6 +129,11 @@ class Image(_ChartReferencing):
     def to_dom(self):
         """Returns an XML DOM of this model."""
         return attachment_dom(self.image, index=self.index)
+
+    def to_json(self, **kwargs):
+        """Returns a JSON-ish dict."""
+        json = super().to_json(**kwargs)
+        return attachment_json(self.image, json)
 
 
 class Text(_ChartReferencing):

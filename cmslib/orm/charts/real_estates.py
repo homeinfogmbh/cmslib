@@ -14,7 +14,7 @@ from openimmodb import Immobilie
 from peeweeplus import EnumField
 
 from cmslib import dom
-from cmslib.domutil import attachment_dom
+from cmslib.attachments import attachment_dom
 from cmslib.orm.common import DSCMS4Model
 from cmslib.orm.charts.common import ChartMode, Chart
 
