@@ -46,9 +46,7 @@ def attachment_json(ident, json=None):
         'mimetype': file.mimetype,
         'filename': file.name,
         'sha256sum': file.sha256sum,
-        'size': file.size,
-        'format': file.format,
-        'index': file.index,
+        'size': file.size
     }
 
     file_data.update(json)
