@@ -37,7 +37,7 @@ class Form(Chart):
         transaction = super().from_json(json, **kwargs)
 
         for choice in choices:
-            choice = Choice.from_json(choice, form=transaction.chart)
+            choice = Choice.from_json(choice, form=transaction.primary)
             transaction.add(choice)
 
         return transaction
@@ -52,7 +52,7 @@ class Form(Chart):
                 transaction.delete(choice)
 
             for choice in choices:
-                choice = Choice.from_json(choice, form=transaction.chart)
+                choice = Choice.from_json(choice, form=transaction.primary)
                 transaction.add(choice)
 
         return transaction

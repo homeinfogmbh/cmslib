@@ -39,7 +39,7 @@ class News(Chart):
 
         for provider in providers:
             provider = NewsProvider(
-                chart=transaction.chart, provider=Provider(provider))
+                chart=transaction.primary, provider=Provider(provider))
             transaction.add(provider)
 
         return transaction
@@ -59,7 +59,7 @@ class News(Chart):
 
             for provider in providers:
                 provider = NewsProvider(
-                    chart=transaction.chart, provider=Provider(provider))
+                    chart=transaction.primary, provider=Provider(provider))
                 transaction.add(provider)
 
         return transaction

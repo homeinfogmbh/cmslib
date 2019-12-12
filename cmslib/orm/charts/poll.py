@@ -37,7 +37,7 @@ class Poll(Chart):
         transaction = super().from_json(json, **kwargs)
 
         for option in options:
-            option = Option.from_json(option, transaction.chart)
+            option = Option.from_json(option, transaction.primary)
             transaction.add(option)
 
         return transaction
@@ -48,18 +48,37 @@ class Poll(Chart):
         return Option.select().where(Option.poll == self).order_by(
             Option.index)
 
+    def _patch_options(self, transaction, json):
+        """Patches the respective poll options."""
+        if json == UNCHANGED:
+            return
+
+        options = {option.text: option for option in self.options}
+        json_objects = {option.get('text'): option for option in json}
+        processed = set()
+
+        for text, option in options.items():
+            processed.add(text)
+
+            try:
+                json_object = json_objects[text]
+            except KeyError:
+                transaction.delete(option)
+            else:
+                option.patch_json(json_object)
+                transaction.add(option)
+
+        for text, json_object in json_objects.items():
+            if text not in processed:
+                option = Option.from_json(json_object, self)
+                transaction.add(option)
+
     def patch_json(self, json, **kwargs):
         """Patches the respective chart."""
         options = json.pop('options', UNCHANGED) or ()
         transaction = super().patch_json(json, **kwargs)
-
-        if options is UNCHANGED:
-            return transaction
-
-        return transaction.resolve_refs(
-            Option, self.options, options,
-            record_identifier=lambda record: record.text,
-            json_identifier=lambda obj: obj.get('text'))
+        self._patch_options(transaction, options)
+        return transaction
 
     def to_json(self, mode=ChartMode.FULL, **kwargs):
         """Returns the dictionary representation of this chart's fields."""

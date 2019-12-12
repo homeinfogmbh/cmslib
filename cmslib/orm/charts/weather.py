@@ -36,7 +36,7 @@ class Weather(Chart):
         transaction = super().from_json(json, **kwargs)
 
         for image in images:
-            image = Image(chart=transaction.chart, image=image)
+            image = Image(chart=transaction.primary, image=image)
             transaction.add(image)
 
         return transaction
@@ -56,7 +56,7 @@ class Weather(Chart):
                 transaction.delete(image)
 
             for image in images:
-                image = Image(chart=transaction.chart, image=image)
+                image = Image(chart=transaction.primary, image=image)
                 transaction.add(image)
 
         return transaction

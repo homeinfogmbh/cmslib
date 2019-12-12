@@ -13,12 +13,11 @@ from peewee import SmallIntegerField
 from peewee import TextField
 from peewee import TimeField
 
-from peeweeplus import EnumField
+from peeweeplus import EnumField, Transaction
 
 from cmslib import dom
 from cmslib.attachments import attachment_dom
 from cmslib.orm.common import DSCMS4Model, CustomerModel
-from cmslib.orm.transaction import Transaction
 
 
 __all__ = [
@@ -139,7 +138,7 @@ class Configuration(CustomerModel):
         backlight = json.pop('backlight', None)
         configuration = super().from_json(json, **kwargs)
         transaction = Transaction()
-        transaction.add(configuration)
+        transaction.add(configuration, primary=True)
         configuration.update_colors(transaction, colors)
         configuration.update_backgrounds(
             transaction, backgrounds, delete=False)
@@ -222,7 +221,7 @@ class Configuration(CustomerModel):
     def patch_json(self, json, **kwargs):
         """Patches the configuration with a JSON-ish dict."""
         transaction = Transaction()
-        transaction.add(self)
+        transaction.add(self, primary=True)
 
         try:
             colors = json.pop('colors')

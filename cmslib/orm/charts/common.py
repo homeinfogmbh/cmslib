@@ -19,12 +19,11 @@ from peewee import TextField
 from peewee import UUIDField
 
 from his.messages.data import MISSING_DATA
-from peeweeplus import EnumField    # pylint: disable=E0401
+from peeweeplus import EnumField, Transaction
 
 from cmslib import dom  # pylint: disable=E0611
 from cmslib.exceptions import OrphanedBaseChart, AmbiguousBaseChart
 from cmslib.orm.common import UNCHANGED, DSCMS4Model, CustomerModel
-from cmslib.orm.transaction import Transaction
 
 
 __all__ = ['CHARTS', 'BaseChart', 'Chart', 'ChartPIN']
@@ -52,48 +51,6 @@ class ChartMode(Enum):
     ANON = 'anon'
 
 
-class ChartTransaction(Transaction):
-    """A chart-related transaction."""
-
-    @property
-    def base_chart(self):
-        """Returns the base chart."""
-        return self.get_instance_of(BaseChart)
-
-    @property
-    def chart(self):
-        """Returns the base chart."""
-        return self.get_instance_of(Chart)
-
-    def resolve_refs(self, model, records, json_objects, *,
-                     record_identifier=lambda record: record.id,
-                     json_identifier=lambda json: json.get('id')):
-        """Resolves chart-referencing records for
-        JSON deserialization and patching.
-        """
-        records = {record_identifier(record): record for record in records}
-        json_objects = {json_identifier(json): json for json in json_objects}
-        processed = set()
-
-        for ident, record in records.items():
-            processed.add(ident)
-
-            try:
-                json = json_objects[ident]
-            except KeyError:
-                self.delete(record)
-            else:
-                record.patch_json(json)
-                self.add(record)
-
-        for ident, json in json_objects.items():
-            if ident not in processed:
-                record = model.from_json(json, self.chart)
-                self.add(record)
-
-        return self
-
-
 class BaseChart(CustomerModel):
     """Common basic chart data model."""
 
@@ -119,8 +76,8 @@ class BaseChart(CustomerModel):
         pins = json.pop('pins', None) or ()
         record = super().from_json(json, skip=skip, **kwargs)
         record.uuid = uuid4() if record.log else None
-        transaction = ChartTransaction()
-        transaction.add(record)
+        transaction = Transaction()
+        transaction.add(record, primary=True)
 
         for pin in pins:
             chart_pin = ChartPIN(base_chart=record, pin=pin)
@@ -198,8 +155,8 @@ class BaseChart(CustomerModel):
         pins = json.pop('pins', UNCHANGED)
         super().patch_json(json, **kwargs)
         self.uuid = uuid4() if self.log else None
-        transaction = ChartTransaction()
-        transaction.add(self)
+        transaction = Transaction()
+        transaction.add(self, primary=True)
         self._patch_pins(pins, transaction)
         return transaction
 
@@ -255,15 +212,15 @@ class Chart(DSCMS4Model):
 
         chart = super().from_json(json, **kwargs)
         transaction = BaseChart.from_json(base_dict)
-        chart.base = transaction.base_chart
-        transaction.add(chart)
+        chart.base = transaction.primary
+        transaction.add(chart, primary=True)
         return transaction
 
     def patch_json(self, json, **kwargs):
         """Pathes the chart with the provided dictionary."""
         transaction = self.base.patch_json(json.pop('base', {}))
         super().patch_json(json, **kwargs)
-        transaction.add(self)
+        transaction.add(self, primary=True)
         return transaction
 
     def to_json(self, mode=ChartMode.FULL, fk_fields=True, **kwargs):

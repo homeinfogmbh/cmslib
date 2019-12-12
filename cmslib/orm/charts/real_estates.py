@@ -36,7 +36,7 @@ def _update_json_transaction(model, json_list, transaction, delete=None):
         return
 
     for json in json_list:
-        record = model.from_json(json, transaction.chart)
+        record = model.from_json(json, transaction.primary)
         transaction.add(record)
 
 

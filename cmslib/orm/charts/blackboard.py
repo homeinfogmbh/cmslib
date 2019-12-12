@@ -40,7 +40,7 @@ class Blackboard(Chart):
         transaction = super().from_json(json, **kwargs)
 
         for image in images:
-            image = Image.from_json(image, transaction.chart)
+            image = Image.from_json(image, transaction.primary)
             transaction.add(image)
 
         return transaction
@@ -60,7 +60,7 @@ class Blackboard(Chart):
                 transaction.delete(image)
 
             for image in images:
-                image = Image.from_json(image, transaction.chart)
+                image = Image.from_json(image, transaction.primary)
                 transaction.add(image)
 
         return transaction

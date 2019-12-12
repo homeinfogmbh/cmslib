@@ -37,11 +37,11 @@ class ImageText(Chart):
         transaction = super().from_json(json, **kwargs)
 
         for image in images:
-            record = Image.from_json(image, chart=transaction.chart)
+            record = Image.from_json(image, chart=transaction.primary)
             transaction.add(record)
 
         for text in texts:
-            record = Text.from_json(text, chart=transaction.chart)
+            record = Text.from_json(text, chart=transaction.primary)
             transaction.add(record)
 
         return transaction
@@ -62,7 +62,7 @@ class ImageText(Chart):
                 transaction.delete(image)
 
             for image in images:
-                record = Image.from_json(image, chart=transaction.chart)
+                record = Image.from_json(image, chart=transaction.primary)
                 transaction.add(record)
 
         if texts is not UNCHANGED:
@@ -70,7 +70,7 @@ class ImageText(Chart):
                 transaction.delete(text)
 
             for text in texts:
-                record = Text.from_json(text, chart=transaction.chart)
+                record = Text.from_json(text, chart=transaction.primary)
                 transaction.add(record)
 
         return transaction

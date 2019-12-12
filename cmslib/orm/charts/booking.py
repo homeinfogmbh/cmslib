@@ -6,13 +6,10 @@ from bookings import get_bookable, Bookable
 
 from cmslib import dom
 from cmslib.orm.charts.common import Chart, ChartMode
-from cmslib.orm.common import DSCMS4Model
+from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
 
 __all__ = ['Booking', 'BookableMapping']
-
-
-_UNCHANGED = object()
 
 
 class Booking(Chart):
@@ -30,37 +27,35 @@ class Booking(Chart):
         """Creates a booking chart from a JSON-ish dict."""
         bookables = json.pop('bookables', ())
         transaction = super().from_json(json, **kwargs)
-        return transaction.chart.update_bookables(bookables, transaction)
+        transaction.primary.update_bookable_mappings(bookables, transaction)
+        return transaction
 
     @property
     def bookables(self):
-        """Yields bookable objects."""
-        for bookable in self.bookables:
-            yield bookable.bookable
+        """Yields the respective bookables."""
+        for bookable_mapping in self.bookable_mappings:
+            yield bookable_mapping.bookable
 
-    def update_bookables(self, bookables, transaction):
+    def update_bookable_mappings(self, bookables, transaction):
         """Updates the bookable objects."""
-        if bookables is _UNCHANGED:
-            return transaction
+        if bookables == UNCHANGED:
+            return
 
         if self.id is not None:
-            for bookable in self.bookables:
-                bookable.delete_instance()
+            for bookable_mapping in self.bookable_mappings:
+                transaction.delete(bookable_mapping)
 
-        if not bookables:
-            return transaction
-
-        for bookable in (get_bookable(ident) for ident in bookables):
+        for ident in bookables or ():
+            bookable = get_bookable(ident)
             bookable_mapping = BookableMapping(chart=self, bookable=bookable)
             transaction.add(bookable_mapping)
 
-        return transaction
-
     def patch_json(self, json, **kwargs):
         """Patches the bookable chart."""
-        bookables = json.pop('bookables', _UNCHANGED)
+        bookables = json.pop('bookables', UNCHANGED)
         transaction = super().patch_json(json, **kwargs)
-        return transaction.chart.update_bookables(bookables, transaction)
+        self.update_bookable_mappings(bookables, transaction)
+        return transaction
 
     def to_json(self, mode=ChartMode.FULL, **kwargs):
         """Returns a JSON-ish dict."""
@@ -92,6 +87,7 @@ class BookableMapping(DSCMS4Model):
         table_name = 'chart_booking_bookable_mapping'
 
     chart = ForeignKeyField(
-        Booking, column_name='chart', backref='bookables', on_delete='CASCADE')
+        Booking, column_name='chart', backref='bookable_mappings',
+        on_delete='CASCADE')
     bookable = ForeignKeyField(
         Bookable, column_name='bookable', on_delete='CASCADE')
