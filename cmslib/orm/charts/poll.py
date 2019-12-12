@@ -11,10 +11,10 @@ from cmslib.orm.charts.common import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
 
-__all__ = ['PollMode', 'Poll', 'Option']
+__all__ = ['Mode', 'Poll', 'Option']
 
 
-class PollMode(Enum):
+class Mode(Enum):
     """Available poll modes."""
 
     SINGLE_CHOICE = 'single choice'
@@ -28,7 +28,7 @@ class Poll(Chart):
         table_name = 'chart_poll'
 
     text = TextField()
-    mode = EnumField(PollMode)
+    mode = EnumField(Mode)
 
     @classmethod
     def from_json(cls, json, **kwargs):

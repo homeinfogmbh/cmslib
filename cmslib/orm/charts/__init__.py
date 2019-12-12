@@ -6,7 +6,11 @@ of the "chart" types of the CMS.
 from cmslib.orm.charts.blackboard import Blackboard, Image as BlackboardImage
 from cmslib.orm.charts.booking import Booking, BookableMapping
 from cmslib.orm.charts.cleaning import Cleaning
-from cmslib.orm.charts.common import CHARTS, ChartMode, BaseChart, Chart, ChartPIN
+from cmslib.orm.charts.common import CHARTS
+from cmslib.orm.charts.common import ChartMode
+from cmslib.orm.charts.common import BaseChart
+from cmslib.orm.charts.common import Chart
+from cmslib.orm.charts.common import ChartPIN
 from cmslib.orm.charts.facebook import Facebook, Account
 from cmslib.orm.charts.form import Form
 from cmslib.orm.charts.garbage_collection import GarbageCollection
@@ -15,7 +19,7 @@ from cmslib.orm.charts.image_text import ImageText
 from cmslib.orm.charts.image_text import Image as ImageTextImage
 from cmslib.orm.charts.image_text import Text
 from cmslib.orm.charts.news import News, NewsProvider
-from cmslib.orm.charts.poll import PollMode, Poll, Option as PollOption
+from cmslib.orm.charts.poll import Poll, Option as PollOption
 from cmslib.orm.charts.public_transport import PublicTransport
 from cmslib.orm.charts.quotes import Quotes
 from cmslib.orm.charts.real_estates import RealEstates
@@ -35,4 +39,5 @@ MODELS = (
     Form, GarbageCollection, GuessPicture, ImageText, ImageTextImage,
     Blackboard, BlackboardImage, Text, News, NewsProvider, Poll, PollOption,
     PublicTransport, Quotes, RealEstates, IdFilter, ZipCodeFilter, RSS,
-    SoccerTable, Video, Weather, WeatherImage)
+    SoccerTable, Video, Weather, WeatherImage
+)
