@@ -16,13 +16,10 @@ from peeweeplus import EnumField
 from cmslib import dom
 from cmslib.attachments import attachment_dom
 from cmslib.orm.common import DSCMS4Model
-from cmslib.orm.charts.common import ChartMode, Chart
+from cmslib.orm.charts.common import UNCHANGED, ChartMode, Chart
 
 
 __all__ = ['RealEstates', 'IdFilter', 'ZipCodeFilter']
-
-
-UNCHANGED = object()
 
 
 def _update_json_transaction(model, json_list, transaction, delete=None):

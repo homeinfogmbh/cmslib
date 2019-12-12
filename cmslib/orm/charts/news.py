@@ -10,13 +10,10 @@ from peeweeplus import EnumField
 
 from cmslib import dom
 from cmslib.orm.charts.common import Chart, ChartMode
-from cmslib.orm.common import DSCMS4Model
+from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
 
 __all__ = ['News', 'NewsProvider']
-
-
-_UNCHANGED = object()
 
 
 class News(Chart):
@@ -49,11 +46,11 @@ class News(Chart):
         try:
             providers = json.pop('providers') or ()
         except KeyError:
-            providers = _UNCHANGED
+            providers = UNCHANGED
 
         transaction = super().patch_json(json, **kwargs)
 
-        if providers is not _UNCHANGED:
+        if providers is not UNCHANGED:
             for provider in self.providers:
                 provider.delete_instance()
 
