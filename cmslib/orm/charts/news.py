@@ -85,8 +85,7 @@ class News(Chart):
         xml.font_size_text = self.font_size_text
         xml.text_color = self.text_color
         xml.ken_burns = self.ken_burns
-        xml.providers = [
-            provider.provider.value for provider in self.providers]
+        xml.provider = [provider.provider.value for provider in self.providers]
         return xml
 
 
