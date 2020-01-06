@@ -26,6 +26,7 @@ class ImageText(Chart):
     font_size = SmallIntegerField(default=26)
     title_color = IntegerField(default=0x000000)
     ken_burns = BooleanField(default=False)
+    random_image = BooleanField(default=False)
 
     @classmethod
     def from_json(cls, json, **kwargs):
