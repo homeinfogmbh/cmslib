@@ -380,6 +380,13 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
+                    <xs:element name="random_image" type="xs:boolean">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Flag zur Anzeige von zufälligen Bildern.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
                     <xs:element name="image" type="Attachment" minOccurs="0" maxOccurs="unbounded">
                         <xs:annotation>
                             <xs:documentation xml:lang="de">
