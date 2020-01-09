@@ -1,6 +1,5 @@
 """DOM utilities."""
 
-from his import CUSTOMER
 from hisfs import File
 
 from cmslib.dom import Attachment   # pylint: disable=E0401,E0611
@@ -17,7 +16,7 @@ def attachment_dom(file_id, format=None, index=None):
         return None
 
     try:
-        file = File.get((File.id == file_id) & (File.customer == CUSTOMER.id))
+        file = File[file_id]
     except File.DoesNotExist:
         return None
 
