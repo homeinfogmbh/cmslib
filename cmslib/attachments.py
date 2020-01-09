@@ -10,14 +10,14 @@ __all__ = ['attachment_dom', 'attachment_json']
 
 
 # pylint: disable=W0622
-def attachment_dom(file, format=None, index=None):
+def attachment_dom(file_id, format=None, index=None):
     """Returns an attachment for the respective file ID."""
 
-    if file is None:
+    if file_id is None:
         return None
 
     try:
-        file = File.get((file.id == file) & (File.customer == CUSTOMER.id))
+        file = File.get((File.id == file_id) & (File.customer == CUSTOMER.id))
     except File.DoesNotExist:
         return None
 
