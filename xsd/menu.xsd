@@ -9,6 +9,7 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
 <xs:schema  xmlns="http://xml.homeinfo.de/schema/dscms4"
             xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0"
             targetNamespace="http://xml.homeinfo.de/schema/dscms4">
+    <xs:include schemaLocation="attachments.xsd"/>
 
     <xs:complexType name="MenuItem">
         <xs:annotation>
@@ -28,6 +29,13 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                 <xs:annotation>
                     <xs:documentation xml:lang="de">
                         Symbol des Menüelements.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="icon_image" type="Attachment" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Bildsymbol des Menüelements.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>

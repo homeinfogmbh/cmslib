@@ -32,6 +32,14 @@ class Menu(CustomerModel):
         """Yields this menu's root items."""
         return self.items.where(MenuItem.parent >> None)
 
+    @property
+    def files(self):
+        """Returns a set of IDs of files used by the chart."""
+        return {
+            item.icon_image for item in self.items
+            if item.icon_image is not None
+        }
+
     def copy(self, suffix=COPY_SUFFIX):
         """Copies thhe respective menu."""
         copy = type(self)[self.id]
@@ -67,6 +75,7 @@ class MenuItem(DSCMS4Model):
         backref='_children')
     name = CharField(255)
     icon = CharField(255, null=True)
+    icon_image = IntegerField(null=True)
     text_color = IntegerField(default=0x000000)
     background_color = IntegerField(default=0xffffff)
     index = IntegerField(default=0)

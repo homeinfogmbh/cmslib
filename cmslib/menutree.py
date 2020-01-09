@@ -7,6 +7,7 @@ from typing import Iterable, NamedTuple
 from uuid import uuid4, UUID
 
 from cmslib import dom  # pylint: disable=E0611
+from cmslib.attachments import attachment_dom
 
 
 __all__ = ['add', 'merge', 'get_index', 'MenuTreeItem']
@@ -49,6 +50,7 @@ class MenuTreeItem(NamedTuple):
     uuid: UUID
     name: str
     icon: str
+    icon_image: int
     text_color: int
     background_color: int
     index: int
@@ -74,16 +76,13 @@ class MenuTreeItem(NamedTuple):
                 menu_item_charts.add(mic)
 
         return type(self).new(
-            self.name, self.icon, self.text_color, self.background_color,
-            self.index, menu_item_charts, children)
+            self.name, self.icon, self.icon_image, self.text_color,
+            self.background_color, self.index, menu_item_charts, children)
 
     @classmethod
-    def new(cls, name, icon, text_color, background_color, index,
-            menu_item_charts, children):
+    def new(cls, *args):
         """Creates a new MenuTreeItem with a unique UUID."""
-        return cls(
-            uuid4(), name, icon, text_color, background_color, index,
-            menu_item_charts, children)
+        return cls(uuid4(), *args)
 
     @classmethod
     def from_menu_item(cls, menu_item):
@@ -91,9 +90,9 @@ class MenuTreeItem(NamedTuple):
         children = [cls.from_menu_item(child) for child in menu_item.children]
         menu_item_charts = list(menu_item.menu_item_charts)
         return cls.new(
-            menu_item.name, menu_item.icon, menu_item.text_color,
-            menu_item.background_color, menu_item.index, menu_item_charts,
-            children)
+            menu_item.name, menu_item.icon, menu_item.icon_image,
+            menu_item.text_color, menu_item.background_color, menu_item.index,
+            menu_item_charts, children)
 
     @classmethod
     def from_menu(cls, menu):
@@ -111,6 +110,7 @@ class MenuTreeItem(NamedTuple):
             'uuid': self.uuid.hex,
             'name': self.name,
             'icon': self.icon,
+            'icon_image': self.icon_image,
             'textColor': self.text_color,
             'backgroundColor': self.background_color,
             'index': self.index,
@@ -133,6 +133,7 @@ class MenuTreeItem(NamedTuple):
         xml.uuid = self.uuid.hex
         xml.name = self.name
         xml.icon = self.icon
+        xml.icon_image = attachment_dom(self.icon_image)
         xml.text_color = self.text_color
         xml.background_color = self.background_color
         xml.index = self.index

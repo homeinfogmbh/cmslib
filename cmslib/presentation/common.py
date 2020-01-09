@@ -115,6 +115,9 @@ class PresentationMixin:
         """Yields the presentation's used file IDs."""
         yield from self._configuration.files
 
+        for menu in self._menus:
+            yield from menu.files
+
         for chart in self.charts:
             try:
                 files = chart.files
