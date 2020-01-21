@@ -167,7 +167,8 @@ class BaseChart(CustomerModel):
             transaction.delete(self.schedule)
 
         if schedule:
-            print('DEBUG:', schedule, type(schedule), flush=True)
+            print('DEBUG:', schedule, type(schedule), schedule is UNCHANGED,
+                  schedule == UNCHANGED, flush=True)
             self.schedule = schedule = Schedule.from_json(schedule)
             transaction.add(schedule, left=True)
         else:
