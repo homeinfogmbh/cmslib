@@ -69,7 +69,7 @@ class BaseChart(CustomerModel):
     log = BooleanField(default=False)
     uuid = UUIDField(null=True)
     schedule = ForeignKeyField(
-        Schedule, column_name='schedule', on_delete='CASCADE')
+        Schedule, column_name='schedule', null=True, on_delete='CASCADE')
 
     @classmethod
     def from_json(cls, json, skip=None, **kwargs):
