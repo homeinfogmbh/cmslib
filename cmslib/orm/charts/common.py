@@ -191,6 +191,10 @@ class BaseChart(CustomerModel):
 
         json = super().to_json(**kwargs)
         json['pins'] = [pin.pin for pin in self.pins]
+
+        if self.schedule:
+            json['schedule'] = self.schedule.to_json()
+
         return json
 
     def to_dom(self):
