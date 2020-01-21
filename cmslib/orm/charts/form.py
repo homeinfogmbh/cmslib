@@ -19,6 +19,7 @@ class Mode(Enum):
 
     REPAIR = 'repair'
     TENANT_TO_TENANT = 'tenant2tenant'
+    TENANT_TO_LANDLORD = 'tenant2landlord'
 
 
 class Form(Chart):
