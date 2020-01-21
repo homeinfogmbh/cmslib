@@ -160,15 +160,13 @@ class BaseChart(CustomerModel):
 
     def _patch_schedule(self, schedule, transaction):
         """Patches the schedule."""
-        if self.schedule is UNCHANGED:
+        if schedule is UNCHANGED:
             return
 
         if self.schedule:
             transaction.delete(self.schedule)
 
         if schedule:
-            print('DEBUG:', schedule, type(schedule), schedule is UNCHANGED,
-                  schedule == UNCHANGED, flush=True)
             self.schedule = schedule = Schedule.from_json(schedule)
             transaction.add(schedule, left=True)
         else:
