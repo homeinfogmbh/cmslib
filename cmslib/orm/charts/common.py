@@ -24,6 +24,7 @@ from peeweeplus import EnumField, Transaction
 from cmslib import dom  # pylint: disable=E0611
 from cmslib.exceptions import OrphanedBaseChart, AmbiguousBaseChart
 from cmslib.orm.common import UNCHANGED, DSCMS4Model, CustomerModel
+from cmslib.orm.schedule import Schedule
 
 
 __all__ = ['CHARTS', 'BaseChart', 'Chart', 'ChartPIN']
@@ -67,6 +68,8 @@ class BaseChart(CustomerModel):
     trashed = BooleanField(default=False)
     log = BooleanField(default=False)
     uuid = UUIDField(null=True)
+    schedule = ForeignKeyField(
+        Schedule, column_name='schedule', on_delete='CASCADE')
 
     @classmethod
     def from_json(cls, json, skip=None, **kwargs):
@@ -74,6 +77,7 @@ class BaseChart(CustomerModel):
         skip_default = ('uuid',)
         skip = tuple(chain(skip_default, skip)) if skip else skip_default
         pins = json.pop('pins', None) or ()
+        schedule = json.pop('schedule', None)
         record = super().from_json(json, skip=skip, **kwargs)
         record.uuid = uuid4() if record.log else None
         transaction = Transaction()
@@ -82,6 +86,10 @@ class BaseChart(CustomerModel):
         for pin in pins:
             chart_pin = ChartPIN(base_chart=record, pin=pin)
             transaction.add(chart_pin)
+
+        if schedule:
+            record.schedule = Schedule.from_json(schedule)
+            transaction.add(schedule, left=True)
 
         return transaction
 
@@ -150,14 +158,29 @@ class BaseChart(CustomerModel):
                     chart_pin = ChartPIN(base_chart=self, pin=pin)
                     transaction.add(chart_pin)
 
+    def _patch_schedule(self, schedule, transaction):
+        """Patches the schedule."""
+        if self.schedule is UNCHANGED:
+            return
+
+        if self.schedule:
+            transaction.delete(self.schedule)
+
+        if schedule:
+            self.schedule = Schedule.from_json(schedule)
+        else:
+            self.schedule = None
+
     def patch_json(self, json, **kwargs):
         """Patches the base chart."""
         pins = json.pop('pins', UNCHANGED)
+        schedule = json.pop('schedule', UNCHANGED)
         super().patch_json(json, **kwargs)
         self.uuid = uuid4() if self.log else None
         transaction = Transaction()
         transaction.add(self, primary=True)
         self._patch_pins(pins, transaction)
+        self._patch_schedule(schedule, transaction)
         return transaction
 
     def to_json(self, brief=False, **kwargs):
