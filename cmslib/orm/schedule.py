@@ -40,10 +40,10 @@ class Schedule(CustomerModel):
         xml.start = self.start
         xml.end = self.end
         xml.duration = dom.TimeInterval()
-        xml.duration.value = self.duration_value
+        xml.duration.value_ = self.duration_value
         xml.duration.unit = self.duration_unit.value
         xml.interval = dom.TimeInterval()
-        xml.interval.value = self.interval_value
+        xml.interval.value_ = self.interval_value
         xml.interval.unit = self.interval_unit.value
 
 
