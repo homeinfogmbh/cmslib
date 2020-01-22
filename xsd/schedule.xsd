@@ -41,17 +41,24 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
+            <xs:element name="description" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Eine Beschreibung.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="start" type="xs:dateTime">
                 <xs:annotation>
                     <xs:documentation xml:lang="de">
-                        Facebook ID.
+                        Startzeitpunkt.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="end" type="xs:dateTime" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="de">
-                        Anzahl der letzten Tage.
+                        Endzeitpunkt.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
@@ -62,7 +69,7 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="intervall" type="TimeInterval">
+            <xs:element name="interval" type="TimeInterval">
                 <xs:annotation>
                     <xs:documentation xml:lang="de">
                         Anzeigeintervall.

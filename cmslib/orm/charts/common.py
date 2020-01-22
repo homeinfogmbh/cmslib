@@ -217,6 +217,9 @@ class BaseChart(CustomerModel):
         if self.uuid:
             xml.uuid = self.uuid.hex
 
+        if self.schedule:
+            xml.schedule = self.schedule.to_dom()
+
         xml.pin = [pin.pin for pin in self.pins]
         return xml
 

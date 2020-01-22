@@ -6,6 +6,7 @@ from peewee import DateTimeField, IntegerField, TextField
 
 from peeweeplus import EnumField
 
+from cmslib import dom  # pylint: disable=E0611
 from cmslib.orm.common import CustomerModel
 
 
@@ -31,6 +32,19 @@ class Schedule(CustomerModel):
     duration_unit = EnumField(TimeUnit)
     interval_value = IntegerField()
     interval_unit = EnumField(TimeUnit)
+
+    def to_dom(self):
+        """Returns an XML DOM."""
+        xml = dom.Schedule()
+        xml.description = self.description
+        xml.start = self.start
+        xml.end = self.end
+        xml.duration = dom.Duration()
+        xml.duration.value = self.duration_value
+        xml.duration.unit = self.duration_unit.value
+        xml.interval = dom.Interval()
+        xml.interval.value = self.interval_value
+        xml.interval.unit = self.interval_unit.value
 
 
 MODELS = (Schedule,)

@@ -65,7 +65,7 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="schedule" type="Schedule" minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="schedule" type="Schedule" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="de">
                         Optionaler Zeitplan.
