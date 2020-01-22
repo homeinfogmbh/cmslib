@@ -45,6 +45,7 @@ class Schedule(CustomerModel):
         xml.interval = dom.TimeInterval()
         xml.interval.value_ = self.interval_value
         xml.interval.unit = self.interval_unit.value
+        return xml
 
 
 MODELS = (Schedule,)
