@@ -5,8 +5,8 @@ __all__ = [
     'OrphanedBaseChart',
     'AmbiguousBaseChart',
     'AmbiguousConfigurationsError',
-    'NoConfigurationFound',
-    'FeedReadError']
+    'NoConfigurationFound'
+]
 
 
 class CMSLibError(Exception):
@@ -59,12 +59,3 @@ class AmbiguousConfigurationsError(AmbiguityError):
 
 class NoConfigurationFound(CMSLibError):
     """Indicates that no configuration has been found."""
-
-
-class FeedReadError(Exception):
-    """Indicates that an RSS feed could not be read."""
-
-    def __init__(self, response):
-        """Sets the response."""
-        super().__init__()
-        self.response = response

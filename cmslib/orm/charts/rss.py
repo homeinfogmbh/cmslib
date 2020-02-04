@@ -1,10 +1,8 @@
 """RSS feed charts."""
 
 from peewee import CharField, IntegerField, SmallIntegerField
-from requests import get
 
 from cmslib import dom
-from cmslib.exceptions import FeedReadError
 from cmslib.orm.charts.common import Chart
 
 
@@ -22,16 +20,6 @@ class RSS(Chart):
     text_color = IntegerField(default=0x000000)
     font_size_text = SmallIntegerField(default=26)
     url = CharField()
-
-    @property
-    def feed(self):
-        """Returns the RSS feed."""
-        response = get(self.url)
-
-        if response.status_code == 200:
-            return response.text
-
-        raise FeedReadError(response)
 
     def to_dom(self, brief=False):
         """Returns an XML DOM of this chart."""
