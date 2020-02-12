@@ -3,7 +3,7 @@
 from peewee import IntegerField, SmallIntegerField
 
 from cmslib import dom  # pylint: disable=E0611
-from cmslib.orm.charts.common import Chart
+from cmslib.orm.charts.api import Chart
 
 
 __all__ = ['Quotes']

@@ -9,7 +9,7 @@ from newslib import Provider
 from peeweeplus import EnumField
 
 from cmslib import dom
-from cmslib.orm.charts.common import Chart, ChartMode
+from cmslib.orm.charts.api import Chart, ChartMode
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
 

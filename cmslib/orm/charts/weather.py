@@ -4,7 +4,7 @@ from peewee import ForeignKeyField, IntegerField, CharField
 
 from cmslib import dom
 from cmslib.attachments import attachment_dom
-from cmslib.orm.charts.common import ChartMode, Chart
+from cmslib.orm.charts.api import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
 

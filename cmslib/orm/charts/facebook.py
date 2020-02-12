@@ -11,7 +11,7 @@ from peewee import SmallIntegerField
 from ferengi.facebook import Facebook as FacebookClient
 
 from cmslib import dom
-from cmslib.orm.charts.common import ChartMode, Chart
+from cmslib.orm.charts.api import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
 

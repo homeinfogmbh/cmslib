@@ -3,14 +3,14 @@
 This package provides ORM models
 of the "chart" types of the CMS.
 """
+from cmslib.orm.charts.api import CHARTS
+from cmslib.orm.charts.api import ChartMode
+from cmslib.orm.charts.api import BaseChart
+from cmslib.orm.charts.api import Chart
+from cmslib.orm.charts.api import ChartPIN
 from cmslib.orm.charts.blackboard import Blackboard, Image as BlackboardImage
 from cmslib.orm.charts.booking import Booking, BookableMapping
 from cmslib.orm.charts.cleaning import Cleaning
-from cmslib.orm.charts.common import CHARTS
-from cmslib.orm.charts.common import ChartMode
-from cmslib.orm.charts.common import BaseChart
-from cmslib.orm.charts.common import Chart
-from cmslib.orm.charts.common import ChartPIN
 from cmslib.orm.charts.facebook import Facebook, Account
 from cmslib.orm.charts.form import Form
 from cmslib.orm.charts.garbage_collection import GarbageCollection

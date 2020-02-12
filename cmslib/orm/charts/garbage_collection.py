@@ -1,7 +1,7 @@
 """Garbage collection chart."""
 
 from cmslib import dom
-from cmslib.orm.charts.common import Chart
+from cmslib.orm.charts.api import Chart
 
 
 __all__ = ['GarbageCollection']

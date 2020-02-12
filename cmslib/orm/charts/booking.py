@@ -5,7 +5,7 @@ from peewee import BooleanField, ForeignKeyField, TextField
 from bookings import get_bookable, Bookable
 
 from cmslib import dom
-from cmslib.orm.charts.common import Chart, ChartMode
+from cmslib.orm.charts.api import Chart, ChartMode
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
 

@@ -1,13 +1,7 @@
-"""Common chart models.
+"""Base chart."""
 
-This module provides the base class "Chart"
-for chart model implementation.
-"""
-from collections import namedtuple
 from datetime import datetime
-from enum import Enum
 from itertools import chain
-from logging import getLogger
 from uuid import uuid4
 
 from peewee import BooleanField
@@ -18,38 +12,19 @@ from peewee import SmallIntegerField
 from peewee import TextField
 from peewee import UUIDField
 
-from his.messages.data import MISSING_DATA
 from peeweeplus import EnumField, Transaction
 
 from cmslib import dom  # pylint: disable=E0611
 from cmslib.exceptions import OrphanedBaseChart, AmbiguousBaseChart
+from cmslib.orm.charts.api.common import CHARTS
+from cmslib.orm.charts.api.common import LOGGER
+from cmslib.orm.charts.api.common import Transitions
+from cmslib.orm.charts.api.common import CheckResult
 from cmslib.orm.common import UNCHANGED, DSCMS4Model, CustomerModel
 from cmslib.orm.schedule import Schedule
 
 
-__all__ = ['CHARTS', 'BaseChart', 'Chart', 'ChartPIN']
-
-
-LOGGER = getLogger(__file__)
-CHARTS = {}
-CheckResult = namedtuple('CheckResult', ('orphans', 'ambiguous'))
-
-
-class Transitions(Enum):
-    """Effects available for chart transition effects."""
-
-    FADE_IN = 'fade-in'
-    MOSAIK = 'mosaik'
-    SLIDE_IN = 'slide-in'
-    RANDOM = 'random'
-
-
-class ChartMode(Enum):
-    """JSON serialization modes."""
-
-    FULL = 'full'
-    BRIEF = 'brief'
-    ANON = 'anon'
+__all__ = ['BaseChart', 'ChartPIN']
 
 
 class BaseChart(CustomerModel):
@@ -88,7 +63,7 @@ class BaseChart(CustomerModel):
             transaction.add(chart_pin)
 
         if schedule:
-            record.schedule = Schedule.from_json(schedule)
+            record.schedule = schedule = Schedule.from_json(schedule)
             transaction.add(schedule, left=True)
 
         return transaction
@@ -222,70 +197,6 @@ class BaseChart(CustomerModel):
 
         xml.pin = [pin.pin for pin in self.pins]
         return xml
-
-
-class Chart(DSCMS4Model):
-    """Abstract basic chart."""
-
-    base = ForeignKeyField(BaseChart, column_name='base', on_delete='CASCADE')
-
-    def __init_subclass__(cls):
-        """Registers the subclass as new chart."""
-        CHARTS[cls.__name__] = cls
-
-    @classmethod
-    def from_json(cls, json, **kwargs):
-        """Creates a chart from a JSON-ish dictionary."""
-        try:
-            base_dict = json.pop('base')
-        except KeyError:
-            raise MISSING_DATA.update(key='base')
-
-        chart = super().from_json(json, **kwargs)
-        transaction = BaseChart.from_json(base_dict)
-        chart.base = transaction.primary
-        transaction.add(chart, primary=True)
-        return transaction
-
-    def patch_json(self, json, **kwargs):
-        """Pathes the chart with the provided dictionary."""
-        transaction = self.base.patch_json(json.pop('base', {}))
-        super().patch_json(json, **kwargs)
-        transaction.add(self, primary=True)
-        return transaction
-
-    def to_json(self, mode=ChartMode.FULL, fk_fields=True, **kwargs):
-        """Returns a JSON-ish dictionary."""
-        if mode == ChartMode.FULL:
-            json = super().to_json(**kwargs)
-            json['base'] = self.base.to_json(
-                autofields=False, fk_fields=fk_fields)
-        elif mode == ChartMode.BRIEF:
-            json = {'id': self.id}
-        elif mode == ChartMode.ANON:
-            json = super().to_json(skip={'id'}, **kwargs)
-            json['base'] = self.base.to_json(
-                autofields=False, fk_fields=fk_fields)
-            return json
-
-        json['type'] = type(self).__name__
-        return json
-
-    def to_dom(self, model):
-        """Returns an XML DOM of this chart."""
-        xml = model()
-        xml.id = self.id
-        xml.type = type(self).__name__
-
-        if model is dom.BriefChart:
-            return xml
-
-        xml.base = self.base.to_dom()
-        return xml
-
-    def delete_instance(self):
-        """Deletes the base chart and thus (CASCADE) this chart."""
-        return self.base.delete_instance()
 
 
 class ChartPIN(DSCMS4Model):

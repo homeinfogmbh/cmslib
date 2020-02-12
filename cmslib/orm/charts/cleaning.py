@@ -6,7 +6,7 @@ from peewee import CharField, TextField, SmallIntegerField, IntegerField
 from peeweeplus import EnumField
 
 from cmslib import dom
-from cmslib.orm.charts.common import Chart
+from cmslib.orm.charts.api import Chart
 
 
 __all__ = ['Mode', 'Cleaning']

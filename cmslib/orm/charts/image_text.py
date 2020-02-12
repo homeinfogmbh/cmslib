@@ -9,7 +9,7 @@ from peewee import TextField
 
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
-from cmslib.orm.charts.common import ChartMode, Chart
+from cmslib.orm.charts.api import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
 

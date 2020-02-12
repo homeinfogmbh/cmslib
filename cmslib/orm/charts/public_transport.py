@@ -1,7 +1,7 @@
 """Local public transport charts."""
 
 from cmslib import dom
-from cmslib.orm.charts.common import Chart
+from cmslib.orm.charts.api import Chart
 
 
 __all__ = ['PublicTransport']

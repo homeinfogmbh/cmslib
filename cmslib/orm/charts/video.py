@@ -4,7 +4,7 @@ from peewee import IntegerField
 
 from cmslib import dom
 from cmslib.attachments import attachment_dom
-from cmslib.orm.charts.common import Chart
+from cmslib.orm.charts.api import Chart
 
 
 __all__ = ['Video']
