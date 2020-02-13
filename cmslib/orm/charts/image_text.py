@@ -135,7 +135,7 @@ class Image(_ChartReferencing):
     def to_json(self, **kwargs):
         """Returns a JSON-ish dict."""
         json = super().to_json(**kwargs)
-        return attachment_json(self.image, json)
+        return attachment_json(self.image, json=json)
 
 
 class Text(_ChartReferencing):

@@ -7,7 +7,7 @@ from typing import Iterable, NamedTuple
 from uuid import uuid4, UUID
 
 from cmslib import dom  # pylint: disable=E0611
-from cmslib.attachments import attachment_dom
+from cmslib.attachments import attachment_dom, attachment_json
 
 
 __all__ = ['add', 'merge', 'get_index', 'MenuTreeItem']
@@ -110,7 +110,7 @@ class MenuTreeItem(NamedTuple):
             'uuid': self.uuid.hex,
             'name': self.name,
             'icon': self.icon,
-            'icon_image': self.icon_image,
+            'iconImage': attachment_json(self.icon_image),
             'textColor': self.text_color,
             'backgroundColor': self.background_color,
             'index': self.index,

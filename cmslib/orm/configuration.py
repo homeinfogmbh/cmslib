@@ -16,7 +16,7 @@ from peewee import TimeField
 from peeweeplus import EnumField, Transaction
 
 from cmslib import dom
-from cmslib.attachments import attachment_dom
+from cmslib.attachments import attachment_dom, attachment_json
 from cmslib.orm.common import DSCMS4Model, CustomerModel
 
 
@@ -253,7 +253,10 @@ class Configuration(CustomerModel):
         """Converts the configuration into a JSON-like dictionary."""
         json = super().to_json(**kwargs)
         json['backgrounds'] = [
-            background.image for background in self.backgrounds]
+            attachment_json(background.image) for background
+            in self.backgrounds]
+        json['logo'] = attachment_json(self.logo)
+        json['dummyPicture'] = attachment_json(self.dummy_picture)
 
         if cascade:
             json['colors'] = self.colors.to_json(

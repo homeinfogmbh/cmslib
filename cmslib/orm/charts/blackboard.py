@@ -7,7 +7,7 @@ from peewee import ForeignKeyField, IntegerField
 from peeweeplus import EnumField
 
 from cmslib import dom
-from cmslib.attachments import attachment_dom
+from cmslib.attachments import attachment_dom, attachment_json
 from cmslib.orm.charts.api import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
@@ -106,7 +106,13 @@ class Image(DSCMS4Model):
         record.chart = chart
         return record
 
+    def to_json(self, *args, **kwargs):
+        """Returns a JSON representation of this record."""
+        json = super().to_json(*args, **kwargs)
+        return attachment_json(
+            self.image, json=json, format=self.format.value, index=self.index)
+
     def to_dom(self):
-        """Returns an XML DOM of this model."""
+        """Returns an XML DOM of this record."""
         return attachment_dom(
             self.image, format=self.format.value, index=self.index)

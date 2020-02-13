@@ -3,7 +3,7 @@
 from peewee import ForeignKeyField, IntegerField, CharField
 
 from cmslib import dom
-from cmslib.attachments import attachment_dom
+from cmslib.attachments import attachment_dom, attachment_json
 from cmslib.orm.charts.api import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
@@ -97,6 +97,11 @@ class Image(DSCMS4Model):
         Weather, column_name='chart', backref='images', on_delete='CASCADE')
     image = IntegerField()
 
+    def to_json(self, *args, **kwargs):
+        """Returns a JSON representation of this record."""
+        json = super().to_json(*args, **kwargs)
+        return attachment_json(self.image, json=json)
+
     def to_dom(self):
-        """Returns an XML DOM of this model."""
+        """Returns an XML DOM of this record."""
         return attachment_dom(self.image)

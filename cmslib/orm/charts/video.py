@@ -3,7 +3,7 @@
 from peewee import IntegerField
 
 from cmslib import dom
-from cmslib.attachments import attachment_dom
+from cmslib.attachments import attachment_dom, attachment_json
 from cmslib.orm.charts.api import Chart
 
 
@@ -27,6 +27,11 @@ class Video(Chart):
             files.add(self.video)
 
         return files
+
+    def to_json(self, *args, **kwargs):
+        """Returns JSON representation of this chart."""
+        json = super().to_json(*args, **kwargs)
+        return attachment_json(self.video, json=json)
 
     def to_dom(self, brief=False):
         """Returns an XML DOM of this chart."""
