@@ -49,7 +49,8 @@ def attachment_json(file, json=None, format=None, index=None):
         'size': file.size
     }
 
-    file_data.update(json)
+    if json:
+        file_data.update(json)
 
     if format is not None:
         file_data['format'] = format
