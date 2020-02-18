@@ -42,7 +42,7 @@ def attachment_json(file_id, json=None, format=None, index=None):
     except File.DoesNotExist:
         return json
 
-    file_data = file.to_json()
+    file_data = file.to_json(skip={'file'})
 
     if json:
         file_data.update(json)
