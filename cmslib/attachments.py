@@ -31,23 +31,18 @@ def attachment_dom(file_id, format=None, index=None):
     return xml
 
 
-def attachment_json(file, json=None, format=None, index=None):
+def attachment_json(file_id, json=None, format=None, index=None):
     """Returns a JSON-ish representation of the attachment."""
 
-    if file is None:
+    if file_id is None:
         return json
 
     try:
-        file = File[file]
+        file = File[file_id]
     except File.DoesNotExist:
         return json
 
-    file_data = {
-        'mimetype': file.mimetype,
-        'filename': file.name,
-        'sha256sum': file.sha256sum,
-        'size': file.size
-    }
+    file_data = file.to_json()
 
     if json:
         file_data.update(json)
