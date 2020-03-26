@@ -66,7 +66,7 @@ class Weather(Chart):
         json = super().to_json(mode=mode, **kwargs)
 
         if mode == ChartMode.FULL:
-            json['images'] = [image.image for image in self.images]
+            json['images'] = [image.to_json(**kwargs) for image in self.images]
 
         return json
 
