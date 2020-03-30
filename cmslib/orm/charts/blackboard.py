@@ -82,8 +82,8 @@ class Blackboard(Chart):
             return super().to_dom(dom.BriefChart)
 
         xml = super().to_dom(dom.Blackboard)
-        xml.image = filter(None, (
-            image.to_dom() for image in self.images.order_by(Image.index)))
+        images = (img.to_dom() for img in self.images.order_by(Image.index))
+        xml.image = filter(None, images)
         return xml
 
 
