@@ -22,10 +22,10 @@ def attachment_dom(file_id, format=None, index=None):
 
     xml = Attachment()
     xml.id = file.id
-    xml.mimetype = file.mimetype
+    xml.mimetype = file.metadata.mimetype
     xml.filename = file.name
-    xml.sha256sum = file.sha256sum
-    xml.size = file.size
+    xml.sha256sum = file.metadata.sha256sum
+    xml.size = file.metadata.size
     xml.format = format
     xml.index = index
     return xml
