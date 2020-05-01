@@ -7,6 +7,8 @@ from peewee import IntegerField
 from peewee import SmallIntegerField
 from peewee import TextField
 
+from hisfs import File
+
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
 from cmslib.orm.charts.api import ChartMode, Chart
@@ -125,7 +127,7 @@ class Image(_ChartReferencing):
 
     chart = ForeignKeyField(
         ImageText, column_name='chart', backref='images', on_delete='CASCADE')
-    image = IntegerField()
+    image = ForeignKeyField(File, column_name='image')
     index = IntegerField(default=0)
 
     def to_dom(self):

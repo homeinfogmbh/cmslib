@@ -2,6 +2,7 @@
 
 from logging import getLogger
 
+from hisfs import File
 from peewee import ForeignKeyField, CharField, IntegerField
 
 from cmslib import dom
@@ -75,7 +76,7 @@ class MenuItem(DSCMS4Model):
         backref='_children')
     name = CharField(255)
     icon = CharField(255, null=True)
-    icon_image = IntegerField(null=True)
+    icon_image = ForeignKeyField(File, column_name='icon_image', null=True)
     text_color = IntegerField(default=0x000000)
     background_color = IntegerField(default=0xffffff)
     index = IntegerField(default=0)

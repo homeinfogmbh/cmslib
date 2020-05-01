@@ -4,6 +4,7 @@ from enum import Enum
 
 from peewee import ForeignKeyField, IntegerField
 
+from hisfs import File
 from peeweeplus import EnumField
 
 from cmslib import dom
@@ -98,7 +99,7 @@ class Image(DSCMS4Model):
 
     chart = ForeignKeyField(
         Blackboard, column_name='chart', backref='images', on_delete='CASCADE')
-    image = IntegerField()
+    image = ForeignKeyField(File, column_name='image')
     format = EnumField(Format, default=Format.A4)
     index = IntegerField(default=0)
 

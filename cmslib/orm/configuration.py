@@ -13,6 +13,7 @@ from peewee import SmallIntegerField
 from peewee import TextField
 from peewee import TimeField
 
+from hisfs import File
 from peeweeplus import EnumField, Transaction
 
 from cmslib import dom
@@ -119,8 +120,9 @@ class Configuration(CustomerModel):
     colors = ForeignKeyField(Colors, column_name='colors')
     title_size = SmallIntegerField()
     text_size = SmallIntegerField()
-    logo = IntegerField(null=True)
-    dummy_picture = IntegerField(null=True)
+    logo = ForeignKeyField(File, column_name='logo', null=True)
+    dummy_picture = ForeignKeyField(
+        File, column_name='dummy_picture', null=True)
     hide_cursor = BooleanField(default=True)
     rotation = SmallIntegerField(default=0)
     email_form = BooleanField()

@@ -1,6 +1,8 @@
 """Video charts."""
 
-from peewee import IntegerField
+from peewee import ForeignKeyField
+
+from hisfs import File
 
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
@@ -16,7 +18,7 @@ class Video(Chart):
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_video'
 
-    video = IntegerField(null=True)
+    video = ForeignKeyField(File, column_name='video', null=True)
 
     @property
     def files(self):
