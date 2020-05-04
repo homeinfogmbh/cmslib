@@ -52,7 +52,6 @@ class Video(Chart):
 
         return transaction
 
-
     def to_json(self, *args, **kwargs):
         """Returns JSON representation of this chart."""
         json = super().to_json(*args, **kwargs)
