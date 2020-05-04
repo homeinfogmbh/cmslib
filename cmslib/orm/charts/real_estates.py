@@ -10,7 +10,7 @@ from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import SmallIntegerField
 
-from filedb import get_file, File
+from hisfs import get_file, File
 from openimmodb import Immobilie
 from peeweeplus import EnumField
 

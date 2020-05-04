@@ -2,7 +2,7 @@
 
 from peewee import ForeignKeyField, IntegerField, CharField
 
-from filedb import get_file, File
+from hisfs import get_file, File
 
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json

@@ -6,7 +6,7 @@ from json import dumps
 from typing import Iterable, NamedTuple
 from uuid import uuid4, UUID
 
-from filedb import File
+from hisfs import File
 
 from cmslib import dom  # pylint: disable=E0611
 from cmslib.attachments import attachment_dom, attachment_json
