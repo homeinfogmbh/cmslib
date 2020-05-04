@@ -4,7 +4,7 @@ from enum import Enum
 
 from peewee import ForeignKeyField, IntegerField
 
-from hisfs import File
+from hisfs import get_file, File
 from peeweeplus import EnumField
 
 from cmslib import dom
@@ -104,10 +104,12 @@ class Image(DSCMS4Model):
     index = IntegerField(default=0)
 
     @classmethod
-    def from_json(cls, json, chart, **kwargs):
-        """Creates the image from a JSON-ish dict."""
-        record = super().from_json(json, **kwargs)
+    def from_json(cls, json, chart=None, **kwargs):
+        """Creates an image from the respective JSON-ish dict."""
+        file_id = json.pop('file')
+        record = super().from_json(json, chart=chart, **kwargs)
         record.chart = chart
+        record.file = get_file(file_id)
         return record
 
     def to_json(self, *args, **kwargs):

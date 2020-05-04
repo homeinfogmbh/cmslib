@@ -7,7 +7,7 @@ from peewee import IntegerField
 from peewee import SmallIntegerField
 from peewee import TextField
 
-from hisfs import File
+from hisfs import get_file, File
 
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
@@ -106,20 +106,7 @@ class ImageText(Chart):
         return xml
 
 
-class _ChartReferencing(DSCMS4Model):
-    """Base class for models referencing the ImageText chart."""
-
-    @classmethod
-    def from_json(cls, json, chart=None, **kwargs):
-        """Creates a new instance from a
-        JSON-ish dict for the given chart.
-        """
-        record = super().from_json(json, **kwargs)
-        record.chart = chart
-        return record
-
-
-class Image(_ChartReferencing):
+class Image(DSCMS4Model):
     """Image for an ImageText chart."""
 
     class Meta:     # pylint: disable=C0111,R0903
@@ -129,6 +116,15 @@ class Image(_ChartReferencing):
         ImageText, column_name='chart', backref='images', on_delete='CASCADE')
     file = ForeignKeyField(File, column_name='file')
     index = IntegerField(default=0)
+
+    @classmethod
+    def from_json(cls, json, chart=None, **kwargs):
+        """Creates an image from the respective JSON-ish dict."""
+        file_id = json.pop('file')
+        record = super().from_json(json, **kwargs)
+        record.chart = chart
+        record.file = get_file(file_id)
+        return record
 
     def to_dom(self):
         """Returns an XML DOM of this model."""
@@ -140,7 +136,7 @@ class Image(_ChartReferencing):
         return attachment_json(self.file, json=json)
 
 
-class Text(_ChartReferencing):
+class Text(DSCMS4Model):
     """Text for an ImageText chart."""
 
     class Meta:     # pylint: disable=C0111,R0903
@@ -149,3 +145,12 @@ class Text(_ChartReferencing):
     chart = ForeignKeyField(
         ImageText, column_name='chart', backref='texts', on_delete='CASCADE')
     text = TextField()
+
+    @classmethod
+    def from_json(cls, json, chart=None, **kwargs):
+        """Creates a new instance from a
+        JSON-ish dict for the given chart.
+        """
+        record = super().from_json(json, **kwargs)
+        record.chart = chart
+        return record
