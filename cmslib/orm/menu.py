@@ -2,7 +2,7 @@
 
 from logging import getLogger
 
-from hisfs import File
+from hisfs import get_file, File
 from peewee import ForeignKeyField, CharField, IntegerField
 
 from cmslib import dom
@@ -86,7 +86,9 @@ class MenuItem(DSCMS4Model):
         """Creates a new menu item from the provided dictionary."""
         menu = json.pop('menu')
         parent = json.pop('parent', None)
+        icon_image = json.pop('iconImage', None)
         menu_item = super().from_json(json, **kwargs)
+        menu_item.icon_image = get_file(icon_image)
         return menu_item.move(menu=menu, parent=parent, customer=customer)
 
     @property
@@ -202,7 +204,12 @@ class MenuItem(DSCMS4Model):
         """Patches the menu item."""
         menu = json.pop('menu', UNCHANGED)
         parent = json.pop('parent', UNCHANGED)
+        icon_image = json.pop('iconImage', UNCHANGED)
         super().patch_json(json, **kwargs)
+
+        if icon_image is not UNCHANGED:
+            self.icon_image = get_file(icon_image)
+
         return self.move(menu=menu, parent=parent)
 
     def to_json(self, charts=False, children=False, **kwargs):
