@@ -52,7 +52,7 @@ class ImageText(Chart):
     @property
     def files(self):
         """Returns a set of IDs of files used by the chart."""
-        return set(image.image for image in self.images)
+        return set(image.file for image in self.images)
 
     def patch_json(self, json, **kwargs):
         """Patches the respective chart."""
@@ -127,17 +127,17 @@ class Image(_ChartReferencing):
 
     chart = ForeignKeyField(
         ImageText, column_name='chart', backref='images', on_delete='CASCADE')
-    image = ForeignKeyField(File, column_name='image')
+    file = ForeignKeyField(File, column_name='file')
     index = IntegerField(default=0)
 
     def to_dom(self):
         """Returns an XML DOM of this model."""
-        return attachment_dom(self.image, index=self.index)
+        return attachment_dom(self.file, index=self.index)
 
     def to_json(self, **kwargs):
         """Returns a JSON-ish dict."""
         json = super().to_json(**kwargs)
-        return attachment_json(self.image, json=json)
+        return attachment_json(self.file, json=json)
 
 
 class Text(_ChartReferencing):
