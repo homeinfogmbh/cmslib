@@ -2,6 +2,8 @@
 
 from peewee import ForeignKeyField, IntegerField, CharField
 
+from filedb import get_file, File
+
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
 from cmslib.orm.charts.api import ChartMode, Chart
@@ -36,7 +38,8 @@ class Weather(Chart):
         transaction = super().from_json(json, **kwargs)
 
         for image in images:
-            image = Image(chart=transaction.primary, image=image)
+            file = get_file(image)
+            image = Image(chart=transaction.primary, file=file)
             transaction.add(image)
 
         return transaction
@@ -56,7 +59,8 @@ class Weather(Chart):
                 transaction.delete(image)
 
             for image in images:
-                image = Image(chart=transaction.primary, image=image)
+                file = get_file(image)
+                image = Image(chart=transaction.primary, file=file)
                 transaction.add(image)
 
         return transaction
@@ -95,12 +99,12 @@ class Image(DSCMS4Model):
 
     chart = ForeignKeyField(
         Weather, column_name='chart', backref='images', on_delete='CASCADE')
-    image = IntegerField()
+    file = ForeignKeyField(File, column_name='file')
 
     def to_json(self, *args, **kwargs):
         """Returns a JSON representation of this record."""
         json = super().to_json(*args, **kwargs)
-        return attachment_json(self.image, json=json)
+        return attachment_json(self.file, json=json)
 
     def to_dom(self):
         """Returns an XML DOM of this record."""

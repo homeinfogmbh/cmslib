@@ -10,6 +10,7 @@ from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import SmallIntegerField
 
+from filedb import get_file, File
 from openimmodb import Immobilie
 from peeweeplus import EnumField
 
@@ -479,13 +480,15 @@ class Contact(DSCMS4Model):
         RealEstates, column_name='chart', backref='contacts',
         on_delete='CASCADE')
     name = CharField(255)
-    image = IntegerField()
+    image = ForeignKeyField(File, column_name='image')
 
     @classmethod
     def from_json(cls, json, chart):
         """Creates a new record from the respective dictionary."""
+        image = json.pop('image')
         record = super().from_json(json)
         record.chart = chart
+        record.image = get_file(image)
         return record
 
     def to_json(self, *args, **kwargs):
