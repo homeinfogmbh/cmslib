@@ -52,7 +52,7 @@ class Blackboard(Chart):
     @property
     def files(self):
         """Returns a set of IDs of files used by the chart."""
-        return set(image.image for image in self.images)
+        return set(image.file for image in self.images)
 
     def patch_json(self, json, **kwargs):
         """Patches the respective chart."""
@@ -99,7 +99,7 @@ class Image(DSCMS4Model):
 
     chart = ForeignKeyField(
         Blackboard, column_name='chart', backref='images', on_delete='CASCADE')
-    image = ForeignKeyField(File, column_name='image')
+    file = ForeignKeyField(File, column_name='file')
     format = EnumField(Format, default=Format.A4)
     index = IntegerField(default=0)
 
@@ -114,9 +114,9 @@ class Image(DSCMS4Model):
         """Returns a JSON representation of this record."""
         json = super().to_json(*args, **kwargs)
         return attachment_json(
-            self.image, json=json, format=self.format.value, index=self.index)
+            self.file, json=json, format=self.format.value, index=self.index)
 
     def to_dom(self):
         """Returns an XML DOM of this record."""
         return attachment_dom(
-            self.image, format=self.format.value, index=self.index)
+            self.file, format=self.format.value, index=self.index)
