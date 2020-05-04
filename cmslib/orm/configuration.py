@@ -13,12 +13,12 @@ from peewee import SmallIntegerField
 from peewee import TextField
 from peewee import TimeField
 
-from hisfs import File
+from hisfs import get_file, File
 from peeweeplus import EnumField, Transaction
 
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
-from cmslib.orm.common import DSCMS4Model, CustomerModel
+from cmslib.orm.common import UNCHANGED, DSCMS4Model, CustomerModel
 
 
 __all__ = [
@@ -138,7 +138,16 @@ class Configuration(CustomerModel):
         backgrounds = json.pop('backgrounds', None)
         tickers = json.pop('tickers', ())
         backlight = json.pop('backlight', None)
+        logo = json.pop('logo', None)
+        dummy_picture = json.pop('dummyPicture', None)
         configuration = super().from_json(json, **kwargs)
+
+        if logo:
+            configuration.logo = get_file(logo)
+
+        if dummy_picture:
+            configuration.dummy_picture = get_file(dummy_picture)
+
         transaction = Transaction()
         transaction.add(configuration, primary=True)
         configuration.update_colors(transaction, colors)
@@ -248,7 +257,16 @@ class Configuration(CustomerModel):
 
         backlight = json.pop('backlight', None)
         self.update_backlights(transaction, backlight, delete=True)
+        logo = json.pop('logo', UNCHANGED)
+        dummy_picture = json.pop('dummy_picture', UNCHANGED)
         super().patch_json(json, **kwargs)
+
+        if logo is not UNCHANGED:
+            self.logo = get_file(logo)
+
+        if dummy_picture is not UNCHANGED:
+            self.dummy_picture = get_file(dummy_picture)
+
         return transaction
 
     def to_json(self, cascade=False, **kwargs):
