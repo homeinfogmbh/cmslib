@@ -6,6 +6,8 @@ from json import dumps
 from typing import Iterable, NamedTuple
 from uuid import uuid4, UUID
 
+from filedb import File
+
 from cmslib import dom  # pylint: disable=E0611
 from cmslib.attachments import attachment_dom, attachment_json
 
@@ -50,7 +52,7 @@ class MenuTreeItem(NamedTuple):
     uuid: UUID
     name: str
     icon: str
-    icon_image: int
+    icon_image: File
     text_color: int
     background_color: int
     index: int
