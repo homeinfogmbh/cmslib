@@ -18,22 +18,22 @@ class Video(Chart):
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_video'
 
-    video = ForeignKeyField(File, column_name='video', null=True)
+    file = ForeignKeyField(File, column_name='file', null=True)
 
     @property
     def files(self):
         """Returns a set of IDs of files used by the chart."""
         files = set()
 
-        if self.video is not None:
-            files.add(self.video)
+        if self.file is not None:
+            files.add(self.file)
 
         return files
 
     def to_json(self, *args, **kwargs):
         """Returns JSON representation of this chart."""
         json = super().to_json(*args, **kwargs)
-        return attachment_json(self.video, json=json)
+        return attachment_json(self.file, json=json)
 
     def to_dom(self, brief=False):
         """Returns an XML DOM of this chart."""
@@ -41,5 +41,5 @@ class Video(Chart):
             return super().to_dom(dom.BriefChart)
 
         xml = super().to_dom(dom.Video)
-        xml.video = attachment_dom(self.video)
+        xml.video = attachment_dom(self.file)
         return xml
