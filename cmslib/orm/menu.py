@@ -6,6 +6,7 @@ from hisfs import get_file, File
 from peewee import ForeignKeyField, CharField, IntegerField
 
 from cmslib import dom
+from cmslib.attachments import attachment_json
 from cmslib.exceptions import OrphanedBaseChart, AmbiguousBaseChart
 from cmslib.messages.data import CIRCULAR_REFERENCE
 from cmslib.messages.menu import DIFFERENT_MENUS
@@ -215,6 +216,7 @@ class MenuItem(DSCMS4Model):
     def to_json(self, charts=False, children=False, **kwargs):
         """Returns a JSON-ish dictionary."""
         json = super().to_json(**kwargs)
+        json['iconImage'] = attachment_json(self.icon_image)
 
         if charts:
             json['charts'] = [
