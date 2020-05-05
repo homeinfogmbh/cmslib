@@ -122,11 +122,7 @@ class Image(DSCMS4Model):
     @classmethod
     def from_json(cls, json, chart=None, **kwargs):
         """Creates an image from the respective JSON-ish dict."""
-        try:
-            file_id = json.pop('file')
-        except KeyError:
-            file_id = json.pop('image')
-
+        file_id = json.pop('file')
         record = super().from_json(json, **kwargs)
         record.chart = chart
         record.file = get_file(file_id)
