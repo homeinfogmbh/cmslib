@@ -166,7 +166,7 @@ class Configuration(CustomerModel):
             files.add(self.logo)
 
         for background in self.backgrounds:
-            files.add(background.image)
+            files.add(background.file)
 
         if self.dummy_picture is not None:
             files.add(self.dummy_picture)
@@ -274,7 +274,7 @@ class Configuration(CustomerModel):
         """Converts the configuration into a JSON-like dictionary."""
         json = super().to_json(**kwargs)
         json['backgrounds'] = [
-            attachment_json(background.image) for background
+            attachment_json(background.file) for background
             in self.backgrounds]
         json['logo'] = attachment_json(self.logo)
         json['dummyPicture'] = attachment_json(self.dummy_picture)
@@ -311,7 +311,7 @@ class Configuration(CustomerModel):
         xml.volume = self.volume / 100
         xml.text_bg_transparent = self.text_bg_transparent
         xml.background = [
-            attachment_dom(background.image)
+            attachment_dom(background.file)
             for background in self.backgrounds]
         xml.ticker = [ticker.to_dom() for ticker in self.tickers]
         xml.backlight = [backlight.to_dom() for backlight in self.backlights]
