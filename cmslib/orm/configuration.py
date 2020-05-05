@@ -202,8 +202,8 @@ class Configuration(CustomerModel):
 
         if backgrounds:
             for background in backgrounds:
-                image = get_file(background)
-                background = Background(configuration=self, image=image)
+                file = get_file(background)
+                background = Background(configuration=self, file=file)
                 transaction.add(background)
 
     def update_tickers(self, transaction, tickers, *, delete):
