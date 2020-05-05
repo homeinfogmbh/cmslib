@@ -111,4 +111,4 @@ class Image(DSCMS4Model):
 
     def to_dom(self):
         """Returns an XML DOM of this record."""
-        return attachment_dom(self.image)
+        return attachment_dom(self.file)
