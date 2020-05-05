@@ -202,7 +202,8 @@ class Configuration(CustomerModel):
 
         if backgrounds:
             for background in backgrounds:
-                background = Background(configuration=self, image=background)
+                image = get_file(background)
+                background = Background(configuration=self, image=image)
                 transaction.add(background)
 
     def update_tickers(self, transaction, tickers, *, delete):
@@ -330,7 +331,12 @@ class Background(DSCMS4Model):
     configuration = ForeignKeyField(
         Configuration, column_name='configuration', backref='backgrounds',
         on_delete='CASCADE')
-    image = ForeignKeyField(File, column_name='image')
+    file = ForeignKeyField(File, column_name='file')
+
+    def to_json(self, *args, **kwargs):
+        """Returns a JSON-ish dict."""
+        json = super().to_json(*args, **kwargs)
+        return attachment_json(self.file, json=json)
 
 
 class Ticker(DSCMS4Model):
