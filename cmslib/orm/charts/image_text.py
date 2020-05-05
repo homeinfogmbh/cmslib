@@ -85,7 +85,9 @@ class ImageText(Chart):
         if mode == ChartMode.FULL:
             json['texts'] = [text.to_json() for text in self.texts]
             json['images'] = [
-                image.to_json() for image in self.images.order_by(Image.index)]
+                image.to_json(fk_fields=False, autofields=False)
+                for image in self.images.order_by(Image.index)
+            ]
 
         return json
 
@@ -134,9 +136,9 @@ class Image(DSCMS4Model):
         """Returns an XML DOM of this model."""
         return attachment_dom(self.file, index=self.index)
 
-    def to_json(self, **kwargs):
-        """Returns a JSON-ish dict."""
-        json = super().to_json(**kwargs)
+    def to_json(self, *args, **kwargs):
+        """Returns a JSON representation of this record."""
+        json = super().to_json(*args, **kwargs)
         return attachment_json(self.file, json=json)
 
 

@@ -76,7 +76,8 @@ class Blackboard(Chart):
         if mode == ChartMode.FULL:
             json['images'] = [
                 image.to_json(fk_fields=False, autofields=False)
-                for image in self.images.order_by(Image.index)]
+                for image in self.images.order_by(Image.index)
+            ]
 
         return json
 
