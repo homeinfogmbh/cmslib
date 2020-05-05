@@ -31,7 +31,7 @@ def attachment_json(file, json=None):
     if file is None:
         return json
 
-    result = file.to_json(skip={'filedb_file'})
+    result = file.to_json(fk_fields=False)
 
     if json:
         result.update(json)
