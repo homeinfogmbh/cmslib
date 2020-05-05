@@ -271,7 +271,10 @@ class RealEstates(Chart):
 
         if mode == ChartMode.FULL:
             json['filters'] = self.filters_dictionary
-            json['contacts'] = [contact.to_json() for contact in self.contacts]
+            json['contacts'] = [
+                contact.to_json(fk_fields=False, autofields=False)
+                for contact in self.contacts
+            ]
 
         return json
 
