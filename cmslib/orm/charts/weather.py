@@ -47,7 +47,7 @@ class Weather(Chart):
     @property
     def files(self):
         """Returns a set of IDs of files used by the chart."""
-        return set(image.image for image in self.images)
+        return set(image.file for image in self.images)
 
     def patch_json(self, json, **kwargs):
         """Patches the respective chart."""

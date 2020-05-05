@@ -330,7 +330,7 @@ class Background(DSCMS4Model):
     configuration = ForeignKeyField(
         Configuration, column_name='configuration', backref='backgrounds',
         on_delete='CASCADE')
-    image = IntegerField()
+    image = ForeignKeyField(File, column_name='image')
 
 
 class Ticker(DSCMS4Model):
