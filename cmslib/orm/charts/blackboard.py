@@ -119,8 +119,7 @@ class Image(DSCMS4Model):
     def to_json(self, *args, **kwargs):
         """Returns a JSON representation of this record."""
         json = super().to_json(*args, **kwargs)
-        return attachment_json(
-            self.file, json=json, format=self.format.value, index=self.index)
+        return attachment_json(self.file, json=json)
 
     def to_dom(self):
         """Returns an XML DOM of this record."""

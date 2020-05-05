@@ -25,7 +25,7 @@ def attachment_dom(file, format=None, index=None):
     return xml
 
 
-def attachment_json(file, json=None, format=None, index=None):
+def attachment_json(file, json=None):
     """Returns a JSON-ish representation of the attachment."""
 
     if file is None:
@@ -35,11 +35,5 @@ def attachment_json(file, json=None, format=None, index=None):
 
     if json:
         result.update(json)
-
-    if format is not None:
-        result['format'] = format
-
-    if index is not None:
-        result['index'] = index
 
     return result
