@@ -19,7 +19,8 @@ class Video(Chart):
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_video'
 
-    file = ForeignKeyField(File, column_name='file', null=True)
+    # Do not serialize.
+    _file = ForeignKeyField(File, column_name='file', null=True)
 
     @classmethod
     def from_json(cls, json, **kwargs):
@@ -28,19 +29,14 @@ class Video(Chart):
         record = super().from_json(json)
 
         if file:
-            record.file = get_file(file)
+            record._file = get_file(file)   # pylint: disable=W0212
 
         return record
 
     @property
     def files(self):
         """Returns a set of IDs of files used by the chart."""
-        files = set()
-
-        if self.file is not None:
-            files.add(self.file)
-
-        return files
+        return {self._file} if self._file else set()
 
     def patch_json(self, json, **kwargs):
         """Patches a video chart."""
@@ -48,15 +44,14 @@ class Video(Chart):
         transaction = super().patch_json(json)
 
         if file is not UNCHANGED:
-            self.file = get_file(file)
+            self._file = get_file(file)
 
         return transaction
 
-    def to_json(self, *args, skip=(), **kwargs):
+    def to_json(self, *args, **kwargs):
         """Returns JSON representation of this chart."""
-        skip = {*skip, 'file'} if skip else {'file'}
-        json = super().to_json(*args, skip=skip, **kwargs)
-        return attachment_json(self.file, json=json)
+        json = super().to_json(*args, **kwargs)
+        return attachment_json(self._file, json=json)
 
     def to_dom(self, brief=False):
         """Returns an XML DOM of this chart."""
@@ -64,5 +59,5 @@ class Video(Chart):
             return super().to_dom(dom.BriefChart)
 
         xml = super().to_dom(dom.Video)
-        xml.video = attachment_dom(self.file)
+        xml.video = attachment_dom(self._file)
         return xml
