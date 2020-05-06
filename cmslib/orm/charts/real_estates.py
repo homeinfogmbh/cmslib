@@ -204,7 +204,7 @@ class RealEstates(Chart):
     @property
     def files(self):
         """Returns the used files."""
-        return {contact.image for contact in self.contacts}
+        return {contact.file for contact in self.contacts}
 
     def patch_json(self, json, **kwargs):
         """Creates a new chart from the respective dictionary."""
@@ -483,25 +483,25 @@ class Contact(DSCMS4Model):
         RealEstates, column_name='chart', backref='contacts',
         on_delete='CASCADE')
     name = CharField(255)
-    image = ForeignKeyField(File, column_name='image')
+    file = ForeignKeyField(File, column_name='file')
 
     @classmethod
     def from_json(cls, json, chart):
         """Creates a new record from the respective dictionary."""
-        image = json.pop('image')
+        file = json.pop('file')
         record = super().from_json(json)
         record.chart = chart
-        record.image = get_file(image)
+        record.file = get_file(file)
         return record
 
     def to_json(self, *args, **kwargs):
         """Returns a JSON representation of this record."""
         json = super().to_json(*args, **kwargs)
-        return attachment_json(self.image, json=json)
+        return attachment_json(self.file, json=json)
 
     def to_dom(self):
         """Returns an XML DOM of this record."""
         xml = dom.RealEstateContact()
         xml.name = self.name
-        xml.image = attachment_dom(self.image)
+        xml.file = attachment_dom(self.file)
         return xml
