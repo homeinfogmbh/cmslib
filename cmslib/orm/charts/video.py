@@ -52,9 +52,10 @@ class Video(Chart):
 
         return transaction
 
-    def to_json(self, *args, **kwargs):
+    def to_json(self, *args, skip=(), **kwargs):
         """Returns JSON representation of this chart."""
-        json = super().to_json(*args, **kwargs)
+        skip = {*skip, 'file'} if skip else {'file'}
+        json = super().to_json(*args, skip=skip, **kwargs)
         return attachment_json(self.file, json=json)
 
     def to_dom(self, brief=False):
