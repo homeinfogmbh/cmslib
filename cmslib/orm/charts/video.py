@@ -51,6 +51,7 @@ class Video(Chart):
         """Returns JSON representation of this chart."""
         json = super().to_json(*args, **kwargs)
         json ['file'] = attachment_json(self.file)
+        return json
 
     def to_dom(self, brief=False):
         """Returns an XML DOM of this chart."""
