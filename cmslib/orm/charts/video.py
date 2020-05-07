@@ -25,12 +25,12 @@ class Video(Chart):
     def from_json(cls, json, **kwargs):
         """Creates a new video chart from a JSON-ish dict."""
         file = json.pop('file', None)
-        record = super().from_json(json)
+        transaction = super().from_json(json)
 
         if file:
-            record.file = get_file(file)
+            transaction.primary.file = get_file(file)
 
-        return record
+        return transaction
 
     @property
     def files(self):
@@ -50,7 +50,7 @@ class Video(Chart):
     def to_json(self, *args, **kwargs):
         """Returns JSON representation of this chart."""
         json = super().to_json(*args, **kwargs)
-        json ['file'] = attachment_json(self.file)
+        json['file'] = attachment_json(self.file)
         return json
 
     def to_dom(self, brief=False):
