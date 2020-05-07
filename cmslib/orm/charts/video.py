@@ -26,9 +26,10 @@ class Video(Chart):
         """Creates a new video chart from a JSON-ish dict."""
         file = json.pop('file', None)
         transaction = super().from_json(json)
+        chart = transaction.primary
 
         if file:
-            transaction.primary.file = get_file(file)
+            chart.file = get_file(file)
 
         return transaction
 
