@@ -150,7 +150,8 @@ class GroupMemberDeployment(DSCMS4Model):
             'id': self.id,
             'index': self.index,
             'group': self.group.id,
-            'deployment': self.deployment.id}
+            'deployment': self.deployment.id
+        }
 
 
 MODELS = (Group, GroupMemberDeployment)
