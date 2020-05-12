@@ -95,9 +95,11 @@ def _get_trashed():
 def get_base_chart(ident):
     """Returns the respective base chart."""
 
+    condition = BaseChart.id == ident
+    condition &= BaseChart.customer == CUSTOMER
+
     try:
-        return BaseChart.get(
-            (BaseChart.id == ident) & (BaseChart.customer == CUSTOMER))
+        return BaseChart.get(condition)
     except BaseChart.DoesNotExist:
         raise NO_SUCH_BASE_CHART
 
@@ -105,19 +107,22 @@ def get_base_chart(ident):
 def get_charts():
     """Lists the available charts."""
 
+    condition = BaseChart.customer == CUSTOMER.id
+    condition &= _get_trashed()
+
     for typ in CHART_TYPES:
-        for record in typ.select().join(BaseChart).where(
-                (BaseChart.customer == CUSTOMER.id) & _get_trashed()):
+        for record in typ.select().join(BaseChart).where(condition):
             yield record
 
 
 def get_chart(ident, type=CHART_TYPE):  # pylint: disable=W0622
     """Returns the selected chart."""
 
+    condition = BaseChart.customer == CUSTOMER.id
+    condition &= type.id == ident
+
     try:
-        return type.select().join(BaseChart).where(
-            (BaseChart.customer == CUSTOMER.id)
-            & (type.id == ident)).get()
+        return type.select().join(BaseChart).where(condition).get()
     except type.DoesNotExist:
         raise NO_SUCH_CHART
 
