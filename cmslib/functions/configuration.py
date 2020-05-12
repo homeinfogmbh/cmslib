@@ -12,10 +12,11 @@ __all__ = ['get_configuration', 'list_configurations']
 def get_configuration(ident):
     """Returns the respective configuration."""
 
+    condition = Configuration.customer == CUSTOMER.id
+    condition &= Configuration.id == ident
+
     try:
-        return Configuration.get(
-            (Configuration.customer == CUSTOMER.id)
-            & (Configuration.id == ident))
+        return Configuration.get(condition)
     except Configuration.DoesNotExist:
         raise NO_SUCH_CONFIGURATION
 

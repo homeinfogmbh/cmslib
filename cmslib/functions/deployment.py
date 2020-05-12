@@ -12,9 +12,11 @@ __all__ = ['get_deployment', 'with_deployment']
 def get_deployment(ident):
     """Returns the respective deployment."""
 
+    condition = Deployment.id == ident
+    condition &= Deployment.customer == CUSTOMER.id
+
     try:
-        return Deployment.get(
-            (Deployment.id == ident) & (Deployment.customer == CUSTOMER.id))
+        return Deployment.get(condition)
     except Deployment.DoesNotExist:
         raise NO_SUCH_DEPLOYMENT
 
