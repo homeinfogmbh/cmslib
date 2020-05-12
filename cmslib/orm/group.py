@@ -54,6 +54,15 @@ class Group(CustomerModel):
             yield from child.tree
 
     @property
+    def parents(self):
+        """Yields all parents."""
+        if self.parent is None:
+            return
+
+        yield self.parent
+        yield from self.parent.parents
+
+    @property
     def json_tree(self):
         """Returns the tree for this group."""
         json = self.to_json(parent=False)
@@ -141,7 +150,8 @@ class GroupMemberDeployment(DSCMS4Model):
             'id': self.id,
             'index': self.index,
             'group': self.group.id,
-            'deployment': self.deployment.id}
+            'deployment': self.deployment.id
+        }
 
 
 MODELS = (Group, GroupMemberDeployment)

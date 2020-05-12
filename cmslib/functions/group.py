@@ -12,7 +12,10 @@ __all__ = ['get_group']
 def get_group(ident):
     """Returns the respective group of the current customer."""
 
+    condition = Group.customer == CUSTOMER.id
+    condition &= Group.id == ident
+
     try:
-        return Group.get((Group.customer == CUSTOMER.id) & (Group.id == ident))
+        return Group.get(condition)
     except Group.DoesNotExist:
         raise NO_SUCH_GROUP
