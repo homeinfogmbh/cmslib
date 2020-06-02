@@ -503,5 +503,5 @@ class Contact(DSCMS4Model):
         """Returns an XML DOM of this record."""
         xml = dom.RealEstateContact()
         xml.name = self.name
-        xml.file = attachment_dom(self.file)
+        xml.image = attachment_dom(self.file)
         return xml
