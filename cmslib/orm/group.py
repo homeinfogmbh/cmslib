@@ -3,7 +3,7 @@
 from peewee import CharField, ForeignKeyField, IntegerField, TextField
 
 from his.messages.data import MISSING_KEY_ERROR, INVALID_KEYS
-from terminallib import Deployment
+from hwdb import Deployment
 
 from cmslib.functions.deployment import get_deployment
 from cmslib.messages.data import CIRCULAR_REFERENCE

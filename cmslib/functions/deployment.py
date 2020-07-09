@@ -1,7 +1,7 @@
 """Deployment-related functions."""
 
 from his import CUSTOMER
-from terminallib import Deployment
+from hwdb import Deployment
 
 from cmslib.messages.deployment import NO_SUCH_DEPLOYMENT
 

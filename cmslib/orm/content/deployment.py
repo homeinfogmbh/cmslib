@@ -2,7 +2,7 @@
 
 from peewee import ForeignKeyField, IntegerField
 
-from terminallib import Deployment
+from hwdb import Deployment
 
 from cmslib.orm.charts import ChartMode, BaseChart
 from cmslib.orm.common import DSCMS4Model
