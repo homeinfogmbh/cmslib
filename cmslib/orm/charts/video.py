@@ -6,7 +6,7 @@ from hisfs import get_file, File
 
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
-from cmslib.orm.charts.api import Chart
+from cmslib.orm.charts.api import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED
 
 
@@ -48,10 +48,13 @@ class Video(Chart):
 
         return transaction
 
-    def to_json(self, *args, **kwargs):
+    def to_json(self, mode=ChartMode.FULL, **kwargs):
         """Returns JSON representation of this chart."""
-        json = super().to_json(*args, **kwargs)
-        json['file'] = attachment_json(self.file)
+        json = super().to_json(**kwargs)
+
+        if mode == ChartMode.FULL:
+            json['file'] = attachment_json(self.file)
+
         return json
 
     def to_dom(self, brief=False):
