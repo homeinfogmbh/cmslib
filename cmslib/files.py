@@ -20,10 +20,12 @@ QUERY = QUERY.join_from(File, Video, JOIN.LEFT_OUTER)
 QUERY = QUERY.join_from(File, WImage, JOIN.LEFT_OUTER).join(Weather)
 QUERY = QUERY.join_from(File, Contact, JOIN.LEFT_OUTER).join(RealEstates)
 QUERY = QUERY.join_from(File, Background, JOIN.LEFT_OUTER).join(Configuration)
-LOGO = Configuration.logo == File.id
-DUMMY_PICTURE = Configuration.dummy_picture == File.id
-QUERY = QUERY.join_from(File, Configuration, JOIN.LEFT_OUTER, on=LOGO)
-QUERY = QUERY.join_from(File, Configuration, JOIN.LEFT_OUTER, on=DUMMY_PICTURE)
+ConfigLogo = Configuration.alias()
+ConfigDP = Configuration.alias()
+LOGO = ConfigLogo.logo == File.id
+DUMMY_PICTURE = ConfigDP.dummy_picture == File.id
+QUERY = QUERY.join_from(File, ConfigLogo, JOIN.LEFT_OUTER, on=LOGO)
+QUERY = QUERY.join_from(File, ConfigDP, JOIN.LEFT_OUTER, on=DUMMY_PICTURE)
 
 
 def get_files(*, menus=None, image_text_charts=None, blackboard_charts=None,
