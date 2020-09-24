@@ -54,7 +54,10 @@ def get_files(*, menus=None, image_text_charts=None, blackboard_charts=None,
         condition &= RealEstates.id << real_estate_charts
 
     if configurations is not None:
-        condition &= Configuration.id << configurations
+        cond_configs = Configuration.id << configurations
+        cond_configs |= ConfigLogo.id << configurations
+        cond_configs |= ConfigDP.id << configurations
+        condition &= cond_configs
 
     if base_charts is not None:
         bc_condition = ImageText.base << base_charts
