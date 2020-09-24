@@ -3,7 +3,6 @@
 from peewee import JOIN
 
 from hisfs import File
-from peeweeplus import ChangedConnection
 
 from cmslib.orm.charts.blackboard import Blackboard, Image as BbImage
 from cmslib.orm.charts.image_text import ImageText, Image as ItImage
@@ -63,5 +62,4 @@ def get_files(*, menus=None, image_text_charts=None, blackboard_charts=None,
         bc_condition |= RealEstates.base << base_charts
         condition &= bc_condition
 
-    with ChangedConnection(File, ImageText):
-        return QUERY.where(condition).execute()
+    return QUERY.where(condition)
