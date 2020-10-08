@@ -1,7 +1,6 @@
 """Base chart."""
 
 from datetime import datetime
-from itertools import chain
 from uuid import uuid4
 
 from peewee import BooleanField
@@ -42,19 +41,17 @@ class BaseChart(CustomerModel):
     created = DateTimeField(default=datetime.now)
     trashed = BooleanField(default=False)
     log = BooleanField(default=False)
-    uuid = UUIDField(null=True)
+    uuid = UUIDField(default=uuid4)
     schedule = ForeignKeyField(
         Schedule, column_name='schedule', null=True, on_delete='CASCADE')
 
     @classmethod
-    def from_json(cls, json, skip=None, **kwargs):
+    def from_json(cls, json, skip=None, **kwargs):  # pylint: disable=W0221
         """Creates a base chart from a JSON-ish dictionary."""
-        skip_default = ('uuid',)
-        skip = tuple(chain(skip_default, skip)) if skip else skip_default
+        skip = {'uuid', *(skip or ())}
         pins = json.pop('pins', None) or ()
         schedule = json.pop('schedule', None)
         record = super().from_json(json, skip=skip, **kwargs)
-        record.uuid = uuid4() if record.log else None
         transaction = Transaction()
         transaction.add(record, primary=True)
 
@@ -114,7 +111,7 @@ class BaseChart(CustomerModel):
         try:
             match, *superfluous = self.charts
         except ValueError:
-            raise OrphanedBaseChart(self)
+            raise OrphanedBaseChart(self) from None
 
         if superfluous:
             charts = frozenset([match] + superfluous)
@@ -152,7 +149,6 @@ class BaseChart(CustomerModel):
         pins = json.pop('pins', UNCHANGED)
         schedule = json.pop('schedule', UNCHANGED)
         super().patch_json(json, **kwargs)
-        self.uuid = uuid4() if self.log else None
         transaction = Transaction()
         transaction.add(self, primary=True)
         self._patch_pins(pins, transaction)
@@ -190,7 +186,7 @@ class BaseChart(CustomerModel):
         xml.trashed = self.trashed
 
         if self.uuid:
-            xml.uuid = self.uuid.hex
+            xml.uuid = self.uuid.hex    # pylint: disable=E1101
 
         if self.schedule:
             xml.schedule = self.schedule.to_dom()
@@ -199,7 +195,7 @@ class BaseChart(CustomerModel):
         return xml
 
 
-class ChartPIN(DSCMS4Model):
+class ChartPIN(DSCMS4Model):    # pylint: disable=R0903
     """PINs to lock a chart."""
 
     class Meta:     # pylint: disable=C0111,R0903
