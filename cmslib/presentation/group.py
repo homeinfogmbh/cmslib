@@ -45,6 +45,7 @@ class Presentation(PresentationMixin):
     def to_dom(self):
         """Returns an XML DOM."""
         xml = super().to_dom()
+        xml.customer = self.customer.id
         xml.group = self.group.id
         return xml
 

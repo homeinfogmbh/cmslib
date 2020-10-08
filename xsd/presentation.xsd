@@ -11,6 +11,7 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
             targetNamespace="http://xml.homeinfo.de/schema/dscms4">
     <xs:include schemaLocation="charts.xsd"/>
     <xs:include schemaLocation="configuration.xsd"/>
+    <xs:include schemaLocation="deployment.xsd"/>
     <xs:include schemaLocation="menu.xsd"/>
 
 
@@ -30,6 +31,13 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
+            <xs:element name="deployment" type="Deployment" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Der Standort.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="configuration" type="Configuration">
                 <xs:annotation>
                     <xs:documentation xml:lang="de">
@@ -59,7 +67,7 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                 </xs:annotation>
             </xs:element>
         </xs:sequence>
-        <xs:attribute name="customer" type="xs:positiveInteger" use="required">
+        <xs:attribute name="customer" type="xs:positiveInteger">
             <xs:annotation>
                 <xs:documentation xml:lang="de">
                     Die Kundennummer.
@@ -77,13 +85,6 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
             <xs:annotation>
                 <xs:documentation xml:lang="de">
                     Die ID der entsprechenden Gruppe.
-                </xs:documentation>
-            </xs:annotation>
-        </xs:attribute>
-        <xs:attribute name="deployment" type="xs:positiveInteger">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Die ID des entsprechenden Deployments.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>

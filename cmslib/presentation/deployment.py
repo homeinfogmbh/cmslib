@@ -1,5 +1,6 @@
 """Content accumulation for digital signage deployment."""
 
+from cmslib import dom  # pylint: disable=E0611
 from cmslib.exceptions import NoConfigurationFound
 from cmslib.orm.charts import BaseChart
 from cmslib.orm.configuration import Configuration
@@ -12,6 +13,35 @@ from cmslib.presentation.common import PresentationMixin
 
 
 __all__ = ['Presentation']
+
+
+def address_to_dom(address):
+    """Returns an XML DOM binding for the address."""
+
+    address_dom = dom.Address()
+    address_dom.street = address.street
+    address_dom.house_number = address.house_number
+    address_dom.zip_code = address.zip_code
+    address_dom.city = address.city
+    return address_dom
+
+
+def deployment_to_dom(deployment):
+    """Returns an XML DOM binding for the deployment."""
+
+    deployment_dom = dom.Deployment()
+    deployment_dom.address = address_to_dom(deployment.address)
+
+    if deployment.lpt_address is not None:
+        deployment_dom.lpt_address = address_to_dom(deployment.lpt_address)
+
+    deployment_dom.id = deployment.id
+    deployment_dom.customer = deployment.customer_id
+    deployment_dom.type = deployment.type.value
+    deployment_dom.connection = deployment.connection.value
+    deployment_dom.testing = deployment.testing
+    deployment_dom.scheduled = deployment.scheduled
+    return deployment_dom
 
 
 class Presentation(PresentationMixin):
@@ -41,7 +71,7 @@ class Presentation(PresentationMixin):
             return Configuration.select().join(DeploymentConfiguration).where(
                 DeploymentConfiguration.deployment == self.deployment).get()
         except Configuration.DoesNotExist:
-            raise NoConfigurationFound()
+            raise NoConfigurationFound() from None
 
     @property
     def groups(self):
@@ -59,7 +89,7 @@ class Presentation(PresentationMixin):
     def to_dom(self):
         """Returns an XML DOM."""
         xml = super().to_dom()
-        xml.deployment = self.deployment.id
+        xml.deployment = deployment_to_dom(self.deployment)
         return xml
 
     def to_json(self):

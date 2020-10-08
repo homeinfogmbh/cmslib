@@ -184,7 +184,6 @@ class PresentationMixin:
     def to_dom(self):
         """Returns an XML dom presentation."""
         xml = dom.presentation()
-        xml.customer = self.customer.id
         xml.configuration = self._configuration.to_dom()
         xml.playlist = [chart.to_dom(brief=True) for chart in self.playlist]
         xml.menu_item = [item.to_dom() for item in self.menutree]
