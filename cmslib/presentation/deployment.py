@@ -89,6 +89,7 @@ class Presentation(PresentationMixin):
     def to_dom(self):
         """Returns an XML DOM."""
         xml = super().to_dom()
+        xml.customer = self.deployment.customer_id  # XXX: application hack.
         xml.deployment = deployment_to_dom(self.deployment)
         return xml
 
