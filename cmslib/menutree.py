@@ -4,7 +4,6 @@ from collections import defaultdict
 from itertools import chain
 from json import dumps
 from typing import Iterable, NamedTuple
-from uuid import uuid4, UUID
 
 from hisfs import File
 
@@ -49,7 +48,6 @@ def get_index(menu_item):
 class MenuTreeItem(NamedTuple):
     """Menu item for tree structure."""
 
-    uuid: UUID
     name: str
     icon: str
     icon_image: File
@@ -77,21 +75,16 @@ class MenuTreeItem(NamedTuple):
                 base_charts.add(mic.base_chart_id)
                 menu_item_charts.add(mic)
 
-        return type(self).new(
+        return type(self)(
             self.name, self.icon, self.icon_image, self.text_color,
             self.background_color, self.index, menu_item_charts, children)
-
-    @classmethod
-    def new(cls, *args):
-        """Creates a new MenuTreeItem with a unique UUID."""
-        return cls(uuid4(), *args)
 
     @classmethod
     def from_menu_item(cls, menu_item):
         """Creates a menu item tree from the given menu item."""
         children = [cls.from_menu_item(child) for child in menu_item.children]
         menu_item_charts = list(menu_item.menu_item_charts)
-        return cls.new(
+        return cls(
             menu_item.name, menu_item.icon, menu_item.icon_image,
             menu_item.text_color, menu_item.background_color, menu_item.index,
             menu_item_charts, children)
@@ -109,7 +102,6 @@ class MenuTreeItem(NamedTuple):
     def to_json(self):
         """Returns a nested JSON-ish dict."""
         return {
-            'uuid': self.uuid.hex,
             'name': self.name,
             'icon': self.icon,
             'iconImage': attachment_json(self.icon_image),
@@ -132,7 +124,6 @@ class MenuTreeItem(NamedTuple):
     def to_dom(self):
         """Returns an XML DOM of the model."""
         xml = dom.MenuItem()
-        xml.uuid = self.uuid.hex
         xml.name = self.name
         xml.icon = self.icon
         xml.icon_image = attachment_dom(self.icon_image)
