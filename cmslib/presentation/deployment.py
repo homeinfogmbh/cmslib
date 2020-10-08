@@ -95,5 +95,5 @@ class Presentation(PresentationMixin):
     def to_json(self):
         """Returns a JSON-ish dict."""
         json = super().to_json()
-        json['deployment'] = self.deployment.id
+        json['deployment'] = self.deployment.to_json(address=True)
         return json
