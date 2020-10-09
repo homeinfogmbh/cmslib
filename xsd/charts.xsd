@@ -23,13 +23,6 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
-            <xs:element name="uuid" type="xs:string">
-                <xs:annotation>
-                    <xs:documentation xml:lang="de">
-                        Globale, dauerhaft gültige, eideutige Chart-ID.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
             <xs:element name="title" type="xs:string">
                 <xs:annotation>
                     <xs:documentation xml:lang="de">
