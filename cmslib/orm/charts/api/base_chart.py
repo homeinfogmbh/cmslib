@@ -32,18 +32,19 @@ class BaseChart(CustomerModel):
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'base_chart'
 
+    uuid = UUIDField(default=uuid4)
     title = CharField(255)
     description = TextField(null=True)
     duration = SmallIntegerField(default=10)
+    position = SmallIntegerField(null=True)
     display_from = DateTimeField(null=True)
     display_until = DateTimeField(null=True)
     transition = EnumField(Transitions, null=True)
     created = DateTimeField(default=datetime.now)
     trashed = BooleanField(default=False)
     log = BooleanField(default=False)
-    uuid = UUIDField(default=uuid4)
     schedule = ForeignKeyField(
-        Schedule, column_name='schedule', null=True, on_delete='CASCADE')
+        Schedule, column_name='schedule', null=True, on_delete='SET NULL')
 
     @classmethod
     def from_json(cls, json, skip=None, **kwargs):  # pylint: disable=W0221
