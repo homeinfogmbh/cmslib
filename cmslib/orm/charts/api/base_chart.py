@@ -44,7 +44,8 @@ class BaseChart(CustomerModel):
     trashed = BooleanField(default=False)
     log = BooleanField(default=False)
     schedule = ForeignKeyField(
-        Schedule, column_name='schedule', null=True, on_delete='SET NULL')
+        Schedule, column_name='schedule', null=True, on_delete='SET NULL',
+        on_update='CASCADE')
 
     @classmethod
     def from_json(cls, json, skip=None, **kwargs):  # pylint: disable=W0221
