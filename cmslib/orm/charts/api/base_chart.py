@@ -173,6 +173,7 @@ class BaseChart(CustomerModel):
     def to_dom(self):
         """Returns an XML DOM of the base chart."""
         xml = dom.BaseChart()
+        xml.id = self.id
         xml.uuid = self.uuid.hex    # pylint: disable=E1101
         xml.title = self.title
         xml.description = self.description
