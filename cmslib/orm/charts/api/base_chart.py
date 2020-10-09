@@ -182,13 +182,12 @@ class BaseChart(CustomerModel):
         xml.display_from = self.display_from
         xml.display_until = self.display_until
 
-        if self.transition is None:
-            xml.transition = None
-        else:
+        if self.transition is not None:
             xml.transition = self.transition.value
 
         xml.created = self.created
         xml.trashed = self.trashed
+        xml.log = self.log
 
         if self.schedule:
             xml.schedule = self.schedule.to_dom()
