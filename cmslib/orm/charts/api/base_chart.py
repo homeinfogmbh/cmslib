@@ -173,9 +173,11 @@ class BaseChart(CustomerModel):
     def to_dom(self):
         """Returns an XML DOM of the base chart."""
         xml = dom.BaseChart()
+        xml.uuid = self.uuid.hex    # pylint: disable=E1101
         xml.title = self.title
         xml.description = self.description
         xml.duration = self.duration
+        xml.position = self.position
         xml.display_from = self.display_from
         xml.display_until = self.display_until
 
@@ -186,9 +188,6 @@ class BaseChart(CustomerModel):
 
         xml.created = self.created
         xml.trashed = self.trashed
-
-        if self.uuid:
-            xml.uuid = self.uuid.hex    # pylint: disable=E1101
 
         if self.schedule:
             xml.schedule = self.schedule.to_dom()

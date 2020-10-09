@@ -23,6 +23,20 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
+            <xs:element name="id" type="xs:positiveInteger">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Die Base Chart ID.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="uuid" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Globale, dauerhaft gültige, eideutige Chart-ID.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="title" type="xs:string">
                 <xs:annotation>
                     <xs:documentation xml:lang="de">
@@ -44,6 +58,27 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
+            <xs:element name="position" type="xs:unsignedShort" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Die Anzeigedauer des Charts.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="display_from" type="xs:dateTime" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Anzeigedatum Beginn.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="display_until" type="xs:dateTime" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Anzeigedatum Ende.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="transition" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="de">
@@ -55,6 +90,20 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                 <xs:annotation>
                     <xs:documentation xml:lang="de">
                         Datum der Erstellung.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="trashed" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Ist der Chart gelöscht?
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="log" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Sollen Änderungen am Chart geloggt werden?
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
@@ -73,27 +122,6 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                 </xs:annotation>
             </xs:element>
         </xs:sequence>
-        <xs:attribute name="display_from" type="xs:dateTime">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Anzeigedatum Beginn.
-                </xs:documentation>
-            </xs:annotation>
-        </xs:attribute>
-        <xs:attribute name="display_until" type="xs:dateTime">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Anzeigedatum Ende.
-                </xs:documentation>
-            </xs:annotation>
-        </xs:attribute>
-        <xs:attribute name="uuid" type="xs:string">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Eideutige Entitäts-ID.
-                </xs:documentation>
-            </xs:annotation>
-        </xs:attribute>
     </xs:complexType>
 
 
@@ -104,6 +132,13 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
+            <xs:element name="id" type="xs:positiveInteger">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Die Chart ID.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="base" type="BaseChart">
                 <xs:annotation>
                     <xs:documentation xml:lang="de">
@@ -112,13 +147,6 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                 </xs:annotation>
             </xs:element>
         </xs:sequence>
-        <xs:attribute name="id" type="xs:positiveInteger" use="required">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Die Chart ID.
-                </xs:documentation>
-            </xs:annotation>
-        </xs:attribute>
         <xs:attribute name="type" type="xs:string" use="required">
             <xs:annotation>
                 <xs:documentation xml:lang="de">

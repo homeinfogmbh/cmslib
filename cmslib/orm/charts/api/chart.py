@@ -28,7 +28,7 @@ class Chart(DSCMS4Model):
         try:
             base_dict = json.pop('base')
         except KeyError:
-            raise MISSING_DATA.update(key='base')
+            raise MISSING_DATA.update(key='base') from None
 
         chart = super().from_json(json, **kwargs)
         transaction = BaseChart.from_json(base_dict)
@@ -66,10 +66,9 @@ class Chart(DSCMS4Model):
         xml.id = self.id
         xml.type = type(self).__name__
 
-        if model is dom.BriefChart:
-            return xml
+        if model is not dom.BriefChart:
+            xml.base = self.base.to_dom()
 
-        xml.base = self.base.to_dom()
         return xml
 
     def delete_instance(self):
