@@ -84,7 +84,8 @@ class PresentationMixin:
         """Charts attached to groups, the object is a member of."""
         return GroupBaseChart.select().join(BaseChart).where(
             (GroupBaseChart.group << self._groups)
-            & (BaseChart.trashed == 0)).order_by(GroupBaseChart.index)
+            & (BaseChart.trashed == 0)
+        ).order_by(GroupBaseChart.index)
 
     @property
     @lru_cache()
