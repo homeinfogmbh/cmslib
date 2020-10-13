@@ -11,6 +11,9 @@ __all__ = ['ChartACL', 'MODELS']
 class ChartACL(CustomerModel):
     """Access control list for charts that customers are allowed to use."""
 
+    class Meta:     # pylint: disable=C0115,R0903
+        table_name = 'chart_acl'
+
     chart_type = CharField(255)
 
     @classmethod
