@@ -18,4 +18,4 @@ def get_group(ident):
     try:
         return Group.get(condition)
     except Group.DoesNotExist:
-        raise NO_SUCH_GROUP
+        raise NO_SUCH_GROUP from None

@@ -18,4 +18,4 @@ def get_schedule(ident):
     try:
         return Schedule.get(condition)
     except Schedule.DoesNotExist:
-        raise NO_SUCH_SCHEDULE
+        raise NO_SUCH_SCHEDULE from None

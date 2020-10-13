@@ -20,7 +20,7 @@ def get_menu(ident):
     try:
         return Menu.get(condition)
     except Menu.DoesNotExist:
-        raise NO_SUCH_MENU
+        raise NO_SUCH_MENU from None
 
 
 def get_menu_item(ident):
@@ -32,7 +32,7 @@ def get_menu_item(ident):
     try:
         return MenuItem.select().join(Menu).where(condition).get()
     except MenuItem.DoesNotExist:
-        raise NO_SUCH_MENU_ITEM
+        raise NO_SUCH_MENU_ITEM from None
 
 
 def get_menu_item_chart(ident):
@@ -45,4 +45,4 @@ def get_menu_item_chart(ident):
     try:
         return select.where(condition).get()
     except MenuItemChart.DoesNotExist:
-        raise NO_SUCH_MENU_ITEM_CHART
+        raise NO_SUCH_MENU_ITEM_CHART from None

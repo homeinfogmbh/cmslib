@@ -134,7 +134,7 @@ class GroupMemberDeployment(DSCMS4Model):
         try:
             deployment = json.pop('deployment')
         except KeyError:
-            raise MISSING_KEY_ERROR.update(keys=['deployment'])
+            raise MISSING_KEY_ERROR.update(keys=['deployment']) from None
 
         deployment = get_deployment(deployment)
         index = json.pop('index', 0)

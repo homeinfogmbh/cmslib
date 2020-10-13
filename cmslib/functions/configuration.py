@@ -18,7 +18,7 @@ def get_configuration(ident):
     try:
         return Configuration.get(condition)
     except Configuration.DoesNotExist:
-        raise NO_SUCH_CONFIGURATION
+        raise NO_SUCH_CONFIGURATION from None
 
 
 def list_configurations():

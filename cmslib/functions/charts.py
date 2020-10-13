@@ -10,8 +10,8 @@ from cmslib.messages.charts import INVALID_CHART_TYPE
 from cmslib.messages.charts import NO_CHART_TYPE_SPECIFIED
 from cmslib.messages.charts import NO_SUCH_BASE_CHART
 from cmslib.messages.charts import NO_SUCH_CHART
+from cmslib.orm.chart_acl import ChartACL
 from cmslib.orm.charts import CHARTS, ChartMode, BaseChart
-from cmslib.orm.chart_types import ChartType
 
 
 __all__ = [
@@ -37,14 +37,14 @@ def _get_chart_types():
         try:
             yield CHARTS[type_name]
         except KeyError:
-            raise INVALID_CHART_TYPE
+            raise INVALID_CHART_TYPE from None
 
 
 def _filter_chart_types():
     """Yields filtered chart types."""
 
     for chart_type in _get_chart_types():
-        if ACCOUNT.root or ChartType.can_use(CUSTOMER.id, chart_type):
+        if ACCOUNT.root or ChartACL.can_use(CUSTOMER.id, chart_type):
             yield chart_type
 
 
@@ -57,14 +57,14 @@ def _get_chart_type():
     try:
         chart_type = request.args['type']
     except KeyError:
-        raise NO_CHART_TYPE_SPECIFIED
+        raise NO_CHART_TYPE_SPECIFIED from None
 
     try:
         chart_type = CHARTS[chart_type]
     except KeyError:
-        raise INVALID_CHART_TYPE
+        raise INVALID_CHART_TYPE from None
 
-    if ACCOUNT.root or ChartType.can_use(CUSTOMER.id, chart_type):
+    if ACCOUNT.root or ChartACL.can_use(CUSTOMER.id, chart_type):
         return chart_type
 
     raise INVALID_CHART_TYPE
@@ -84,7 +84,7 @@ def _get_trashed():
     try:
         trashed = int(trashed)
     except ValueError:
-        raise NOT_AN_INTEGER.update(key='trashed', value=trashed)
+        raise NOT_AN_INTEGER.update(key='trashed', value=trashed) from None
 
     if trashed:
         return BaseChart.trashed == 1
@@ -101,7 +101,7 @@ def get_base_chart(ident):
     try:
         return BaseChart.get(condition)
     except BaseChart.DoesNotExist:
-        raise NO_SUCH_BASE_CHART
+        raise NO_SUCH_BASE_CHART from None
 
 
 def get_charts():
@@ -124,7 +124,7 @@ def get_chart(ident, type=CHART_TYPE):  # pylint: disable=W0622
     try:
         return type.select().join(BaseChart).where(condition).get()
     except type.DoesNotExist:
-        raise NO_SUCH_CHART
+        raise NO_SUCH_CHART from None
 
 
 def get_mode():
@@ -138,4 +138,4 @@ def get_mode():
     try:
         return ChartMode(mode)
     except ValueError:
-        raise INVALID_DATA.update(key='mode', value=mode)
+        raise INVALID_DATA.update(key='mode', value=mode) from None
