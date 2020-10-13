@@ -842,56 +842,6 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
     </xs:complexType>
 
 
-    <xs:complexType name="RSS">
-        <xs:annotation>
-            <xs:documentation xml:lang="de">
-                RSS Feed Chart.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexContent>
-            <xs:extension base="Chart">
-                <xs:sequence>
-                    <xs:element name="title_color" type="xs:nonNegativeInteger">
-                        <xs:annotation>
-                            <xs:documentation xml:lang="de">
-                                Titelfarbe.
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                    <xs:element name="font_size_title" type="xs:unsignedShort">
-                        <xs:annotation>
-                            <xs:documentation xml:lang="de">
-                                Schriftgröße des Titels.
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                    <xs:element name="text_color" type="xs:nonNegativeInteger">
-                        <xs:annotation>
-                            <xs:documentation xml:lang="de">
-                                Schriftfarbe des Texts.
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                    <xs:element name="font_size_text" type="xs:unsignedShort">
-                        <xs:annotation>
-                            <xs:documentation xml:lang="de">
-                                Schriftgröße des Texts.
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                    <xs:element name="url" type="xs:string">
-                        <xs:annotation>
-                            <xs:documentation xml:lang="de">
-                                RSS Feed URL.
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-
-
     <xs:complexType name="SoccerTable">
         <xs:annotation>
             <xs:documentation xml:lang="de">
@@ -926,6 +876,63 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                         <xs:annotation>
                             <xs:documentation xml:lang="de">
                                 Textfarbe.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+    <xs:complexType name="URL">
+        <xs:annotation>
+            <xs:documentation xml:lang="de">
+                URL Chart.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="Chart">
+                <xs:sequence>
+                    <xs:element name="url" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                RSS Feed URL.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="mode" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Modus des Charts.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="title_color" type="xs:nonNegativeInteger">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Titelfarbe.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="font_size_title" type="xs:unsignedShort">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Schriftgröße des Titels.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="text_color" type="xs:nonNegativeInteger">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Schriftfarbe des Texts.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="font_size_text" type="xs:unsignedShort">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="de">
+                                Schriftgröße des Texts.
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
