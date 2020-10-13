@@ -43,5 +43,5 @@ class URL(Chart):
         xml.text_color = self.text_color
         xml.font_size_text = self.font_size_text
         xml.url = self.url
-        xml.type = self.type
+        xml.mode = self.mode
         return xml
