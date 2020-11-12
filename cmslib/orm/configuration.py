@@ -66,6 +66,7 @@ class Design(Enum):
     FLAT = 'flat'
     HD = 'hd'
     AIR = 'air'
+    MUP = 'mup'
 
 
 class TickerTypes(Enum):
