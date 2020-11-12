@@ -122,6 +122,11 @@ class Option(DSCMS4Model):
         record.poll = poll
         return record
 
+    def vote(self, amount=1):
+        """Adds votes."""
+        self.votes += amount
+        self.save()
+
     def to_dom(self):
         """Returns an XML DOM of this model."""
         xml = dom.PollOption(self.text)
