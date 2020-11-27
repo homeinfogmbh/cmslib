@@ -2,9 +2,9 @@
 
 from enum import Enum
 
-from peewee import ForeignKeyField, IntegerField, TextField
+from peewee import ForeignKeyField, IntegerField
 
-from peeweeplus import EnumField
+from peeweeplus import EnumField, HTMLTextField
 
 from cmslib import dom
 from cmslib.orm.charts.api import ChartMode, Chart
@@ -29,7 +29,7 @@ class Form(Chart):
         table_name = 'chart_form'
 
     mode = EnumField(Mode, column_name='mode')
-    text = TextField(null=True)
+    text = HTMLTextField(null=True)
 
     @classmethod
     def from_json(cls, json, **kwargs):
@@ -87,7 +87,7 @@ class Choice(DSCMS4Model):
 
     form = ForeignKeyField(
         Form, column_name='form', backref='choices', on_delete='CASCADE')
-    text = TextField()
+    text = HTMLTextField()
     index = IntegerField(default=0)
 
     @classmethod

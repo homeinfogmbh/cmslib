@@ -2,9 +2,9 @@
 
 from enum import Enum
 
-from peewee import DateTimeField, IntegerField, TextField
+from peewee import DateTimeField, IntegerField
 
-from peeweeplus import EnumField
+from peeweeplus import EnumField, HTMLTextField
 
 from cmslib import dom  # pylint: disable=E0611
 from cmslib.orm.common import CustomerModel
@@ -25,7 +25,7 @@ class TimeUnit(Enum):
 class Schedule(CustomerModel):
     """A schedule for recurring events."""
 
-    description = TextField(null=True)
+    description = HTMLTextField(null=True)
     start = DateTimeField()
     end = DateTimeField(null=True)
     duration_value = IntegerField()

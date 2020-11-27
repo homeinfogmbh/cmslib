@@ -6,15 +6,13 @@ from datetime import datetime
 from enum import Enum
 
 from peewee import BooleanField
-from peewee import CharField
 from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import SmallIntegerField
-from peewee import TextField
 from peewee import TimeField
 
 from hisfs import get_file, File
-from peeweeplus import EnumField, Transaction
+from peeweeplus import EnumField, HTMLCharField, HTMLTextField, Transaction
 
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
@@ -110,8 +108,8 @@ class Colors(DSCMS4Model):
 class Configuration(CustomerModel):
     """Customer configuration for charts."""
 
-    name = CharField(255)
-    description = CharField(255, null=True)
+    name = HTMLCharField(255)
+    description = HTMLCharField(255, null=True)
     font = EnumField(Font)
     portrait = BooleanField(default=False)
     touch = BooleanField()
@@ -347,7 +345,7 @@ class Ticker(DSCMS4Model):
         Configuration, column_name='configuration', backref='tickers',
         on_delete='CASCADE')
     type_ = EnumField(TickerTypes, column_name='type')
-    content = TextField()
+    content = HTMLTextField()
 
     @classmethod
     def from_json(cls, json, configuration, **kwargs):

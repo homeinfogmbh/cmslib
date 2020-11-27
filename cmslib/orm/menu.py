@@ -2,8 +2,10 @@
 
 from logging import getLogger
 
+from peewee import ForeignKeyField, IntegerField
+
 from hisfs import get_file, File
-from peewee import ForeignKeyField, CharField, IntegerField
+from peeweeplus import HTMLCharField
 
 from cmslib import dom
 from cmslib.attachments import attachment_json
@@ -26,8 +28,8 @@ COPY_SUFFIX = ' (Kopie)'
 class Menu(CustomerModel):
     """Menus trees."""
 
-    name = CharField(255)
-    description = CharField(255, null=True)
+    name = HTMLCharField(255)
+    description = HTMLCharField(255, null=True)
 
     @property
     def root_items(self):
@@ -75,8 +77,8 @@ class MenuItem(DSCMS4Model):
     parent = ForeignKeyField(
         'self', column_name='parent', null=True, on_delete='CASCADE',
         backref='_children')
-    name = CharField(255)
-    icon = CharField(255, null=True)
+    name = HTMLCharField(255)
+    icon = HTMLCharField(255, null=True)
     icon_image = ForeignKeyField(File, column_name='icon_image', null=True)
     text_color = IntegerField(default=0x000000)
     background_color = IntegerField(default=0xffffff)
@@ -164,7 +166,7 @@ class MenuItem(DSCMS4Model):
         try:
             parent = self._get_parent(parent, customer=customer)
         except self.DoesNotExist:
-            raise NO_SUCH_MENU_ITEM
+            raise NO_SUCH_MENU_ITEM from None
 
         if parent is not None:
             if parent.menu != menu:

@@ -1,8 +1,9 @@
 """Weather chart."""
 
-from peewee import ForeignKeyField, IntegerField, CharField
+from peewee import ForeignKeyField, IntegerField
 
 from hisfs import get_file, File
+from peeweeplus import HTMLCharField
 
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
@@ -19,7 +20,7 @@ class Weather(Chart):
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_weather'
 
-    location = CharField(255)
+    location = HTMLCharField(255)
     font_color = IntegerField()
     icon_color = IntegerField()
     box_color_top = IntegerField()

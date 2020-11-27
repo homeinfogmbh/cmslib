@@ -1,8 +1,9 @@
 """Booking chart."""
 
-from peewee import BooleanField, ForeignKeyField, TextField
+from peewee import BooleanField, ForeignKeyField
 
 from bookings import get_bookable, Bookable
+from peeweeplus import HTMLTextField
 
 from cmslib import dom
 from cmslib.orm.charts.api import Chart, ChartMode
@@ -20,7 +21,7 @@ class Booking(Chart):
 
     rentee = BooleanField(null=True)
     purpose = BooleanField(null=True)
-    text = TextField(null=True)
+    text = HTMLTextField(null=True)
 
     @classmethod
     def from_json(cls, json, **kwargs):

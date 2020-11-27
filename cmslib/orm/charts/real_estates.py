@@ -5,14 +5,13 @@ from enum import Enum
 from itertools import chain
 
 from peewee import BooleanField
-from peewee import CharField
 from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import SmallIntegerField
 
 from hisfs import get_file, File
 from openimmodb import Immobilie
-from peeweeplus import EnumField
+from peeweeplus import EnumField, HTMLCharField
 
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
@@ -395,7 +394,7 @@ class IdFilter(DSCMS4Model):
     chart = ForeignKeyField(
         RealEstates, column_name='chart', backref='id_filters',
         on_delete='CASCADE')
-    value = CharField(255)
+    value = HTMLCharField(255)
     type = EnumField(IdTypes)
 
     def __call__(self, real_estate):
@@ -437,7 +436,7 @@ class ZipCodeFilter(DSCMS4Model):
     chart = ForeignKeyField(
         RealEstates, column_name='chart', backref='zip_code_filters',
         on_delete='CASCADE')
-    zip_code = CharField(255)
+    zip_code = HTMLCharField(255)
     # True: blacklist, False: whitelist.
     blacklist = BooleanField(default=False)
 
@@ -482,7 +481,7 @@ class Contact(DSCMS4Model):
     chart = ForeignKeyField(
         RealEstates, column_name='chart', backref='contacts',
         on_delete='CASCADE')
-    name = CharField(255)
+    name = HTMLCharField(255)
     file = ForeignKeyField(File, column_name='file')
 
     @classmethod

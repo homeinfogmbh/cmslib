@@ -2,8 +2,8 @@
 
 from enum import Enum
 
-from peewee import CharField, TextField, SmallIntegerField, IntegerField
-from peeweeplus import EnumField
+from peewee import CharField, SmallIntegerField, IntegerField
+from peeweeplus import EnumField, HTMLTextField
 
 from cmslib import dom
 from cmslib.orm.charts.api import Chart
@@ -27,7 +27,7 @@ class Cleaning(Chart):
 
     title = CharField(255, null=True)
     mode = EnumField(Mode)
-    text = TextField(null=True)
+    text = HTMLTextField(null=True)
     font_size = SmallIntegerField(default=8)
     text_color = IntegerField(default=0x000000)
 

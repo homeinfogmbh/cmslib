@@ -4,14 +4,12 @@ from datetime import datetime
 from uuid import uuid4
 
 from peewee import BooleanField
-from peewee import CharField
 from peewee import DateTimeField
 from peewee import ForeignKeyField
 from peewee import SmallIntegerField
-from peewee import TextField
 from peewee import UUIDField
 
-from peeweeplus import EnumField, Transaction
+from peeweeplus import EnumField, HTMLCharField, HTMLTextField, Transaction
 
 from cmslib import dom  # pylint: disable=E0611
 from cmslib.exceptions import OrphanedBaseChart, AmbiguousBaseChart
@@ -33,8 +31,8 @@ class BaseChart(CustomerModel):
         table_name = 'base_chart'
 
     uuid = UUIDField(default=uuid4)
-    title = CharField(255)
-    description = TextField(null=True)
+    title = HTMLCharField(255)
+    description = HTMLTextField(null=True)
     duration = SmallIntegerField(default=10)
     position = SmallIntegerField(null=True)
     display_from = DateTimeField(null=True)
@@ -205,4 +203,4 @@ class ChartPIN(DSCMS4Model):    # pylint: disable=R0903
     base_chart = ForeignKeyField(
         BaseChart, column_name='base_chart', backref='pins',
         on_delete='CASCADE', on_update='CASCADE')
-    pin = CharField(8)
+    pin = HTMLCharField(8)

@@ -3,12 +3,12 @@
 from datetime import datetime, timedelta
 
 from peewee import BooleanField
-from peewee import CharField
 from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import SmallIntegerField
 
 from ferengi.facebook import Facebook as FacebookClient
+from peeweeplus import HTMLCharField
 
 from cmslib import dom
 from cmslib.orm.charts.api import ChartMode, Chart
@@ -99,10 +99,10 @@ class Account(DSCMS4Model):
 
     chart = ForeignKeyField(
         Facebook, column_name='chart', backref='accounts', on_delete='CASCADE')
-    facebook_id = CharField(255)
+    facebook_id = HTMLCharField(255)
     recent_days = SmallIntegerField(default=14)
     max_posts = SmallIntegerField(default=10)
-    name = CharField(255, null=True)
+    name = HTMLCharField(255, null=True)
 
     @classmethod
     def from_json(cls, json, chart, **kwargs):

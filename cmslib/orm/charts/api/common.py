@@ -1,8 +1,8 @@
 """Common chart data."""
 
 from enum import Enum
-from collections import namedtuple
 from logging import getLogger
+from typing import NamedTuple
 
 
 __all__ = ['CHARTS', 'LOGGER']
@@ -12,7 +12,11 @@ CHARTS = {}
 LOGGER = getLogger(__file__)
 
 
-CheckResult = namedtuple('CheckResult', ('orphans', 'ambiguous'))
+class CheckResult(NamedTuple):
+    """Chart check result."""
+
+    orphans: frozenset
+    ambiguous: frozenset
 
 
 class Transitions(Enum):

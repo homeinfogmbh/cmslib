@@ -2,9 +2,9 @@
 
 from enum import Enum
 
-from peewee import CharField, ForeignKeyField, IntegerField, TextField
+from peewee import ForeignKeyField, IntegerField
 
-from peeweeplus import EnumField
+from peeweeplus import EnumField, HTMLCharField, HTMLTextField
 
 from cmslib import dom
 from cmslib.orm.charts.api import ChartMode, Chart
@@ -27,7 +27,7 @@ class Poll(Chart):
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_poll'
 
-    text = TextField()
+    text = HTMLTextField()
     mode = EnumField(Mode)
 
     @classmethod
@@ -111,7 +111,7 @@ class Option(DSCMS4Model):
 
     poll = ForeignKeyField(
         Poll, column_name='poll', backref='options', on_delete='CASCADE')
-    text = CharField(255)
+    text = HTMLCharField(255)
     votes = IntegerField(default=0)
     index = IntegerField(default=0)
 

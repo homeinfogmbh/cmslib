@@ -1,13 +1,12 @@
 """Image / text charts."""
 
 from peewee import BooleanField
-from peewee import CharField
 from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import SmallIntegerField
-from peewee import TextField
 
 from hisfs import get_file, File
+from peeweeplus import HTMLCharField, HTMLTextField
 
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
@@ -24,7 +23,7 @@ class ImageText(Chart):
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_image_text'
 
-    title = CharField(255)
+    title = HTMLCharField(255)
     font_size = SmallIntegerField(default=26)
     title_color = IntegerField(default=0x000000)
     ken_burns = BooleanField(default=False)
@@ -146,7 +145,7 @@ class Text(DSCMS4Model):
 
     chart = ForeignKeyField(
         ImageText, column_name='chart', backref='texts', on_delete='CASCADE')
-    text = TextField()
+    text = HTMLTextField()
 
     @classmethod
     def from_json(cls, json, chart=None, **kwargs):

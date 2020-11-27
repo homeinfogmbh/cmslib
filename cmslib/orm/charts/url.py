@@ -2,8 +2,9 @@
 
 from enum import Enum
 
-from peewee import CharField, IntegerField, SmallIntegerField
-from peeweeplus import EnumField
+from peewee import IntegerField, SmallIntegerField
+
+from peeweeplus import EnumField, HTMLCharField
 
 from cmslib import dom
 from cmslib.orm.charts.api import Chart
@@ -25,7 +26,7 @@ class URL(Chart):
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_url'
 
-    url = CharField()
+    url = HTMLCharField()
     mode = EnumField(Mode)
     title_color = IntegerField(default=0x000000)
     font_size_title = SmallIntegerField(default=26)

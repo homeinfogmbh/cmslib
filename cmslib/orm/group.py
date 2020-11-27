@@ -1,9 +1,10 @@
 """ORM model to represent groups."""
 
-from peewee import CharField, ForeignKeyField, IntegerField, TextField
+from peewee import ForeignKeyField, IntegerField
 
 from his.messages.data import MISSING_KEY_ERROR, INVALID_KEYS
 from hwdb import Deployment
+from peeweeplus import HTMLCharField, HTMLTextField
 
 from cmslib.functions.deployment import get_deployment
 from cmslib.messages.data import CIRCULAR_REFERENCE
@@ -16,8 +17,8 @@ __all__ = ['MODELS', 'Group', 'GroupMemberDeployment']
 class Group(CustomerModel):
     """Groups of 'clients' that can be assigned content."""
 
-    name = CharField(255)
-    description = TextField(null=True)
+    name = HTMLCharField(255)
+    description = HTMLTextField(null=True)
     parent = ForeignKeyField(
         'self', column_name='parent', null=True, backref='_children')
     index = IntegerField(default=0)
