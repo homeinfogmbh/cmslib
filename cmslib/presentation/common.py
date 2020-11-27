@@ -39,13 +39,7 @@ def resolve_charts(base_charts):
             LOGGER.error('Base chart is ambiguous: %s.', base_chart)
 
 
-def identify(item):
-    """Returns the item's ID."""
-
-    return item.id
-
-
-def indexify(item):
+def get_index(item):
     """Returns the item's index."""
 
     return item.index
@@ -104,7 +98,7 @@ class PresentationMixin:
         return chain(self.menus, self.group_menus)
 
     @property
-    @coerce(partial(uniquesort, key=identify))
+    @coerce(partial(uniquesort, key=lambda item: item.id))
     def charts(self):
         """Yields all charts for this object."""
         return chain(self.playlist, self.menu_charts)
@@ -170,7 +164,7 @@ class PresentationMixin:
     def menutree(self):
         """Returns the merged menu tree."""
         items = chain(*(MenuTreeItem.from_menu(menu) for menu in self._menus))
-        return sorted(merge(items), key=indexify)
+        return sorted(merge(items), key=get_index)
 
     @property
     @lru_cache()
@@ -179,7 +173,7 @@ class PresentationMixin:
         """Yields the playlist."""
         base_charts = chain(self._group_base_charts, self.base_charts)
 
-        for base_chart_mapping in sorted(base_charts, key=indexify):
+        for base_chart_mapping in sorted(base_charts, key=get_index):
             yield base_chart_mapping.base_chart
 
     def to_dom(self):
