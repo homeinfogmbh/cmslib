@@ -48,13 +48,13 @@ class Chart(DSCMS4Model):
         if mode == ChartMode.FULL:
             json = super().to_json(**kwargs)
             json['base'] = self.base.to_json(
-                autofields=False, fk_fields=fk_fields)
+                autofields=False, fk_fields=fk_fields, **kwargs)
         elif mode == ChartMode.BRIEF:
             json = {'id': self.id}
         elif mode == ChartMode.ANON:
-            json = super().to_json(skip={'id'}, **kwargs)
+            json = super().to_json(autofields=False, **kwargs)
             json['base'] = self.base.to_json(
-                autofields=False, fk_fields=fk_fields)
+                autofields=False, fk_fields=fk_fields, **kwargs)
             return json
 
         json['type'] = type(self).__name__
