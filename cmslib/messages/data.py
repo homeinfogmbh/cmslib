@@ -7,7 +7,8 @@ __all__ = [
     'INVALID_ID',
     'NO_ID_SPECIFIED',
     'CIRCULAR_REFERENCE',
-    'INVALID_REFERENCE']
+    'INVALID_REFERENCE'
+]
 
 
 INVALID_ID = JSONMessage('Invalid ID.', status=400)

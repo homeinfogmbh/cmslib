@@ -10,7 +10,8 @@ __all__ = [
     'CONTENT_ADDED',
     'CONTENT_EXISTS',
     'CONTENT_PATCHED',
-    'CONTENT_DELETED']
+    'CONTENT_DELETED'
+]
 
 
 NO_SUCH_CONTENT = JSONMessage('No such content.', status=404)

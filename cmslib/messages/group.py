@@ -11,7 +11,8 @@ __all__ = [
     'GROUP_PATCHED',
     'GROUP_DELETED',
     'MEMBER_ADDED',
-    'MEMBER_DELETED']
+    'MEMBER_DELETED'
+]
 
 
 NO_SUCH_GROUP = JSONMessage('The specified group does not exist.', status=404)

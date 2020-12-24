@@ -1,1 +1,1 @@
-"""Localized JSON messages."""
+"""JSON messages."""

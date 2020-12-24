@@ -24,7 +24,8 @@ __all__ = [
     'MENU_ITEM_CHART_DELETED',
     'MENU_ITEM_CHART_PATCHED',
     'DIFFERENT_MENU_ITEMS',
-    'MENU_XOR_PARENT']
+    'MENU_XOR_PARENT'
+]
 
 
 NO_MENU_SPECIFIED = JSONMessage('No menu specified.', status=400)
