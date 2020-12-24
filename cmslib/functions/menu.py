@@ -11,7 +11,7 @@ from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
 __all__ = ['get_menu', 'get_menu_item', 'get_menu_item_chart']
 
 
-def get_menu(ident):
+def get_menu(ident: int) -> Menu:
     """Returns the respective menu of the current customer."""
 
     condition = Menu.customer == CUSTOMER.id
@@ -23,7 +23,7 @@ def get_menu(ident):
         raise NO_SUCH_MENU from None
 
 
-def get_menu_item(ident):
+def get_menu_item(ident: int) -> MenuItem:
     """Returns the respective menu item."""
 
     condition = Menu.customer == CUSTOMER.id
@@ -35,7 +35,7 @@ def get_menu_item(ident):
         raise NO_SUCH_MENU_ITEM from None
 
 
-def get_menu_item_chart(ident):
+def get_menu_item_chart(ident: int) -> MenuItemChart:
     """Returns the respective MenuItemChart."""
 
     select = MenuItemChart.select().join(MenuItem).join(Menu)
