@@ -49,15 +49,15 @@ class BaseChart(CustomerModel):
     @classmethod
     def from_json(cls, json: dict, skip: set = None,    # pylint: disable=W0221
                   **kwargs) -> Transaction:
-        """Creates a base chart from a JSON-ish dictionary."""
+        """Creates a base chart from a JSON-ish dict."""
         skip = {'uuid', *(skip or ())}
-        pins = json.pop('pins', None)
+        pins = json.pop('pins', ())
         schedule = json.pop('schedule', None)
         record = super().from_json(json, skip=skip, **kwargs)
         transaction = Transaction()
         transaction.add(record, primary=True)
 
-        for pin in pins or ():
+        for pin in pins:
             chart_pin = ChartPIN(base_chart=record, pin=pin)
             transaction.add(chart_pin)
 
