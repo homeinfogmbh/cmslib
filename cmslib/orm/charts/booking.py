@@ -1,9 +1,11 @@
 """Booking chart."""
 
+from typing import Iterable, Iterator, Union
+
 from peewee import BooleanField, ForeignKeyField
 
 from bookings import get_bookable, Bookable
-from peeweeplus import HTMLTextField
+from peeweeplus import HTMLTextField, Transaction
 
 from cmslib import dom
 from cmslib.orm.charts.api import Chart, ChartMode
@@ -11,6 +13,9 @@ from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
 
 __all__ = ['Booking', 'BookableMapping']
+
+
+DomModel = Union[dom.BriefChart, dom.Booking]
 
 
 class Booking(Chart):
@@ -24,7 +29,7 @@ class Booking(Chart):
     text = HTMLTextField(null=True)
 
     @classmethod
-    def from_json(cls, json, **kwargs):
+    def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates a booking chart from a JSON-ish dict."""
         bookables = json.pop('bookables', ())
         transaction = super().from_json(json, **kwargs)
@@ -32,12 +37,13 @@ class Booking(Chart):
         return transaction
 
     @property
-    def bookables(self):
+    def bookables(self) -> Iterator[Bookable]:
         """Yields the respective bookables."""
         for bookable_mapping in self.bookable_mappings:
             yield bookable_mapping.bookable
 
-    def update_bookable_mappings(self, bookables, transaction):
+    def update_bookable_mappings(self, bookables: Iterable[int],
+                                 transaction: Transaction) -> None:
         """Updates the bookable objects."""
         if bookables == UNCHANGED:
             return
@@ -51,14 +57,14 @@ class Booking(Chart):
             bookable_mapping = BookableMapping(chart=self, bookable=bookable)
             transaction.add(bookable_mapping)
 
-    def patch_json(self, json, **kwargs):
+    def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the bookable chart."""
         bookables = json.pop('bookables', UNCHANGED)
         transaction = super().patch_json(json, **kwargs)
         self.update_bookable_mappings(bookables, transaction)
         return transaction
 
-    def to_json(self, mode=ChartMode.FULL, **kwargs):
+    def to_json(self, mode: ChartMode = ChartMode.FULL, **kwargs) -> dict:
         """Returns a JSON-ish dict."""
         json = super().to_json(mode=mode, **kwargs)
 
@@ -68,7 +74,7 @@ class Booking(Chart):
 
         return json
 
-    def to_dom(self, brief=False):
+    def to_dom(self, brief: bool = False) -> DomModel:
         """Returns an XML DOM."""
         if brief:
             return super().to_dom(dom.BriefChart)
@@ -81,7 +87,7 @@ class Booking(Chart):
         return xml
 
 
-class BookableMapping(DSCMS4Model):
+class BookableMapping(DSCMS4Model):     # pylint: disable=R0903
     """Many-to-many mapping of bookables and charts."""
 
     class Meta:     # pylint: disable=C0111,R0903
