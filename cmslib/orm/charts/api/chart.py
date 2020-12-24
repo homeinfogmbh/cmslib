@@ -3,6 +3,7 @@
 from peewee import ForeignKeyField
 
 from his.messages.data import MISSING_DATA
+from peeweeplus import Transaction
 
 from cmslib import dom  # pylint: disable=E0611
 from cmslib.orm.charts.api.base_chart import BaseChart
@@ -23,8 +24,8 @@ class Chart(DSCMS4Model):
         CHARTS[cls.__name__] = cls
 
     @classmethod
-    def from_json(cls, json, **kwargs):
-        """Creates a chart from a JSON-ish dictionary."""
+    def from_json(cls, json: dict, **kwargs) -> Transaction:
+        """Creates a chart from a JSON-ish dict."""
         try:
             base_dict = json.pop('base')
         except KeyError:
@@ -36,14 +37,15 @@ class Chart(DSCMS4Model):
         transaction.add(chart, primary=True)
         return transaction
 
-    def patch_json(self, json, **kwargs):
-        """Pathes the chart with the provided dictionary."""
+    def patch_json(self, json: dict, **kwargs) -> Transaction:
+        """Patches the chart from a JSON-ish dict."""
         transaction = self.base.patch_json(json.pop('base', {}))
         super().patch_json(json, **kwargs)
         transaction.add(self, primary=True)
         return transaction
 
-    def to_json(self, mode=ChartMode.FULL, fk_fields=True, **kwargs):
+    def to_json(self, mode: ChartMode = ChartMode.FULL, fk_fields: bool = True,
+                **kwargs) -> dict:
         """Returns a JSON-ish dictionary."""
         if mode == ChartMode.FULL:
             json = super().to_json(**kwargs)
@@ -60,7 +62,7 @@ class Chart(DSCMS4Model):
         json['type'] = type(self).__name__
         return json
 
-    def to_dom(self, model):
+    def to_dom(self, model: type) -> dom.Chart:
         """Returns an XML DOM of this chart."""
         xml = model()
         xml.id = self.id
@@ -71,6 +73,6 @@ class Chart(DSCMS4Model):
 
         return xml
 
-    def delete_instance(self):
+    def delete_instance(self) -> int:
         """Deletes the base chart and thus (CASCADE) this chart."""
         return self.base.delete_instance()
