@@ -9,7 +9,7 @@ from cmslib.orm.group import Group
 __all__ = ['get_group']
 
 
-def get_group(ident):
+def get_group(ident: int) -> Group:
     """Returns the respective group of the current customer."""
 
     condition = Group.customer == CUSTOMER.id
