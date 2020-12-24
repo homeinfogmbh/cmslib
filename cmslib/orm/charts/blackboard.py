@@ -8,7 +8,7 @@ from peewee import ForeignKeyField, IntegerField
 from hisfs import get_file, File
 from peeweeplus import EnumField, Transaction
 
-from cmslib import dom  # pylint: disable=E0611
+from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
 from cmslib.orm.charts.api import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
