@@ -1,6 +1,9 @@
 """Charts related functions."""
 
+from typing import Iterable, Iterator
+
 from flask import request
+from peewee import Expression, ModelBase
 from werkzeug.local import LocalProxy
 
 from his import ACCOUNT, CUSTOMER
@@ -11,7 +14,7 @@ from cmslib.messages.charts import NO_CHART_TYPE_SPECIFIED
 from cmslib.messages.charts import NO_SUCH_BASE_CHART
 from cmslib.messages.charts import NO_SUCH_CHART
 from cmslib.orm.chart_acl import ChartACL
-from cmslib.orm.charts import CHARTS, ChartMode, BaseChart
+from cmslib.orm.charts import CHARTS, BaseChart, Chart, ChartMode
 
 
 __all__ = [
@@ -24,7 +27,7 @@ __all__ = [
 ]
 
 
-def _get_chart_types():
+def _get_chart_types() -> Iterator[Chart]:
     """Yields selected chart types."""
 
     try:
@@ -40,7 +43,7 @@ def _get_chart_types():
             raise INVALID_CHART_TYPE from None
 
 
-def _filter_chart_types():
+def _filtered_chart_types() -> Iterator[Chart]:
     """Yields filtered chart types."""
 
     for chart_type in _get_chart_types():
@@ -48,10 +51,10 @@ def _filter_chart_types():
             yield chart_type
 
 
-CHART_TYPES = LocalProxy(_filter_chart_types)
+CHART_TYPES = LocalProxy(_filtered_chart_types)
 
 
-def _get_chart_type():
+def _get_chart_type() -> Chart:
     """Returns the selected chart type."""
 
     try:
@@ -73,7 +76,7 @@ def _get_chart_type():
 CHART_TYPE = LocalProxy(_get_chart_type)
 
 
-def _get_trashed():
+def _get_trashed() -> Expression:
     """Returns a selection for the trashed status."""
 
     trashed = request.args.get('trashed')
@@ -92,7 +95,7 @@ def _get_trashed():
     return BaseChart.trashed == 0
 
 
-def get_base_chart(ident):
+def get_base_chart(ident: int) -> BaseChart:
     """Returns the respective base chart."""
 
     condition = BaseChart.id == ident
@@ -104,7 +107,7 @@ def get_base_chart(ident):
         raise NO_SUCH_BASE_CHART from None
 
 
-def get_charts():
+def get_charts() -> Iterator[Chart]:
     """Lists the available charts."""
 
     condition = BaseChart.customer == CUSTOMER.id
@@ -115,19 +118,19 @@ def get_charts():
             yield record
 
 
-def get_chart(ident, type=CHART_TYPE):  # pylint: disable=W0622
+def get_chart(ident: int, cls: ModelBase = CHART_TYPE) -> Iterable[Chart]:
     """Returns the selected chart."""
 
     condition = BaseChart.customer == CUSTOMER.id
-    condition &= type.id == ident
+    condition &= cls.id == ident
 
     try:
-        return type.select().join(BaseChart).where(condition).get()
-    except type.DoesNotExist:
+        return cls.select().join(BaseChart).where(condition).get()
+    except cls.DoesNotExist:
         raise NO_SUCH_CHART from None
 
 
-def get_mode():
+def get_mode() -> ChartMode:
     """Determines the extend of the dataset."""
 
     try:
