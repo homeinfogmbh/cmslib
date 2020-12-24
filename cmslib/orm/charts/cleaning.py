@@ -1,6 +1,7 @@
 """Cleaning chart."""
 
 from enum import Enum
+from typing import Union
 
 from peewee import CharField, SmallIntegerField, IntegerField
 from peeweeplus import EnumField, HTMLTextField
@@ -12,6 +13,9 @@ from cmslib.orm.charts.api import Chart
 __all__ = ['Mode', 'Cleaning']
 
 
+DomModel = Union[dom.BriefChart, dom.Cleaning]
+
+
 class Mode(Enum):
     """Possible displaying modes."""
 
@@ -19,7 +23,7 @@ class Mode(Enum):
     INPUT = 'input'
 
 
-class Cleaning(Chart):
+class Cleaning(Chart) -> DomModel:
     """Cleaning chart."""
 
     class Meta:     # pylint: disable=C0111,R0903
@@ -31,7 +35,7 @@ class Cleaning(Chart):
     font_size = SmallIntegerField(default=8)
     text_color = IntegerField(default=0x000000)
 
-    def to_dom(self, brief=False):
+    def to_dom(self, brief: bool = False) -> DomModel:
         """Returns an XML DOM of this chart."""
         if brief:
             return super().to_dom(dom.BriefChart)
