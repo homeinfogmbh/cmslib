@@ -1,6 +1,7 @@
 """Base chart."""
 
 from datetime import datetime
+from typing import Iterator
 from uuid import uuid4
 
 from peewee import BooleanField
@@ -46,16 +47,17 @@ class BaseChart(CustomerModel):
         on_update='CASCADE')
 
     @classmethod
-    def from_json(cls, json, skip=None, **kwargs):  # pylint: disable=W0221
+    def from_json(cls, json: dict, skip: set = None,    # pylint: disable=W0221
+                  **kwargs) -> Transaction:
         """Creates a base chart from a JSON-ish dictionary."""
         skip = {'uuid', *(skip or ())}
-        pins = json.pop('pins', None) or ()
+        pins = json.pop('pins', None)
         schedule = json.pop('schedule', None)
         record = super().from_json(json, skip=skip, **kwargs)
         transaction = Transaction()
         transaction.add(record, primary=True)
 
-        for pin in pins:
+        for pin in pins or ():
             chart_pin = ChartPIN(base_chart=record, pin=pin)
             transaction.add(chart_pin)
 
@@ -66,7 +68,7 @@ class BaseChart(CustomerModel):
         return transaction
 
     @classmethod
-    def check(cls, verbose=False):
+    def check(cls, verbose: bool = False) -> CheckResult:
         """Checks base charts."""
         orphans = set()
         ambiguous = set()
@@ -91,7 +93,7 @@ class BaseChart(CustomerModel):
         return CheckResult(frozenset(orphans), frozenset(ambiguous))
 
     @property
-    def active(self):
+    def active(self) -> bool:
         """Determines whether the chart is considered active."""
         now = datetime.now()
         cond_from = self.display_from is None or self.display_from > now
@@ -99,14 +101,14 @@ class BaseChart(CustomerModel):
         return cond_from and cond_until
 
     @property
-    def charts(self):
+    def charts(self) -> Iterator[DSCMS4Model]:
         """Yields all charts that associate this base chart."""
         for model in CHARTS.values():
             for record in model.select().where(model.base == self):
                 yield record
 
     @property
-    def chart(self):
+    def chart(self) -> DSCMS4Model:
         """Returns the mapped implementation of this base chart."""
         try:
             match, *superfluous = self.charts
@@ -119,7 +121,7 @@ class BaseChart(CustomerModel):
 
         return match
 
-    def _patch_pins(self, pins, transaction):
+    def _patch_pins(self, pins: dict, transaction: Transaction):
         """Patches the PINs."""
         if pins is not UNCHANGED:
             for chart_pin in self.pins:
@@ -130,7 +132,7 @@ class BaseChart(CustomerModel):
                     chart_pin = ChartPIN(base_chart=self, pin=pin)
                     transaction.add(chart_pin)
 
-    def _patch_schedule(self, schedule, transaction):
+    def _patch_schedule(self, schedule: dict, transaction: Transaction):
         """Patches the schedule."""
         if schedule is UNCHANGED:
             return
@@ -144,7 +146,7 @@ class BaseChart(CustomerModel):
         else:
             self.schedule = None
 
-    def patch_json(self, json, **kwargs):
+    def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the base chart."""
         pins = json.pop('pins', UNCHANGED)
         schedule = json.pop('schedule', UNCHANGED)
@@ -155,7 +157,7 @@ class BaseChart(CustomerModel):
         self._patch_schedule(schedule, transaction)
         return transaction
 
-    def to_json(self, brief=False, **kwargs):
+    def to_json(self, brief: bool = False, **kwargs) -> dict:
         """Returns a JSON-ish dictionary."""
         if brief:
             return {'title': self.title}
@@ -168,7 +170,7 @@ class BaseChart(CustomerModel):
 
         return json
 
-    def to_dom(self):
+    def to_dom(self) -> dom.BaseChart:
         """Returns an XML DOM of the base chart."""
         xml = dom.BaseChart()
         xml.id = self.id
