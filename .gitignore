@@ -8,4 +8,3 @@ dist
 .buildconfig
 .anjuta*
 *.anjuta
-cmslib/dom.py
