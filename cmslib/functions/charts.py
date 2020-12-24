@@ -1,6 +1,6 @@
 """Charts related functions."""
 
-from typing import Iterable, Iterator
+from typing import Iterator
 
 from flask import request
 from peewee import Expression, ModelBase
@@ -118,7 +118,7 @@ def get_charts() -> Iterator[Chart]:
             yield record
 
 
-def get_chart(ident: int, cls: ModelBase = CHART_TYPE) -> Iterable[Chart]:
+def get_chart(ident: int, cls: ModelBase = CHART_TYPE) -> Chart:
     """Returns the selected chart."""
 
     condition = BaseChart.customer == CUSTOMER.id
