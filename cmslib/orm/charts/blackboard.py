@@ -1,19 +1,23 @@
 """Black board charts."""
 
 from enum import Enum
+from typing import Set, Union
 
 from peewee import ForeignKeyField, IntegerField
 
 from hisfs import get_file, File
-from peeweeplus import EnumField
+from peeweeplus import EnumField, Transaction
 
-from cmslib import dom
+from cmslib import dom  # pylint: disable=E0611
 from cmslib.attachments import attachment_dom, attachment_json
 from cmslib.orm.charts.api import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
 
 __all__ = ['Blackboard', 'Image']
+
+
+DomModel = Union[dom.BriefChart, dom.Blackboard]
 
 
 class Format(Enum):
@@ -36,7 +40,7 @@ class Blackboard(Chart):
         table_name = 'chart_blackboard'
 
     @classmethod
-    def from_json(cls, json, **kwargs):
+    def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates a new chart ffrom a JSON-ish dict."""
         # Pop images first to exclude them from the
         # dictionary before invoking super().from_json().
@@ -50,11 +54,11 @@ class Blackboard(Chart):
         return transaction
 
     @property
-    def files(self):
-        """Returns a set of IDs of files used by the chart."""
+    def files(self) -> Set[File]:
+        """Returns a set of files used by the chart."""
         return set(image.file for image in self.images)
 
-    def patch_json(self, json, **kwargs):
+    def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the respective chart."""
         images = json.pop('images', UNCHANGED) or ()
         transaction = super().patch_json(json, **kwargs)
@@ -69,7 +73,7 @@ class Blackboard(Chart):
 
         return transaction
 
-    def to_json(self, mode=ChartMode.FULL, **kwargs):
+    def to_json(self, mode: ChartMode = ChartMode.FULL, **kwargs) -> dict:
         """Returns the dictionary representation of this chart's fields."""
         json = super().to_json(mode=mode, **kwargs)
 
@@ -81,7 +85,7 @@ class Blackboard(Chart):
 
         return json
 
-    def to_dom(self, brief=False):
+    def to_dom(self, brief: bool = False) -> DomModel:
         """Returns an XML DOM of this chart."""
         if brief:
             return super().to_dom(dom.BriefChart)
@@ -105,7 +109,7 @@ class Image(DSCMS4Model):
     index = IntegerField(default=0)
 
     @classmethod
-    def from_json(cls, json, chart=None, **kwargs):
+    def from_json(cls, json: dict, chart: Blackboard, **kwargs) -> Image:
         """Creates an image from the respective JSON-ish dict."""
         file_id = json.pop('file')
         record = super().from_json(json, **kwargs)
@@ -113,12 +117,12 @@ class Image(DSCMS4Model):
         record.file = get_file(file_id)
         return record
 
-    def to_json(self, *args, **kwargs):
+    def to_json(self, *args, **kwargs) -> dict:
         """Returns a JSON representation of this record."""
         json = super().to_json(*args, **kwargs)
         return attachment_json(self.file, json=json)
 
-    def to_dom(self):
+    def to_dom(self) -> dom.Attachment:
         """Returns an XML DOM of this record."""
         return attachment_dom(
             self.file, format=self.format.value, index=self.index)
