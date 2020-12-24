@@ -9,7 +9,7 @@ from cmslib.orm.schedule import Schedule
 __all__ = ['get_schedule']
 
 
-def get_schedule(ident):
+def get_schedule(ident: int) -> Schedule:
     """Returns the respective schedule."""
 
     condition = Schedule.id == ident
