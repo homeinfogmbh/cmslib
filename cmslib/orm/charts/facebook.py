@@ -1,14 +1,15 @@
 """Facebook charts and associated data."""
 
 from datetime import datetime, timedelta
+from typing import Iterator, Union
 
 from peewee import BooleanField
 from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import SmallIntegerField
 
-from ferengi.facebook import Facebook as FacebookClient
-from peeweeplus import HTMLCharField
+from ferengi.facebook import Facebook as FacebookClient, Post
+from peeweeplus import HTMLCharField, Transaction
 
 from cmslib import dom
 from cmslib.orm.charts.api import ChartMode, Chart
@@ -16,6 +17,9 @@ from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
 
 __all__ = ['Facebook', 'Account']
+
+
+DomModel = Union[dom.BriefChart, dom.Facebook]
 
 
 class Facebook(Chart):
@@ -31,7 +35,7 @@ class Facebook(Chart):
     ken_burns = BooleanField(default=False)
 
     @classmethod
-    def from_json(cls, json, **kwargs):
+    def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates a new quotes chart from the
         dictionary for the respective customer.
         """
@@ -44,7 +48,7 @@ class Facebook(Chart):
 
         return transaction
 
-    def patch_json(self, json, **kwargs):
+    def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Creates a new quotes chart from the
         dictionary for the respective customer.
         """
@@ -65,7 +69,7 @@ class Facebook(Chart):
 
         return transaction
 
-    def to_json(self, mode=ChartMode.FULL, **kwargs):
+    def to_json(self, mode: ChartMode = ChartMode.FULL, **kwargs) -> dict:
         """Returns a JSON-ish dictionary."""
         json = super().to_json(mode=mode, **kwargs)
 
@@ -76,7 +80,7 @@ class Facebook(Chart):
 
         return json
 
-    def to_dom(self, brief=False):
+    def to_dom(self, brief: bool = False) -> DomModel:
         """Returns an XML DOM of this chart."""
         if brief:
             return super().to_dom(dom.BriefChart)
@@ -105,7 +109,7 @@ class Account(DSCMS4Model):
     name = HTMLCharField(255, null=True)
 
     @classmethod
-    def from_json(cls, json, chart, **kwargs):
+    def from_json(cls, json: dict, chart: Facebook, **kwargs) -> Account:
         """Creates a new facebook account for the provided
         facebook chart from the respective distionary.
         """
@@ -114,18 +118,18 @@ class Account(DSCMS4Model):
         return account
 
     @property
-    def since(self):
+    def since(self) -> datetime:
         """Returns the datetime of the first post."""
         return datetime.now() - timedelta(days=self.recent_days)
 
     @property
-    def posts(self):
+    def posts(self) -> Iterator[Post]:
         """Yields posts."""
         facebook = FacebookClient.default_instance()
         return facebook.get_posts(
             self.facebook_id, limit=self.max_posts, since=self.since)
 
-    def to_dom(self):
+    def to_dom(self) -> dom.FacebookAccount:
         """Returns an XML DOM of this model."""
         xml = dom.FacebookAccount()
         xml.facebook_id = self.facebook_id
