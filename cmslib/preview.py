@@ -4,7 +4,7 @@ from typinng import Union
 
 from his.messages.request import INVALID_CONTENT_TYPE
 from previewlib import FileAccessToken
-from wsgilib import ACCEPT, JSON, XML
+from wsgilib import ACCEPT, JSON, JSONMessage, XML
 
 from cmslib.exceptions import AmbiguousConfigurationsError
 from cmslib.exceptions import NoConfigurationFound
@@ -13,10 +13,13 @@ from cmslib.messages.presentation import AMBIGUOUS_CONFIGURATIONS
 from cmslib.presentation.common import PresentationMixin
 
 
-__all__ = ['make_response']
+__all__ = ['Response', 'make_response']
 
 
-def make_response(presentation: PresentationMixin) -> Union[JSON, XML]:
+Response = Union[JSON, JSONMessage, XML]
+
+
+def make_response(presentation: PresentationMixin) -> Response:
     """Creates a response for the respective presentation."""
 
     file_preview_token = FileAccessToken.token_for_presentation(presentation)
