@@ -1,19 +1,22 @@
 """Common preview functions."""
 
+from typinng import Union
+
+from his.messages.request import INVALID_CONTENT_TYPE
+from previewlib import FileAccessToken
+from wsgilib import ACCEPT, JSON, XML
+
 from cmslib.exceptions import AmbiguousConfigurationsError
 from cmslib.exceptions import NoConfigurationFound
 from cmslib.messages.presentation import NO_CONFIGURATION_ASSIGNED
 from cmslib.messages.presentation import AMBIGUOUS_CONFIGURATIONS
-from his.messages.request import INVALID_CONTENT_TYPE
-from previewlib import FileAccessToken
-
-from wsgilib import ACCEPT, JSON, XML
+from cmslib.presentation.common import PresentationMixin
 
 
 __all__ = ['make_response']
 
 
-def make_response(presentation):
+def make_response(presentation: PresentationMixin) -> Union[JSON, XML]:
     """Creates a response for the respective presentation."""
 
     file_preview_token = FileAccessToken.token_for_presentation(presentation)

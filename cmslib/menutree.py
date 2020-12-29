@@ -1,20 +1,22 @@
 """Menu tree utilities."""
 
+from __future__ import annotations
 from collections import defaultdict
 from itertools import chain
 from json import dumps
-from typing import Iterable, NamedTuple
+from typing import Any, Iterable, Iterator, NamedTuple, Tuple
 
 from hisfs import File
 
 from cmslib import dom  # pylint: disable=E0611
 from cmslib.attachments import attachment_dom, attachment_json
+from cmslib.orm.menu import Menu, MenuItem
 
 
 __all__ = ['add', 'merge', 'get_index', 'MenuTreeItem']
 
 
-def add(children):
+def add(children: Iterable[MenuTreeItem]) -> MenuTreeItem:
     """Adds children."""
 
     child, *children = children
@@ -28,7 +30,7 @@ def add(children):
     return child
 
 
-def merge(children):
+def merge(children: Iterable[MenuTreeItem]) -> Iterable[MenuTreeItem]:
     """Merges lists of children by name."""
 
     mapping = defaultdict(list)
@@ -39,10 +41,10 @@ def merge(children):
     return [add(children) for children in mapping.values()]
 
 
-def get_index(menu_item):
+def get_index(obj: Any) -> int:
     """Key function for sorting."""
 
-    return menu_item.index
+    return obj.index
 
 
 class MenuTreeItem(NamedTuple):
@@ -55,13 +57,13 @@ class MenuTreeItem(NamedTuple):
     background_color: int
     index: int
     menu_item_charts: Iterable
-    children: Iterable
+    children: Iterable[MenuTreeItem]
 
     def __str__(self):
         """Returns a nested JSON object."""
         return dumps(self.to_json(), indent=2)
 
-    def __add__(self, other):
+    def __add__(self, other: MenuTreeItem) -> MenuTreeItem:
         """Adds two menu tree items."""
         if self.signature != other.signature:
             raise ValueError('Can only add menu items with same signature.')
@@ -80,7 +82,7 @@ class MenuTreeItem(NamedTuple):
             self.background_color, self.index, menu_item_charts, children)
 
     @classmethod
-    def from_menu_item(cls, menu_item):
+    def from_menu_item(cls, menu_item: MenuItem) -> MenuTreeItem:
         """Creates a menu item tree from the given menu item."""
         children = [cls.from_menu_item(child) for child in menu_item.children]
         menu_item_charts = list(menu_item.menu_item_charts)
@@ -90,16 +92,17 @@ class MenuTreeItem(NamedTuple):
             menu_item_charts, children)
 
     @classmethod
-    def from_menu(cls, menu):
+    def from_menu(cls, menu: Menu) -> Iterator[MenuTreeItem]:
         """Yields menu tree items from the respective menu."""
-        return [cls.from_menu_item(menu_item) for menu_item in menu.root_items]
+        for menu_item in menu.root_items:
+            yield cls.from_menu_item(menu_item)
 
     @property
-    def signature(self):
+    def signature(self) -> Tuple[str, str, int, int]:
         """Returns a tuple, identifying the menu tree item."""
         return (self.name, self.icon, self.text_color, self.background_color)
 
-    def to_json(self):
+    def to_json(self) -> dict:
         """Returns a nested JSON-ish dict."""
         return {
             'name': self.name,
@@ -121,7 +124,7 @@ class MenuTreeItem(NamedTuple):
             ]
         }
 
-    def to_dom(self):
+    def to_dom(self) -> dom.MenuItem:
         """Returns an XML DOM of the model."""
         xml = dom.MenuItem()
         xml.name = self.name
@@ -134,5 +137,6 @@ class MenuTreeItem(NamedTuple):
         xml.chart = [
             menu_item_chart.to_dom() for menu_item_chart
             in sorted(self.menu_item_charts, key=get_index)
-            if not menu_item_chart.base_chart.trashed]
+            if not menu_item_chart.base_chart.trashed
+        ]
         return xml
