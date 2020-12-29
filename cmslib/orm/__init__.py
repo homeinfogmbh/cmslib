@@ -18,13 +18,12 @@ __all__ = ['create_tables']
 
 
 # Order matters here!
-MODELS = (
-    charts.MODELS + configuration.MODELS + group.MODELS + menu.MODELS
-    + content.MODELS + chart_acl.MODELS + schedule.MODELS + settings.MODELS
-)
+MODELS = (*charts.MODELS, *configuration.MODELS, *group.MODELS, *menu.MODELS,
+          *content.MODELS, *chart_acl.MODELS, *schedule.MODELS,
+          *settings.MODELS)
 
 
-def create_tables(fail_silently=True):
+def create_tables(fail_silently: bool = True) -> None:
     """Create the respective tables."""
 
     for model in MODELS:

@@ -1,6 +1,8 @@
 """Menus, menu items and chart members."""
 
+from __future__ import annotations
 from logging import getLogger
+from typing import Iterable, Iterator, Set, Union
 
 from peewee import ForeignKeyField, IntegerField
 
@@ -15,14 +17,14 @@ from cmslib.messages.menu import DIFFERENT_MENUS
 from cmslib.messages.menu import NO_MENU_SPECIFIED
 from cmslib.messages.menu import NO_SUCH_MENU_ITEM
 from cmslib.orm.common import UNCHANGED, CustomerModel, DSCMS4Model
-from cmslib.orm.charts import ChartMode, BaseChart
+from cmslib.orm.charts import BaseChart, Chart, ChartMode
 
 
 __all__ = ['Menu', 'MenuItem', 'MODELS']
 
 
 LOGGER = getLogger('Menu')
-COPY_SUFFIX = ' (Kopie)'
+SUFFIX = ' (Kopie)'
 
 
 class Menu(CustomerModel):
@@ -32,19 +34,19 @@ class Menu(CustomerModel):
     description = HTMLCharField(255, null=True)
 
     @property
-    def root_items(self):
+    def root_items(self) -> Iterable[MenuItem]:
         """Yields this menu's root items."""
         return self.items.where(MenuItem.parent >> None)
 
     @property
-    def files(self):
+    def files(self) -> Set[File]:
         """Returns a set of IDs of files used by the chart."""
         return {
             item.icon_image for item in self.items
             if item.icon_image is not None
         }
 
-    def copy(self, suffix=COPY_SUFFIX):
+    def copy(self, suffix: str = SUFFIX) -> Iterator[Union[Menu, MenuItem]]:
         """Copies thhe respective menu."""
         copy = type(self)[self.id]
         copy.id = None
@@ -54,14 +56,15 @@ class Menu(CustomerModel):
         for root_item in self.root_items:
             yield from root_item.copy(menu=copy)
 
-    def to_json(self, *args, items=False, **kwargs):
+    def to_json(self, *args, items: bool = False, **kwargs) -> dict:
         """Returns the menu as a dictionary."""
         json = super().to_json(*args, **kwargs)
 
         if items:
             json['items'] = [
                 item.to_json(charts=True, children=True, fk_fields=False)
-                for item in self.root_items.order_by(MenuItem.index)]
+                for item in self.root_items.order_by(MenuItem.index)
+            ]
 
         return json
 
@@ -85,7 +88,7 @@ class MenuItem(DSCMS4Model):
     index = IntegerField(default=0)
 
     @classmethod
-    def from_json(cls, json, customer, **kwargs):
+    def from_json(cls, json: dict, customer: int, **kwargs) -> MenuItem:
         """Creates a new menu item from the provided dictionary."""
         menu = json.pop('menu')
         parent = json.pop('parent', None)
@@ -98,12 +101,12 @@ class MenuItem(DSCMS4Model):
         return menu_item.move(menu=menu, parent=parent, customer=customer)
 
     @property
-    def root(self):
+    def root(self) -> bool:
         """Determines whether this is a root node entry."""
         return self.menu is not None
 
     @property
-    def children(self):
+    def children(self) -> Iterable[MenuItem]:
         """Returns the children."""
         if self.id is None:     # Fix #351.
             return ()
@@ -111,7 +114,7 @@ class MenuItem(DSCMS4Model):
         return self._children.order_by(type(self).index)
 
     @property
-    def tree(self):
+    def tree(self) -> Iterator[MenuItem]:
         """Recursively yields all submenus."""
         yield self
 
@@ -119,7 +122,7 @@ class MenuItem(DSCMS4Model):
             yield from child.tree
 
     @property
-    def charts(self):
+    def charts(self) -> Iterator[Chart]:
         """Yields the respective charts."""
         for menu_item_chart in self.menu_item_charts:
             base_chart = menu_item_chart.base_chart
@@ -131,7 +134,7 @@ class MenuItem(DSCMS4Model):
             except AmbiguousBaseChart:
                 LOGGER.error('Base chart #%i is ambiguous.', base_chart.id)
 
-    def _get_menu(self, menu, customer=None):
+    def _get_menu(self, menu: int, customer: int = None) -> Menu:
         """Returns the respective menu."""
         if menu is None:
             raise NO_MENU_SPECIFIED
@@ -144,7 +147,7 @@ class MenuItem(DSCMS4Model):
 
         return Menu.get((Menu.customer == customer) & (Menu.id == menu))
 
-    def _get_parent(self, parent, customer=None):
+    def _get_parent(self, parent: int, customer: int = None) -> MenuItem:
         """Returns the respective parent."""
         if parent is None:
             return None
@@ -159,7 +162,8 @@ class MenuItem(DSCMS4Model):
         return cls.select().join(Menu).where(
             (Menu.customer == customer) & (cls.id == parent)).get()
 
-    def move(self, *, menu=UNCHANGED, parent=UNCHANGED, customer=None):
+    def move(self, *, menu: int = UNCHANGED, parent: int = UNCHANGED,
+             customer: int = None) -> MenuItemGroup:
         """Moves the menu item to another menu and / or parent."""
         menu = self._get_menu(menu, customer=customer)
 
@@ -184,7 +188,8 @@ class MenuItem(DSCMS4Model):
 
         return MenuItemGroup(menu_items)
 
-    def copy(self, menu=None, parent=None):
+    def copy(self, menu: Menu = None, parent: MenuItem = None) \
+            -> Iterator[Union[MenuItem, MenuItemChart]]:
         """Copies this menu item."""
         copy = type(self)[self.id]
         copy.id = None
@@ -198,7 +203,7 @@ class MenuItem(DSCMS4Model):
         for child in self.children:
             yield from child.copy(menu=menu, parent=copy)
 
-    def delete_instance(self, update_children=False, **kwargs):
+    def delete_instance(self, update_children: bool = False, **kwargs) -> int:
         """Removes this menu item."""
         if update_children:
             for child in self.children:
@@ -206,7 +211,7 @@ class MenuItem(DSCMS4Model):
 
         return super().delete_instance(**kwargs)
 
-    def patch_json(self, json, **kwargs):
+    def patch_json(self, json: dict, **kwargs) -> MenuItemGroup:
         """Patches the menu item."""
         menu = json.pop('menu', UNCHANGED)
         parent = json.pop('parent', UNCHANGED)
@@ -218,7 +223,8 @@ class MenuItem(DSCMS4Model):
 
         return self.move(menu=menu, parent=parent)
 
-    def to_json(self, charts=False, children=False, **kwargs):
+    def to_json(self, charts: bool = False, children: bool = False,
+                **kwargs) -> dict:
         """Returns a JSON-ish dictionary."""
         json = super().to_json(**kwargs)
         json['iconImage'] = attachment_json(self.icon_image)
@@ -255,21 +261,23 @@ class MenuItemChart(DSCMS4Model):
     index = IntegerField(default=0)
 
     @classmethod
-    def from_json(cls, json, menu_item, base_chart, **kwargs):
+    def from_json(cls, json: dict, menu_item: MenuItem, base_chart: BaseChart,
+                  **kwargs) -> MenuItemChart:
         """Creates a record from a JSON-ish dictionary."""
         menu_item_chart = super().from_json(json, **kwargs)
         menu_item_chart.menu_item = menu_item
         menu_item_chart.base_chart = base_chart
         return menu_item_chart
 
-    def copy(self, menu_item=None):
+    def copy(self, menu_item: MenuItem = None) -> MenuItemChart:
         """Copies this menu item chart."""
         copy = type(self)[self.id]
         copy.id = None
         copy.menu_item = menu_item or self.menu_item
         return copy
 
-    def to_json(self, menu_item=True, base_chart=True, chart=False):
+    def to_json(self, menu_item: bool = True, base_chart: bool = True,
+                chart: bool = False) -> dict:
         """Returns a JSON-ish dictionary."""
         if menu_item and base_chart and not chart:
             return super().to_json()
@@ -289,7 +297,7 @@ class MenuItemChart(DSCMS4Model):
 
         return json
 
-    def to_dom(self):
+    def to_dom(self) -> dom.MenuItemChart:
         """Returns an XML DOM of the model."""
         xml = dom.MenuItemChart()
         chart = self.base_chart.chart

@@ -1,7 +1,11 @@
 """Per-customer Settings regarding this CMS itself.
 Not to be confused with "configuration".
 """
+from __future__ import annotations
+
 from peewee import BooleanField
+
+from mdb import Customer
 
 from cmslib.orm.common import CustomerModel
 
@@ -17,7 +21,7 @@ class Settings(CustomerModel):
     testing = BooleanField(default=False)   # Show testing deployments.
 
     @classmethod
-    def for_customer(cls, customer):
+    def for_customer(cls, customer: Customer) -> Settings:
         """Returns an XML DOM of the model."""
         try:
             return cls.get(cls.customer == customer)

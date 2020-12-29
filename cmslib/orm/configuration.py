@@ -1,9 +1,11 @@
 """Configurations i.e. colors, tickers and brightness
 settings for the digital signage presentation.
 """
+from __future__ import annotations
 from contextlib import suppress
 from datetime import datetime
 from enum import Enum
+from typing import Iterable, Set
 
 from peewee import BooleanField
 from peewee import ForeignKeyField
@@ -33,7 +35,7 @@ __all__ = [
 TIME_FORMAT = '%H:%M'
 
 
-def percentage(value):
+def percentage(value: float) -> int:
     """Restricts a number to 0-100 %."""
 
     value = round(value)
@@ -129,7 +131,7 @@ class Configuration(CustomerModel):
     text_bg_transparent = BooleanField(default=False)
 
     @classmethod
-    def from_json(cls, json, **kwargs):
+    def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates a new configuration from the provided
         dictionary for the respective customer.
         """
@@ -157,7 +159,7 @@ class Configuration(CustomerModel):
         return transaction
 
     @property
-    def files(self):
+    def files(self) -> Set[File]:
         """Returns a set od IDs of files used by the configuration."""
         files = set()
 
@@ -173,7 +175,7 @@ class Configuration(CustomerModel):
         return files
 
     @property
-    def backlight_dict(self):
+    def backlight_dict(self) -> dict:
         """Returns a backlight settings dictionary for this configuration."""
         backlights = {}
 
@@ -183,7 +185,7 @@ class Configuration(CustomerModel):
 
         return backlights
 
-    def update_colors(self, transaction, colors):
+    def update_colors(self, transaction: Transaction, colors: Colors) -> None:
         """Updates the respective colors."""
         if colors:
             try:
@@ -193,7 +195,9 @@ class Configuration(CustomerModel):
 
             transaction.add(self.colors, left=True)
 
-    def update_backgrounds(self, transaction, backgrounds, *, delete):
+    def update_backgrounds(self, transaction: Transaction,
+                           backgrounds: Iterable[int], *,
+                           delete: bool) -> None:
         """Updates the related backgrounds."""
         if delete:
             for background in self.backgrounds:
@@ -205,7 +209,8 @@ class Configuration(CustomerModel):
                 background = Background(configuration=self, file=file)
                 transaction.add(background)
 
-    def update_tickers(self, transaction, tickers, *, delete):
+    def update_tickers(self, transaction: Transaction,
+                       tickers: Iterable[dict], *, delete: bool) -> None:
         """Updates the respective ticker records."""
         if delete:
             for ticker in self.tickers:
@@ -216,7 +221,8 @@ class Configuration(CustomerModel):
                 ticker = Ticker.from_json(json, self)
                 transaction.add(ticker)
 
-    def update_backlights(self, transaction, backlights, *, delete):
+    def update_backlights(self, transaction: Transaction, backlights: dict, *,
+                          delete: bool) -> None:
         """Updates the respective backlight records."""
         if delete:
             for backlight in self.backlights:
@@ -229,7 +235,7 @@ class Configuration(CustomerModel):
                 backlight = Backlight.from_json(json, self)
                 transaction.add(backlight)
 
-    def patch_json(self, json, **kwargs):
+    def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the configuration with a JSON-ish dict."""
         transaction = Transaction()
         transaction.add(self, primary=True)
@@ -269,7 +275,7 @@ class Configuration(CustomerModel):
 
         return transaction
 
-    def to_json(self, cascade=False, **kwargs):
+    def to_json(self, cascade: bool = False, **kwargs) -> dict:
         """Converts the configuration into a JSON-like dictionary."""
         json = super().to_json(**kwargs)
         json['backgrounds'] = [
@@ -288,7 +294,7 @@ class Configuration(CustomerModel):
 
         return json
 
-    def to_dom(self):
+    def to_dom(self) -> dom.Configuration:
         """Returns an XML DOM of the configuration."""
         xml = dom.Configuration()
         xml.name = self.name
@@ -316,7 +322,7 @@ class Configuration(CustomerModel):
         xml.backlight = [backlight.to_dom() for backlight in self.backlights]
         return xml
 
-    def delete_instance(self):
+    def delete_instance(self) -> int:
         """Deletes this instance."""
         colors = self.colors
         result = super().delete_instance()
@@ -332,7 +338,7 @@ class Background(DSCMS4Model):
         on_delete='CASCADE')
     file = ForeignKeyField(File, column_name='file')
 
-    def to_json(self, *args, **kwargs):
+    def to_json(self, *args, **kwargs) -> dict:
         """Returns a JSON-ish dict."""
         json = super().to_json(*args, **kwargs)
         return attachment_json(self.file, json=json)
@@ -348,13 +354,14 @@ class Ticker(DSCMS4Model):
     content = HTMLTextField()
 
     @classmethod
-    def from_json(cls, json, configuration, **kwargs):
+    def from_json(cls, json: dict, configuration: Configuration,
+                  **kwargs) -> Ticker:
         """Creates a new ticker from the respective dictionary."""
         ticker = super().from_json(json, **kwargs)
         ticker.configuration = configuration
         return ticker
 
-    def to_dom(self):
+    def to_dom(self) -> dom.Ticker:
         """Returns an XML DOM of the model."""
         xml = dom.Ticker()
         xml.type = self.type_.value
@@ -372,27 +379,28 @@ class Backlight(DSCMS4Model):
     brightness = SmallIntegerField()   # Brightness in percent.
 
     @classmethod
-    def from_json(cls, json, configuration, **kwargs):
+    def from_json(cls, json: dict, configuration: Configuration,
+                  **kwargs) -> Backlight:
         """Yields new records from the provided JSON-ish dictionary."""
         backlight = super().from_json(json, **kwargs)
         backlight.configuration = configuration
         return backlight
 
     @property
-    def percent(self):
+    def percent(self) -> int:
         """Returns the percentage as an integer."""
         return percentage(self.brightness)
 
     @percent.setter
-    def percent(self, brightness):
+    def percent(self, brightness: float):
         """Sets the percentage."""
         self.brightness = percentage(brightness)
 
-    def to_json(self):
+    def to_json(self) -> dict:
         """Returns the backlight as dictionary."""
         return {self.time.strftime(TIME_FORMAT): self.percent}
 
-    def to_dom(self):
+    def to_dom(self) -> dom.Backlight:
         """Returns an XML DOM of the model."""
         xml = dom.Backlight()
         xml.time = self.time
