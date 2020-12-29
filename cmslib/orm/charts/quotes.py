@@ -1,5 +1,7 @@
 """Quotes charts."""
 
+from typing import Union
+
 from peewee import IntegerField, SmallIntegerField
 
 from cmslib import dom  # pylint: disable=E0611
@@ -7,6 +9,9 @@ from cmslib.orm.charts.api import Chart
 
 
 __all__ = ['Quotes']
+
+
+DomModel = Union[dom.BriefChart, dom.Quotes]
 
 
 class Quotes(Chart):
@@ -20,7 +25,7 @@ class Quotes(Chart):
     font_size_quote = SmallIntegerField(default=26)
     font_size_author = SmallIntegerField(default=26)
 
-    def to_dom(self, brief=False):  # pylint: disable=W0221
+    def to_dom(self, brief: bool = False) -> DomModel:
         """Returns an XML DOM of this chart."""
         if brief:
             return super().to_dom(dom.BriefChart)

@@ -1,17 +1,21 @@
 """Real estate chart ORM."""
 
+from __future__ import annotations
 from collections import defaultdict
 from enum import Enum
 from itertools import chain
+from typing import Dict, Iterable, Iterator, List, Set, Union
 
 from peewee import BooleanField
 from peewee import ForeignKeyField
 from peewee import IntegerField
+from peewee import Model
+from peewee import ModelBase
 from peewee import SmallIntegerField
 
 from hisfs import get_file, File
 from openimmodb import Immobilie
-from peeweeplus import EnumField, HTMLCharField
+from peeweeplus import EnumField, HTMLCharField, Transaction
 
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
@@ -22,7 +26,12 @@ from cmslib.orm.common import UNCHANGED, DSCMS4Model
 __all__ = ['RealEstates', 'IdFilter', 'ZipCodeFilter']
 
 
-def _update_json_transaction(model, json_list, transaction, delete=None):
+DomModel = Union[dom.BriefChart, dom.RealEstates]
+
+
+def _update_json_transaction(
+        model: ModelBase, json_list: List[dict], transaction: Transaction,
+        delete: List[Model] = None) -> None:
     """Adds models for the given JSON data to a transaction."""
 
     if delete:
@@ -157,7 +166,7 @@ class RealEstates(Chart):
     sale = BooleanField(default=True)
 
     @classmethod
-    def from_json(cls, json, **kwargs):
+    def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates a new chart from the respective dictionary."""
         filters = json.pop('filters', {})
         contacts = json.pop('contacts', ())
@@ -169,25 +178,25 @@ class RealEstates(Chart):
         return transaction
 
     @property
-    def zip_code_whitelist(self):
+    def zip_code_whitelist(self) -> Iterable[ZipCodeFilter]:
         """Yields ZIP code whitelist filters."""
         return ZipCodeFilter.select().where(
             (ZipCodeFilter.chart == self) & (ZipCodeFilter.blacklist == 0))
 
     @property
-    def zip_code_blacklist(self):
+    def zip_code_blacklist(self) -> Iterable[ZipCodeFilter]:
         """Yields ZIP code blacklist filters."""
         return ZipCodeFilter.select().where(
             (ZipCodeFilter.chart == self) & (ZipCodeFilter.blacklist == 1))
 
     @property
-    def real_estates(self):
+    def real_estates(self) -> Iterable[Immobilie]:
         """Yields filtered real estates for this chart."""
         return self.filter(Immobilie.select().where(
             Immobilie.customer == self.customer))
 
     @property
-    def filters_dictionary(self):
+    def filters_dictionary(self) -> Dict[List[dict]]:
         """Dictionary of filters."""
         filters = defaultdict(list)
         skip = ('id', 'chart')
@@ -201,11 +210,11 @@ class RealEstates(Chart):
         return filters
 
     @property
-    def files(self):
+    def files(self) -> Set[File]:
         """Returns the used files."""
         return {contact.file for contact in self.contacts}
 
-    def patch_json(self, json, **kwargs):
+    def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Creates a new chart from the respective dictionary."""
         filters = json.pop('filters', {})
         contacts = json.pop('contacts', UNCHANGED)
@@ -234,7 +243,7 @@ class RealEstates(Chart):
 
         return transaction
 
-    def match(self, real_estate):
+    def match(self, real_estate: Immobilie) -> bool:
         """Matches the respective real estate
         against the configures filters.
         """
@@ -260,11 +269,11 @@ class RealEstates(Chart):
 
         return True
 
-    def filter(self, real_estates):
+    def filter(self, real_estates: Iterable[Immobilie]) -> Iterator[Immobilie]:
         """Yields filtered real estates."""
         return filter(self.match, real_estates)
 
-    def to_json(self, mode=ChartMode.FULL, **kwargs):
+    def to_json(self, mode: ChartMode = ChartMode.FULL, **kwargs) -> dict:
         """Returns a JSON-ish dictionary of the record's properties."""
         json = super().to_json(mode=mode, **kwargs)
 
@@ -277,7 +286,7 @@ class RealEstates(Chart):
 
         return json
 
-    def to_dom(self, brief=False):
+    def to_dom(self, brief: bool = False) -> DomModel:
         """Returns an XML DOM of this chart."""
         if brief:
             return super().to_dom(dom.BriefChart)
@@ -397,7 +406,7 @@ class IdFilter(DSCMS4Model):
     value = HTMLCharField(255)
     type = EnumField(IdTypes)
 
-    def __call__(self, real_estate):
+    def __call__(self, real_estate: Immobilie) -> bool:
         """Checks the filter against the respective real estate."""
         if self.type == IdTypes.INTERN:
             return self.value == real_estate.objektnr_intern
@@ -411,7 +420,7 @@ class IdFilter(DSCMS4Model):
         raise ValueError('Unexpected ID type.')
 
     @classmethod
-    def from_json(cls, json, chart):
+    def from_json(cls, json: dict, chart: RealEstates) -> IdFilter:
         """Creates a new entry from the
         dictionary for the respective chart.
         """
@@ -419,7 +428,7 @@ class IdFilter(DSCMS4Model):
         record.chart = chart
         return record
 
-    def to_dom(self):
+    def to_dom(self) -> dom.IdFilter:
         """Returns an XML DOM of this model."""
         xml = dom.IdFilter()
         xml.value_ = self.value
@@ -440,7 +449,7 @@ class ZipCodeFilter(DSCMS4Model):
     # True: blacklist, False: whitelist.
     blacklist = BooleanField(default=False)
 
-    def __call__(self, real_estate):
+    def __call__(self, real_estate: Immobilie) -> bool:
         """Checks the filter against the respective real estate."""
         if self.blacklist:
             return real_estate.plz != self.zip_code
@@ -448,23 +457,23 @@ class ZipCodeFilter(DSCMS4Model):
         return real_estate.plz == self.zip_code
 
     @classmethod
-    def from_json(cls, json, chart):
+    def from_json(cls, json: dict, chart: RealEstates) -> ZipCodeFilter:
         """Creates a new record from the respective dictionary."""
         record = super().from_json(json)
         record.chart = chart
         return record
 
     @property
-    def whitelist(self):
+    def whitelist(self) -> bool:
         """Determines whether this is a whitelist record."""
         return not self.blacklist
 
     @whitelist.setter
-    def whitelist(self, whitelist):
+    def whitelist(self, whitelist: bool):
         """Sets whether this is a whitelist record."""
         self.blacklist = not whitelist
 
-    def to_dom(self):
+    def to_dom(self) -> dom.ZipCodeFilter:
         """Returns an XML DOM of this model."""
         xml = dom.ZipCodeFilter()
         xml.zip_code = self.zip_code
@@ -485,7 +494,7 @@ class Contact(DSCMS4Model):
     file = ForeignKeyField(File, column_name='file')
 
     @classmethod
-    def from_json(cls, json, chart):
+    def from_json(cls, json: dict, chart: RealEstates) -> Contact:
         """Creates a new record from the respective dictionary."""
         file = json.pop('file')
         record = super().from_json(json)
@@ -493,12 +502,12 @@ class Contact(DSCMS4Model):
         record.file = get_file(file)
         return record
 
-    def to_json(self, *args, **kwargs):
+    def to_json(self, *args, **kwargs) -> dict:
         """Returns a JSON representation of this record."""
         json = super().to_json(*args, **kwargs)
         return attachment_json(self.file, json=json)
 
-    def to_dom(self):
+    def to_dom(self) -> dom.RealEstateContact:
         """Returns an XML DOM of this record."""
         xml = dom.RealEstateContact()
         xml.name = self.name

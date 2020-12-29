@@ -1,12 +1,15 @@
 """New charts."""
 
+from __future__ import annotations
+from typing import Union
+
 from peewee import BooleanField
 from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import SmallIntegerField
 
 from newslib import Provider
-from peeweeplus import EnumField
+from peeweeplus import EnumField, Transaction
 
 from cmslib import dom
 from cmslib.orm.charts.api import Chart, ChartMode
@@ -14,6 +17,9 @@ from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
 
 __all__ = ['News', 'NewsProvider']
+
+
+DomModel = Union[dom.BriefChart, dom.News]
 
 
 class News(Chart):
@@ -29,7 +35,7 @@ class News(Chart):
     ken_burns = BooleanField(null=True)
 
     @classmethod
-    def from_json(cls, json, **kwargs):
+    def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates an new news chart from a JSON-ish dict."""
         providers = json.pop('providers', None) or ()
         transaction = super().from_json(json, **kwargs)
@@ -41,7 +47,7 @@ class News(Chart):
 
         return transaction
 
-    def patch_json(self, json, **kwargs):
+    def patch_json(self, json: dict, **kwargs) -> News:
         """Patches the chart and related components from a JSON-ish dict."""
         try:
             providers = json.pop('providers') or ()
@@ -61,7 +67,7 @@ class News(Chart):
 
         return transaction
 
-    def to_json(self, mode=ChartMode.FULL, **kwargs):
+    def to_json(self, mode: ChartMode = ChartMode.FULL, **kwargs) -> dict:
         """Returns a JSON-ish dict."""
         json = super().to_json(mode=mode, **kwargs)
 
@@ -71,7 +77,7 @@ class News(Chart):
 
         return json
 
-    def to_dom(self, brief=False):
+    def to_dom(self, brief: bool = False) -> DomModel:
         """Returns an XML DOM of this chart."""
         if brief:
             return super().to_dom(dom.BriefChart)

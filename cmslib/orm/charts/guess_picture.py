@@ -1,10 +1,15 @@
 """Oicture guessing chart."""
 
+from typing import Union
+
 from cmslib import dom
 from cmslib.orm.charts.api import Chart
 
 
 __all__ = ['GuessPicture']
+
+
+DomModel = Union[dom.BriefChart, dom.GuessPicture]
 
 
 class GuessPicture(Chart):
@@ -13,7 +18,7 @@ class GuessPicture(Chart):
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_guess_picture'
 
-    def to_dom(self, brief=False):
+    def to_dom(self, brief: bool = False) -> DomModel:
         """Returns an XML DOM of this chart."""
         if brief:
             return super().to_dom(dom.BriefChart)
