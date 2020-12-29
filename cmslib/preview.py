@@ -1,6 +1,6 @@
 """Common preview functions."""
 
-from typinng import Union
+from typing import Union
 
 from his.messages.request import INVALID_CONTENT_TYPE
 from previewlib import FileAccessToken
