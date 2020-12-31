@@ -1,6 +1,8 @@
 """Chart type settings for the respective customers."""
 
-from peewee import CharField
+from peewee import CharField, ModelBase
+
+from mdb import Customer
 
 from cmslib.orm.common import CustomerModel
 
@@ -17,14 +19,15 @@ class ChartACL(CustomerModel):
     chart_type = CharField(255)
 
     @classmethod
-    def can_use(cls, customer, chart_class):
+    def can_use(cls, customer: Customer, chart_class: ModelBase) -> bool:
         """Determines whether the respective
         user may use the given chart class.
         """
+        condition = cls.customer == customer
+        condition &= cls.chart_type == chart_class.__name__
+
         try:
-            cls.get(
-                (cls.customer == customer)
-                & (cls.chart_type == chart_class.__name__))
+            cls.get(condition)
         except cls.DoesNotExist:
             return False
 

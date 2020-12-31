@@ -1,8 +1,10 @@
 """Content assigned to groups."""
 
+from __future__ import annotations
+
 from peewee import ForeignKeyField, IntegerField
 
-from cmslib.orm.charts import ChartMode, BaseChart
+from cmslib.orm.charts import BaseChart, Chart, ChartMode
 from cmslib.orm.common import DSCMS4Model
 from cmslib.orm.configuration import Configuration
 from cmslib.orm.group import Group
@@ -33,7 +35,8 @@ class GroupBaseChart(_GroupContent):
     index = IntegerField(default=0)
 
     @classmethod
-    def from_json(cls, json, group, base_chart, **kwargs):
+    def from_json(cls, json: dict, group: Group, base_chart: BaseChart,
+                  **kwargs) -> GroupBaseChart:
         """Creates a new group base chart."""
         record = super().from_json(json, **kwargs)
         record.group = group
@@ -41,16 +44,17 @@ class GroupBaseChart(_GroupContent):
         return record
 
     @property
-    def chart(self):
+    def chart(self) -> Chart:
         """Returns the respective chart."""
         return self.base_chart.chart
 
-    def to_json(self):
+    def to_json(self) -> dict:
         """Returns a JSON-ish dict."""
         return {
             'id': self.id,
             'chart': self.chart.to_json(mode=ChartMode.BRIEF),
-            'index': self.index}
+            'index': self.index
+        }
 
 
 class GroupConfiguration(_GroupContent):
@@ -62,7 +66,7 @@ class GroupConfiguration(_GroupContent):
     configuration = ForeignKeyField(
         Configuration, column_name='configuration', on_delete='CASCADE')
 
-    def to_json(self):
+    def to_json(self) -> dict:
         """Returns a JSON-ish dict."""
         return {'id': self.id, 'configuration': self.configuration_id}
 
@@ -75,7 +79,7 @@ class GroupMenu(_GroupContent):
 
     menu = ForeignKeyField(Menu, column_name='menu', on_delete='CASCADE')
 
-    def to_json(self):
+    def to_json(self) -> dict:
         """Returns a JSON-ish dict."""
         return {'id': self.id, 'menu': self.menu_id}
 

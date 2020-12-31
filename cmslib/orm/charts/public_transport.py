@@ -1,10 +1,15 @@
 """Local public transport charts."""
 
+from typing import Union
+
 from cmslib import dom
 from cmslib.orm.charts.api import Chart
 
 
 __all__ = ['PublicTransport']
+
+
+DomModel = Union[dom.BriefChart, dom.PublicTransport]
 
 
 class PublicTransport(Chart):
@@ -13,7 +18,7 @@ class PublicTransport(Chart):
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_public_transport'
 
-    def to_dom(self, brief=False):
+    def to_dom(self, brief: bool = False) -> DomModel:
         """Returns an XML DOM of this chart."""
         if brief:
             return super().to_dom(dom.BriefChart)

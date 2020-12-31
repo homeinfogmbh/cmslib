@@ -1,5 +1,8 @@
 """ORM model to represent groups."""
 
+from __future__ import annotations
+from typing import Iterable, Iterator, Union
+
 from peewee import ForeignKeyField, IntegerField
 
 from his.messages.data import MISSING_KEY_ERROR, INVALID_KEYS
@@ -24,7 +27,7 @@ class Group(CustomerModel):
     index = IntegerField(default=0)
 
     @classmethod
-    def from_json(cls, json, **kwargs):
+    def from_json(cls, json: dict, **kwargs) -> Group:
         """Creates a group from a JSON-ish dictionary."""
         parent = json.pop('parent', None)
         record = super().from_json(json, **kwargs)
@@ -32,12 +35,12 @@ class Group(CustomerModel):
         return record
 
     @property
-    def root(self):
+    def root(self) -> bool:
         """Determines whether this group is on the root level."""
         return self.parent is None
 
     @property
-    def children(self):
+    def children(self) -> Iterable[Group]:
         """Yields the children in order."""
         if self.id is None:
             return ()
@@ -45,7 +48,7 @@ class Group(CustomerModel):
         return self._children.order_by(type(self).index)
 
     @property
-    def tree(self):
+    def tree(self) -> Iterator[Group]:
         """Recursively yields this group's
         children in a depth-first search.
         """
@@ -55,7 +58,7 @@ class Group(CustomerModel):
             yield from child.tree
 
     @property
-    def parents(self):
+    def parents(self) -> Iterator[Group]:
         """Yields all parents."""
         if self.parent is None:
             return
@@ -64,13 +67,13 @@ class Group(CustomerModel):
         yield from self.parent.parents
 
     @property
-    def json_tree(self):
+    def json_tree(self) -> dict:
         """Returns the tree for this group."""
         json = self.to_json(parent=False)
         json['children'] = [child.json_tree for child in self.children]
         return json
 
-    def set_parent(self, parent):
+    def set_parent(self, parent: Union[Group, None]) -> None:
         """Changes the parent reference of the group."""
         if parent is not None:
             parent = self.get_peer(parent)
@@ -80,7 +83,7 @@ class Group(CustomerModel):
 
         self.parent = parent
 
-    def patch_json(self, json, **kwargs):
+    def patch_json(self, json: dict, **kwargs) -> None:
         """Creates a group from a JSON-ish dictionary."""
         try:
             parent = json.pop('parent')
@@ -91,7 +94,7 @@ class Group(CustomerModel):
 
         super().patch_json(json, **kwargs)
 
-    def to_json(self, parent=True, **kwargs):
+    def to_json(self, parent: bool = True, **kwargs) -> dict:
         """Converts the group to a JSON-ish dictionary."""
         json = super().to_json(**kwargs)
 
@@ -105,7 +108,7 @@ class Group(CustomerModel):
 
         return json
 
-    def delete_instance(self, *args, **kwargs):
+    def delete_instance(self, *args, **kwargs) -> int:
         """Deletes the respective instance from the group hierarchy
         setting all child's parent reference to this groups parent.
         """
@@ -128,7 +131,7 @@ class GroupMemberDeployment(DSCMS4Model):
     index = IntegerField(default=0)
 
     @classmethod
-    def from_json(cls, json, group):
+    def from_json(cls, json: dict, group: Group) -> GroupMemberDeployment:
         """Creates a member for the given group
         from the respective JSON-ish dictionary.
         """
@@ -145,7 +148,7 @@ class GroupMemberDeployment(DSCMS4Model):
 
         return cls(group=group, deployment=deployment, index=index)
 
-    def to_json(self):
+    def to_json(self) -> dict:
         """Returns a JSON-ish dict."""
         return {
             'id': self.id,

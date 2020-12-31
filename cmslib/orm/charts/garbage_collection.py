@@ -1,10 +1,15 @@
 """Garbage collection chart."""
 
+from typing import Union
+
 from cmslib import dom
 from cmslib.orm.charts.api import Chart
 
 
 __all__ = ['GarbageCollection']
+
+
+DomModel = Union[dom.BriefChart, dom.GarbageCollection]
 
 
 class GarbageCollection(Chart):
@@ -13,7 +18,7 @@ class GarbageCollection(Chart):
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_garbage_collection'
 
-    def to_dom(self, brief=False):
+    def to_dom(self, brief: bool = False) -> DomModel:
         """Returns an XML DOM of this chart."""
         if brief:
             return super().to_dom(dom.BriefChart)

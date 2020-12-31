@@ -1,5 +1,7 @@
 """DOM utilities."""
 
+from hisfs import File
+
 from cmslib.dom import Attachment   # pylint: disable=E0401,E0611
 
 
@@ -7,7 +9,8 @@ __all__ = ['attachment_dom', 'attachment_json']
 
 
 # pylint: disable=W0622
-def attachment_dom(file, format=None, index=None):
+def attachment_dom(file: File, format: str = None,
+                   index: int = None) -> Attachment:
     """Returns an attachment for the respective file ID."""
 
     if file is None:
@@ -25,7 +28,7 @@ def attachment_dom(file, format=None, index=None):
     return xml
 
 
-def attachment_json(file, json=None):
+def attachment_json(file: File, json: dict = None) -> dict:
     """Returns a JSON-ish representation of the attachment."""
 
     if file is None:

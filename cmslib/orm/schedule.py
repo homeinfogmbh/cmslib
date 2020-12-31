@@ -33,7 +33,7 @@ class Schedule(CustomerModel):
     interval_value = IntegerField()
     interval_unit = EnumField(TimeUnit)
 
-    def to_dom(self):
+    def to_dom(self) -> dom.Schedule:
         """Returns an XML DOM."""
         xml = dom.Schedule()
         xml.description = self.description

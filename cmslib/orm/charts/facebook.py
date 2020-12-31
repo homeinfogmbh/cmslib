@@ -1,5 +1,6 @@
 """Facebook charts and associated data."""
 
+from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Iterator, Union
 

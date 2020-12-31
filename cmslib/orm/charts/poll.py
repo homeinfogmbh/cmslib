@@ -1,10 +1,12 @@
 """Chart for polls."""
 
+from __future__ import annotations
 from enum import Enum
+from typing import Iterable, Union
 
 from peewee import ForeignKeyField, IntegerField
 
-from peeweeplus import EnumField, HTMLCharField, HTMLTextField
+from peeweeplus import EnumField, HTMLCharField, HTMLTextField, Transaction
 
 from cmslib import dom
 from cmslib.orm.charts.api import ChartMode, Chart
@@ -12,6 +14,9 @@ from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
 
 __all__ = ['Mode', 'Poll', 'Option']
+
+
+DomModel = Union[dom.BriefChart, dom.Poll]
 
 
 class Mode(Enum):
@@ -31,7 +36,7 @@ class Poll(Chart):
     mode = EnumField(Mode)
 
     @classmethod
-    def from_json(cls, json, **kwargs):
+    def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates a new poll from JSON."""
         options = json.pop('options', ())
         transaction = super().from_json(json, **kwargs)
@@ -43,12 +48,12 @@ class Poll(Chart):
         return transaction
 
     @property
-    def options(self):
+    def options(self) -> Iterable[Option]:
         """Returns sorted options."""
         return Option.select().where(Option.poll == self).order_by(
             Option.index)
 
-    def _patch_options(self, transaction, json):
+    def _patch_options(self, transaction: Transaction, json: dict) -> None:
         """Patches the respective poll options."""
         if json == UNCHANGED:
             return
@@ -73,14 +78,14 @@ class Poll(Chart):
                 option = Option.from_json(json_object, self)
                 transaction.add(option)
 
-    def patch_json(self, json, **kwargs):
+    def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the respective chart."""
         options = json.pop('options', UNCHANGED) or ()
         transaction = super().patch_json(json, **kwargs)
         self._patch_options(transaction, options)
         return transaction
 
-    def to_json(self, mode=ChartMode.FULL, **kwargs):
+    def to_json(self, mode: ChartMode = ChartMode.FULL, **kwargs) -> dict:
         """Returns the dictionary representation of this chart's fields."""
         json = super().to_json(mode=mode, **kwargs)
 
@@ -91,7 +96,7 @@ class Poll(Chart):
 
         return json
 
-    def to_dom(self, brief=False):
+    def to_dom(self, brief: bool = False) -> DomModel:
         """Returns an XML DOM of this chart."""
         if brief:
             return super().to_dom(dom.BriefChart)
@@ -116,18 +121,18 @@ class Option(DSCMS4Model):
     index = IntegerField(default=0)
 
     @classmethod
-    def from_json(cls, json, poll, **kwargs):
+    def from_json(cls, json: dict, poll: Poll, **kwargs) -> Option:
         """Creates the image from a JSON-ish dict."""
         record = super().from_json(json, **kwargs)
         record.poll = poll
         return record
 
-    def vote(self, amount=1):
+    def vote(self, amount: int = 1) -> None:
         """Adds votes."""
         self.votes += amount
         self.save()
 
-    def to_dom(self):
+    def to_dom(self) -> dom.PollOption:
         """Returns an XML DOM of this model."""
         xml = dom.PollOption(self.text)
         xml.id = self.id

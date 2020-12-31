@@ -1,7 +1,10 @@
 """Common ORM models."""
 
+from __future__ import annotations
+from typing import Union
+
 from flask import has_request_context
-from peewee import ForeignKeyField
+from peewee import ForeignKeyField, Model
 
 from his import CUSTOMER
 from mdb import Customer
@@ -47,7 +50,8 @@ class CustomerModel(DSCMS4Model):
         return f'{self.id}:{self.customer_id}@{cls.__name__}'
 
     @classmethod
-    def from_json(cls, json, *, customer=None, **kwargs):
+    def from_json(cls, json: dict, *, customer: Customer = None,
+                  **kwargs) -> CustomerModel:
         """Creates a new record from the provided
         JSON-ish dictionary for a customer.
 
@@ -65,7 +69,7 @@ class CustomerModel(DSCMS4Model):
         record.customer = customer
         return record
 
-    def get_peer(self, record_or_id):
+    def get_peer(self, record_or_id: Union[Model, int]) -> Model:
         """Ensures that the provided record or ID is of the same
         model and for the same customer as this record itself.
         """
@@ -84,4 +88,4 @@ class CustomerModel(DSCMS4Model):
             return cls.get(
                 (cls.id == record_or_id) & (cls.customer == self.customer))
         except cls.DoesNotExist:
-            raise INVALID_REFERENCE
+            raise INVALID_REFERENCE from None

@@ -1,6 +1,7 @@
 """RSS feed charts."""
 
 from enum import Enum
+from typing import Union
 
 from peewee import IntegerField, SmallIntegerField
 
@@ -11,6 +12,9 @@ from cmslib.orm.charts.api import Chart
 
 
 __all__ = ['Mode', 'URL']
+
+
+DomModel = Union[dom.BriefChart, dom.URL]
 
 
 class Mode(Enum):
@@ -33,7 +37,7 @@ class URL(Chart):
     text_color = IntegerField(default=0x000000)
     font_size_text = SmallIntegerField(default=26)
 
-    def to_dom(self, brief=False):
+    def to_dom(self, brief: bool = False) -> DomModel:
         """Returns an XML DOM of this chart."""
         if brief:
             return super().to_dom(dom.BriefChart)

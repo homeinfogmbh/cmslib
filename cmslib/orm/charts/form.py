@@ -1,10 +1,12 @@
 """Charts for forms."""
 
+from __future__ import annotations
 from enum import Enum
+from typing import Union
 
 from peewee import ForeignKeyField, IntegerField
 
-from peeweeplus import EnumField, HTMLTextField
+from peeweeplus import EnumField, HTMLTextField, Transaction
 
 from cmslib import dom
 from cmslib.orm.charts.api import ChartMode, Chart
@@ -12,6 +14,9 @@ from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
 
 __all__ = ['Mode', 'Form']
+
+
+DomModel = Union[dom.BriefChart, dom.Form]
 
 
 class Mode(Enum):
@@ -32,7 +37,7 @@ class Form(Chart):
     text = HTMLTextField(null=True)
 
     @classmethod
-    def from_json(cls, json, **kwargs):
+    def from_json(cls, json: dict, **kwargs) -> Form:
         """Creates the chart from a JSON-ish dict."""
         choices = json.pop('choices', None) or ()
         transaction = super().from_json(json, **kwargs)
@@ -43,7 +48,7 @@ class Form(Chart):
 
         return transaction
 
-    def patch_json(self, json, **kwargs):
+    def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the chart from a JSON-ish dict."""
         choices = json.pop('choices', UNCHANGED) or ()
         transaction = super().patch_json(json, **kwargs)
@@ -58,7 +63,7 @@ class Form(Chart):
 
         return transaction
 
-    def to_json(self, mode=ChartMode.FULL, **kwargs):
+    def to_json(self, mode: ChartMode = ChartMode.FULL, **kwargs) -> dict:
         """Returns a JSON-ish dict."""
         json = super().to_json(mode=mode, **kwargs)
 
@@ -67,7 +72,7 @@ class Form(Chart):
 
         return json
 
-    def to_dom(self, brief=False):
+    def to_dom(self, brief: bool = False) -> DomModel:
         """Returns an XML DOM of this chart."""
         if brief:
             return super().to_dom(dom.BriefChart)
@@ -91,12 +96,12 @@ class Choice(DSCMS4Model):
     index = IntegerField(default=0)
 
     @classmethod
-    def from_json(cls, json, form=None, **kwargs):
+    def from_json(cls, json: dict, form: Form = None, **kwargs) -> Choice:
         """Creates a choice from a JSON-ish dict for the given form."""
         record = super().from_json(json, **kwargs)
         record.form = form
         return record
 
-    def to_dom(self):
+    def to_dom(self) -> dom.Choice:
         """Returns an XML DOM of this chart."""
         return dom.Choice(self.text, index=self.index)

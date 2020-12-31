@@ -23,7 +23,7 @@ class Mode(Enum):
     INPUT = 'input'
 
 
-class Cleaning(Chart) -> DomModel:
+class Cleaning(Chart):
     """Cleaning chart."""
 
     class Meta:     # pylint: disable=C0111,R0903
