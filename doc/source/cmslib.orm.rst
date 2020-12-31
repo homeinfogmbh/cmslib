@@ -37,14 +37,6 @@ cmslib.orm.configuration module
    :undoc-members:
    :show-inheritance:
 
-cmslib.orm.functions module
----------------------------
-
-.. automodule:: cmslib.orm.functions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 cmslib.orm.group module
 -----------------------
 
