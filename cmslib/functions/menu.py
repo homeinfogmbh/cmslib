@@ -1,6 +1,9 @@
 """Menu related functions."""
 
+from peewee import ModelSelect
+
 from his import CUSTOMER
+from peeweeplus import select_tree
 
 from cmslib.messages.menu import NO_SUCH_MENU
 from cmslib.messages.menu import NO_SUCH_MENU_ITEM
@@ -11,38 +14,46 @@ from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
 __all__ = ['get_menu', 'get_menu_item', 'get_menu_item_chart']
 
 
+def list_menus() -> ModelSelect:
+    """Lists the menus of the current customer."""
+
+    return select_tree(Menu).where(Menu.customer == CUSTOMER.id)
+
+
 def get_menu(ident: int) -> Menu:
     """Returns the respective menu of the current customer."""
 
-    condition = Menu.customer == CUSTOMER.id
-    condition &= Menu.id == ident
-
     try:
-        return Menu.get(condition)
+        return list_menus().where(Menu.id == ident).get()
     except Menu.DoesNotExist:
         raise NO_SUCH_MENU from None
+
+
+def list_menu_items() -> ModelSelect:
+    """Lists the menu items of the current customer."""
+
+    return select_tree(MenuItem).where(Menu.customer == CUSTOMER.id).get()
 
 
 def get_menu_item(ident: int) -> MenuItem:
     """Returns the respective menu item."""
 
-    condition = Menu.customer == CUSTOMER.id
-    condition &= MenuItem.id == ident
-
     try:
-        return MenuItem.select().join(Menu).where(condition).get()
+        return list_menu_items().where(MenuItem.id == ident).get()
     except MenuItem.DoesNotExist:
         raise NO_SUCH_MENU_ITEM from None
+
+
+def list_menu_item_charts() -> ModelSelect:
+    """Selects the menu item charts of the current customer."""
+
+    return select_tree(MenuItemChart).where(Menu.customer == CUSTOMER.id)
 
 
 def get_menu_item_chart(ident: int) -> MenuItemChart:
     """Returns the respective MenuItemChart."""
 
-    select = MenuItemChart.select().join(MenuItem).join(Menu)
-    condition = Menu.customer == CUSTOMER.id
-    condition &= MenuItemChart.id == ident
-
     try:
-        return select.where(condition).get()
+        return list_menu_item_charts().where(MenuItemChart.id == ident).get()
     except MenuItemChart.DoesNotExist:
         raise NO_SUCH_MENU_ITEM_CHART from None
