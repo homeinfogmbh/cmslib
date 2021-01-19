@@ -1,8 +1,9 @@
 """Configuration related functions."""
 
-from typing import Iterable
+from peewee import ModelSelect
 
 from his import CUSTOMER
+from peeweeplus import select_tree
 
 from cmslib.messages.configuration import NO_SUCH_CONFIGURATION
 from cmslib.orm.configuration import Configuration
@@ -11,19 +12,17 @@ from cmslib.orm.configuration import Configuration
 __all__ = ['get_configuration', 'list_configurations']
 
 
+def list_configurations() -> ModelSelect:
+    """Returns the respective configuration."""
+
+    return select_tree(Configuration).where(
+        Configuration.customer == CUSTOMER.id)
+
+
 def get_configuration(ident: int) -> Configuration:
     """Returns the respective configuration."""
 
-    condition = Configuration.customer == CUSTOMER.id
-    condition &= Configuration.id == ident
-
     try:
-        return Configuration.get(condition)
+        return list_configurations().where(Configuration.id == ident).get()
     except Configuration.DoesNotExist:
         raise NO_SUCH_CONFIGURATION from None
-
-
-def list_configurations() -> Iterable[Configuration]:
-    """Returns the respective configuration."""
-
-    return Configuration.select().where(Configuration.customer == CUSTOMER.id)

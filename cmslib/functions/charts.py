@@ -3,11 +3,12 @@
 from typing import Iterator
 
 from flask import request
-from peewee import Expression, ModelBase
+from peewee import Expression, ModelBase, ModelSelect
 from werkzeug.local import LocalProxy
 
 from his import ACCOUNT, CUSTOMER
 from his.messages.data import INVALID_DATA, NOT_AN_INTEGER
+from peeweeplus import select_tree
 
 from cmslib.messages.charts import INVALID_CHART_TYPE
 from cmslib.messages.charts import NO_CHART_TYPE_SPECIFIED
@@ -107,15 +108,14 @@ def get_base_chart(ident: int) -> BaseChart:
         raise NO_SUCH_BASE_CHART from None
 
 
-def get_charts() -> Iterator[Chart]:
+def get_charts() -> ModelSelect:
     """Lists the available charts."""
 
     condition = BaseChart.customer == CUSTOMER.id
     condition &= _get_trashed()
 
     for typ in CHART_TYPES:
-        for record in typ.select().join(BaseChart).where(condition):
-            yield record
+        return select_tree(typ).where(condition)
 
 
 def get_chart(ident: int, cls: ModelBase = CHART_TYPE) -> Chart:
@@ -125,7 +125,7 @@ def get_chart(ident: int, cls: ModelBase = CHART_TYPE) -> Chart:
     condition &= cls.id == ident
 
     try:
-        return cls.select().join(BaseChart).where(condition).get()
+        return select_tree(cls).where(condition).get()
     except cls.DoesNotExist:
         raise NO_SUCH_CHART from None
 
