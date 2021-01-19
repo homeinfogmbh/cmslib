@@ -3,7 +3,7 @@
 from peewee import ModelSelect
 
 from his import CUSTOMER
-from peeweeplus import select_tree
+from mdb import Address, Company, Customer
 
 from cmslib.messages.group import NO_SUCH_GROUP
 from cmslib.orm.group import Group
@@ -15,7 +15,9 @@ __all__ = ['get_group']
 def list_group() -> ModelSelect:
     """Selects the groups of the current customer."""
 
-    return select_tree(Group).where(Group.customer == CUSTOMER.id)
+    select = Group.select(Group, Customer, Company, Address)
+    select = select.join(Customer).join(Company).join(Address)
+    return select.where(Group.customer == CUSTOMER.id)
 
 
 def get_group(ident: int) -> Group:
