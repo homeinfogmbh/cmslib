@@ -8,7 +8,7 @@ from werkzeug.local import LocalProxy
 
 from his import ACCOUNT, CUSTOMER
 from his.messages.data import INVALID_DATA, NOT_AN_INTEGER
-from peeweeplus import select_tree
+from mdb import Address, Company, Customer
 
 from cmslib.messages.charts import INVALID_CHART_TYPE
 from cmslib.messages.charts import NO_CHART_TYPE_SPECIFIED
@@ -108,24 +108,28 @@ def get_base_chart(ident: int) -> BaseChart:
         raise NO_SUCH_BASE_CHART from None
 
 
-def get_charts() -> ModelSelect:
-    """Lists the available charts."""
+def _get_charts(cls: ModelBase) -> ModelSelect:
+    """Selects charts of the given type for the current customer."""
 
     condition = BaseChart.customer == CUSTOMER.id
     condition &= _get_trashed()
+    select = cls.select(cls, BaseChart, Customer, Company, Address)
+    select = cls.join(BaseChart).join(Customer).join(Company).join(Address)
+    return select.where(condition)
 
-    for typ in CHART_TYPES:
-        return select_tree(typ).where(condition)
+
+def get_charts() -> Iterator[Chart]:
+    """Lists the available charts."""
+
+    for cls in CHART_TYPES:
+        yield from _get_charts(cls)
 
 
 def get_chart(ident: int, cls: ModelBase = CHART_TYPE) -> Chart:
     """Returns the selected chart."""
 
-    condition = BaseChart.customer == CUSTOMER.id
-    condition &= cls.id == ident
-
     try:
-        return select_tree(cls).where(condition).get()
+        return _get_charts(cls).where(cls.id == ident).get()
     except cls.DoesNotExist:
         raise NO_SUCH_CHART from None
 
