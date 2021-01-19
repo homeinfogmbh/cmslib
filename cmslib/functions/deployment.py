@@ -6,7 +6,7 @@ from peewee import ModelSelect
 
 from his import CUSTOMER
 from hwdb import Deployment
-from peeweeplus import select_tree
+from mdb import Address, Company, Customer
 
 from cmslib.messages.deployment import NO_SUCH_DEPLOYMENT
 
@@ -17,7 +17,18 @@ __all__ = ['get_deployment', 'with_deployment']
 def list_deployments() -> ModelSelect:
     """Selects the deployments of the current customer."""
 
-    return select_tree(Deployment).where(Deployment.customer == CUSTOMER.id)
+    deployment_address = Address.alias()
+    lpt_address = Address.alias()
+    select = Deployment.select(
+        Deployment, Customer, Company, Address, deployment_address,
+        lpt_address)
+    select = select.join(Customer).join(Company).join(Address)
+    select = select.join_from(
+        Deployment, deployment_address,
+        on=Deployment.address == deployment_address.id)
+    select = select.join_from(
+        Deployment, lpt_address, on=Deployment.lpt_address == lpt_address.id)
+    return select.where(Deployment.customer == CUSTOMER.id)
 
 
 def get_deployment(ident: int) -> Deployment:
