@@ -16,6 +16,7 @@ from cmslib.messages.charts import NO_SUCH_BASE_CHART
 from cmslib.messages.charts import NO_SUCH_CHART
 from cmslib.orm.chart_acl import ChartACL
 from cmslib.orm.charts import CHARTS, BaseChart, Chart, ChartMode
+from cmslib.orm.schedule import Schedule
 
 
 __all__ = [
@@ -113,8 +114,12 @@ def _get_charts(cls: ModelBase) -> ModelSelect:
 
     condition = BaseChart.customer == CUSTOMER.id
     condition &= _get_trashed()
-    select = cls.select(cls, BaseChart, Customer, Company, Address)
-    select = cls.join(BaseChart).join(Customer).join(Company).join(Address)
+    select = cls.select(cls, BaseChart, Customer, Company, Address, Schedule)
+    select = cls.join(BaseChart)
+    select = select.join(Customer)
+    select = select.join(Company)
+    select = select.join(Address)
+    select = select.join_from(BaseChart, Schedule)
     return select.where(condition)
 
 
