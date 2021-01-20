@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 from enum import Enum
-from typing import Iterable, Union
+from typing import Union
 
-from peewee import ForeignKeyField, IntegerField
+from peewee import ForeignKeyField, IntegerField, ModelSelect
 
 from peeweeplus import EnumField, HTMLCharField, HTMLTextField, Transaction
 
@@ -48,17 +48,16 @@ class Poll(Chart):
         return transaction
 
     @property
-    def options(self) -> Iterable[Option]:
+    def sorted_options(self) -> ModelSelect:
         """Returns sorted options."""
-        return Option.select().where(Option.poll == self).order_by(
-            Option.index)
+        return self.options.order_by(Option.index)
 
     def _patch_options(self, transaction: Transaction, json: dict) -> None:
         """Patches the respective poll options."""
         if json == UNCHANGED:
             return
 
-        options = {option.text: option for option in self.options}
+        options = {option.text: option for option in self.sorted_options}
         json_objects = {option.get('text'): option for option in json}
         processed = set()
 
@@ -92,7 +91,8 @@ class Poll(Chart):
         if mode == ChartMode.FULL:
             json['options'] = [
                 option.to_json(fk_fields=False, autofields=True)
-                for option in self.options.order_by(Option.index)]
+                for option in self.sorted_options
+            ]
 
         return json
 
@@ -104,7 +104,7 @@ class Poll(Chart):
         xml = super().to_dom(dom.Poll)
         xml.text = self.text
         xml.mode = self.mode.value
-        xml.option = [option.to_dom() for option in self.options]
+        xml.option = [option.to_dom() for option in self.sorted_options]
         return xml
 
 
