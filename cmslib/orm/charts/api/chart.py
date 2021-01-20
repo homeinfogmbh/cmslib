@@ -50,7 +50,6 @@ class Chart(DSCMS4Model):
             **kwargs).join(BaseChart).join(Customer).join(Company).join_from(
             BaseChart, Schedule, join_type=JOIN.LEFT_OUTER)
 
-
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the chart from a JSON-ish dict."""
         transaction = self.base.patch_json(json.pop('base', {}))

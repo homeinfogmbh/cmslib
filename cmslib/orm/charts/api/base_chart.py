@@ -118,7 +118,7 @@ class BaseChart(CustomerModel):
     def charts(self) -> Iterator[DSCMS4Model]:
         """Yields all charts that associate this base chart."""
         for model in CHARTS.values():
-            for record in model.select().where(model.base == self):
+            for record in model.select(cascade=True).where(model.base == self):
                 yield record
 
     @property

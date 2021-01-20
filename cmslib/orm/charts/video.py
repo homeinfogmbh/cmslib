@@ -48,7 +48,6 @@ class Video(Chart):
         return super().select(*args, File, cascade=True, **kwargs).join_from(
             cls, File, on=cls.file == File.id, join_type=JOIN.LEFT_OUTER)
 
-
     @property
     def files(self) -> Set[File]:
         """Returns a set of IDs of files used by the chart."""
