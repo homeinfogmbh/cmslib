@@ -1,12 +1,13 @@
 """ORM model to represent groups."""
 
 from __future__ import annotations
-from typing import Iterable, Iterator, Union
+from typing import Iterator, Union
 
 from peewee import ForeignKeyField, IntegerField, ModelSelect
 
 from his.messages.data import MISSING_KEY_ERROR, INVALID_KEYS
 from hwdb import Deployment
+from mdb import Address, Company, Customer
 from peeweeplus import HTMLCharField, HTMLTextField
 
 from cmslib.functions.deployment import get_deployment
@@ -126,9 +127,11 @@ class GroupMemberDeployment(DSCMS4Model):
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'group_member_deployment'
 
-    group = ForeignKeyField(Group, column_name='group', on_delete='CASCADE')
+    group = ForeignKeyField(
+        Group, column_name='group', on_delete='CASCADE', lazy_load=False)
     deployment = ForeignKeyField(
-        Deployment, column_name='deployment', on_delete='CASCADE')
+        Deployment, column_name='deployment', on_delete='CASCADE',
+        lazy_load=False)
     index = IntegerField(default=0)
 
     @classmethod
@@ -148,6 +151,23 @@ class GroupMemberDeployment(DSCMS4Model):
             raise INVALID_KEYS.update(keys=tuple(json))
 
         return cls(group=group, deployment=deployment, index=index)
+
+    @classmethod
+    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+        """Selects records."""
+        if not cascade:
+            return super().select(*args, **kwargs)
+
+        deployment_customer = Customer.alias()
+        deployment_company = Company.alias()
+        args = {
+            cls, Group, Customer, Company, Deployment, deployment_customer,
+            deployment_company, *args}
+        return super().select(*args, cascade=cascade, **kwargs).join_from(
+            cls, Group).join(Customer).join(Company).join_from(
+            cls, Deployment).join_from(Deployment, deployment_customer).join(
+            deployment_company).join_from(
+            Deployment, Address, on=Deployment.address == Address.id)
 
     def to_json(self) -> dict:
         """Returns a JSON-ish dict."""
