@@ -4,10 +4,10 @@ from __future__ import annotations
 from typing import Union
 
 from flask import has_request_context
-from peewee import ForeignKeyField, Model
+from peewee import ForeignKeyField, Model, ModelSelect
 
 from his import CUSTOMER
-from mdb import Customer
+from mdb import Address, Company, Customer
 from peeweeplus import MySQLDatabase, JSONModel
 
 from cmslib.config import CONFIG, LOGGER
@@ -68,6 +68,16 @@ class CustomerModel(DSCMS4Model):
         record = super().from_json(json, **kwargs)
         record.customer = customer
         return record
+
+    @classmethod
+    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+        """Selects records."""
+        if cascade:
+            return super().select(
+                *{cls, Customer, Company, Address, *args}, **kwargs).join(
+                Customer).join(Company).join(Address)
+
+        return super().select(*args, **kwargs)
 
     def get_peer(self, record_or_id: Union[Model, int]) -> Model:
         """Ensures that the provided record or ID is of the same

@@ -12,7 +12,6 @@ from peewee import ModelSelect
 from peewee import SmallIntegerField
 from peewee import UUIDField
 
-from mdb import Company, Customer
 from peeweeplus import EnumField, HTMLCharField, HTMLTextField, Transaction
 
 from cmslib import dom  # pylint: disable=E0611
@@ -100,8 +99,7 @@ class BaseChart(CustomerModel):
         """Selects records."""
         if cascade:
             return super().select(
-                cls, Customer, Company, Schedule, **kwargs).join(
-                Customer).join(Company).join_from(
+                *{cls, Schedule, *args}, cascade=cascade, **kwargs).join_from(
                 BaseChart, Schedule, join_type=JOIN.LEFT_OUTER)
 
         return super().select(*args, **kwargs)
