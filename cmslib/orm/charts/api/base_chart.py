@@ -4,12 +4,15 @@ from datetime import datetime
 from typing import Iterator
 from uuid import uuid4
 
+from peewee import JOIN
 from peewee import BooleanField
 from peewee import DateTimeField
 from peewee import ForeignKeyField
+from peewee import ModelSelect
 from peewee import SmallIntegerField
 from peewee import UUIDField
 
+from mdb import Company, Customer
 from peeweeplus import EnumField, HTMLCharField, HTMLTextField, Transaction
 
 from cmslib import dom  # pylint: disable=E0611
@@ -91,6 +94,17 @@ class BaseChart(CustomerModel):
                     LOGGER.info('%s ↔ %s', base_chart, chart)
 
         return CheckResult(frozenset(orphans), frozenset(ambiguous))
+
+    @classmethod
+    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+        """Selects records."""
+        if cascade:
+            return super().select(
+                cls, Customer, Company, Schedule, **kwargs).join(
+                Customer).join(Company).join_from(
+                BaseChart, Schedule, join_type=JOIN.LEFT_OUTER)
+
+        return super().select(*args, **kwargs)
 
     @property
     def active(self) -> bool:
