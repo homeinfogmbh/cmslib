@@ -25,7 +25,8 @@ class Video(Chart):
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_video'
 
-    file = ForeignKeyField(File, column_name='file', null=True)
+    file = ForeignKeyField(
+        File, column_name='file', null=True, lazy_load=False)
 
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:

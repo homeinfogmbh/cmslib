@@ -91,7 +91,8 @@ class Choice(DSCMS4Model):
         table_name = 'chart_form_choice'
 
     form = ForeignKeyField(
-        Form, column_name='form', backref='choices', on_delete='CASCADE')
+        Form, column_name='form', backref='choices', on_delete='CASCADE',
+        lazy_load=False)
     text = HTMLTextField()
     index = IntegerField(default=0)
 

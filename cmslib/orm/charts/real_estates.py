@@ -400,7 +400,7 @@ class IdFilter(DSCMS4Model):
 
     chart = ForeignKeyField(
         RealEstates, column_name='chart', backref='id_filters',
-        on_delete='CASCADE')
+        on_delete='CASCADE', lazy_load=False)
     value = HTMLCharField(255)
     type = EnumField(IdTypes)
 
@@ -442,7 +442,7 @@ class ZipCodeFilter(DSCMS4Model):
 
     chart = ForeignKeyField(
         RealEstates, column_name='chart', backref='zip_code_filters',
-        on_delete='CASCADE')
+        on_delete='CASCADE', lazy_load=False)
     zip_code = HTMLCharField(255)
     # True: blacklist, False: whitelist.
     blacklist = BooleanField(default=False)
@@ -487,9 +487,9 @@ class Contact(DSCMS4Model):
 
     chart = ForeignKeyField(
         RealEstates, column_name='chart', backref='contacts',
-        on_delete='CASCADE')
+        on_delete='CASCADE', lazy_load=False)
     name = HTMLCharField(255)
-    file = ForeignKeyField(File, column_name='file')
+    file = ForeignKeyField(File, column_name='file', lazy_load=False)
 
     @classmethod
     def from_json(cls, json: dict, chart: RealEstates) -> Contact:

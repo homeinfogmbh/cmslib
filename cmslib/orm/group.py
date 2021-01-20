@@ -3,7 +3,7 @@
 from __future__ import annotations
 from typing import Iterable, Iterator, Union
 
-from peewee import ForeignKeyField, IntegerField
+from peewee import ForeignKeyField, IntegerField, ModelSelect
 
 from his.messages.data import MISSING_KEY_ERROR, INVALID_KEYS
 from hwdb import Deployment
@@ -23,7 +23,7 @@ class Group(CustomerModel):
     name = HTMLCharField(255)
     description = HTMLTextField(null=True)
     parent = ForeignKeyField(
-        'self', column_name='parent', null=True, backref='_children')
+        'self', column_name='parent', null=True, backref='children')
     index = IntegerField(default=0)
 
     @classmethod
@@ -40,7 +40,7 @@ class Group(CustomerModel):
         return self.parent is None
 
     @property
-    def children(self) -> Iterable[Group]:
+    def ordered_children(self) -> ModelSelect:
         """Yields the children in order."""
         if self.id is None:
             return ()
@@ -54,7 +54,7 @@ class Group(CustomerModel):
         """
         yield self
 
-        for child in self.children:
+        for child in self.ordered_children:
             yield from child.tree
 
     @property
@@ -70,7 +70,7 @@ class Group(CustomerModel):
     def json_tree(self) -> dict:
         """Returns the tree for this group."""
         json = self.to_json(parent=False)
-        json['children'] = [child.json_tree for child in self.children]
+        json['children'] = [child.json_tree for child in self.ordered_children]
         return json
 
     def set_parent(self, parent: Union[Group, None]) -> None:

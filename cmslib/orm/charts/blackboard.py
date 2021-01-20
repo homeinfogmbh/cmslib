@@ -104,8 +104,9 @@ class Image(DSCMS4Model):
         table_name = 'chart_blackboard_image'
 
     chart = ForeignKeyField(
-        Blackboard, column_name='chart', backref='images', on_delete='CASCADE')
-    file = ForeignKeyField(File, column_name='file')
+        Blackboard, column_name='chart', backref='images', on_delete='CASCADE',
+        lazy_load=False)
+    file = ForeignKeyField(File, column_name='file', lazy_load=False)
     format = EnumField(Format, default=Format.A4)
     index = IntegerField(default=0)
 

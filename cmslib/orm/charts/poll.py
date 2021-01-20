@@ -115,7 +115,8 @@ class Option(DSCMS4Model):
         table_name = 'poll_option'
 
     poll = ForeignKeyField(
-        Poll, column_name='poll', backref='options', on_delete='CASCADE')
+        Poll, column_name='poll', backref='options', on_delete='CASCADE',
+        lazy_load=False)
     text = HTMLCharField(255)
     votes = IntegerField(default=0)
     index = IntegerField(default=0)

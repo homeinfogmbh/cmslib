@@ -46,7 +46,7 @@ class BaseChart(CustomerModel):
     log = BooleanField(default=False)
     schedule = ForeignKeyField(
         Schedule, column_name='schedule', null=True, on_delete='SET NULL',
-        on_update='CASCADE')
+        on_update='CASCADE', lazy_load=False)
 
     @classmethod
     def from_json(cls, json: dict, skip: set = None,    # pylint: disable=W0221

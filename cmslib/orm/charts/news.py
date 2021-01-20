@@ -100,5 +100,5 @@ class NewsProvider(DSCMS4Model):
 
     chart = ForeignKeyField(
         News, column_name='chart', backref='providers', on_delete='CASCADE',
-        on_update='CASCADE')
+        on_update='CASCADE', lazy_load=False)
     provider = EnumField(Provider)

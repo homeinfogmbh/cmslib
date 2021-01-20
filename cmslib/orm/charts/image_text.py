@@ -120,8 +120,9 @@ class Image(DSCMS4Model):
         table_name = 'chart_image_text_image'
 
     chart = ForeignKeyField(
-        ImageText, column_name='chart', backref='images', on_delete='CASCADE')
-    file = ForeignKeyField(File, column_name='file')
+        ImageText, column_name='chart', backref='images', on_delete='CASCADE',
+        lazy_load=False)
+    file = ForeignKeyField(File, column_name='file', lazy_load=False)
     index = IntegerField(default=0)
 
     @classmethod
@@ -150,7 +151,8 @@ class Text(DSCMS4Model):
         table_name = 'chart_image_text_text'
 
     chart = ForeignKeyField(
-        ImageText, column_name='chart', backref='texts', on_delete='CASCADE')
+        ImageText, column_name='chart', backref='texts', on_delete='CASCADE',
+        lazy_load=False)
     text = HTMLTextField()
 
     @classmethod

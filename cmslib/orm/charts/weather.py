@@ -107,8 +107,9 @@ class Image(DSCMS4Model):
         table_name = 'chart_weather_image'
 
     chart = ForeignKeyField(
-        Weather, column_name='chart', backref='images', on_delete='CASCADE')
-    file = ForeignKeyField(File, column_name='file')
+        Weather, column_name='chart', backref='images', on_delete='CASCADE',
+        lazy_load=False)
+    file = ForeignKeyField(File, column_name='file', lazy_load=False)
 
     def to_json(self, *args, **kwargs) -> dict:
         """Returns a JSON representation of this record."""

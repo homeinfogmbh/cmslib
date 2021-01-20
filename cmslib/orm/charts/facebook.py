@@ -103,7 +103,8 @@ class Account(DSCMS4Model):
         table_name = 'facebook_account'
 
     chart = ForeignKeyField(
-        Facebook, column_name='chart', backref='accounts', on_delete='CASCADE')
+        Facebook, column_name='chart', backref='accounts', on_delete='CASCADE',
+        lazy_load=False)
     facebook_id = HTMLCharField(255)
     recent_days = SmallIntegerField(default=14)
     max_posts = SmallIntegerField(default=10)

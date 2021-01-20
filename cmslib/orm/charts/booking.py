@@ -95,6 +95,6 @@ class BookableMapping(DSCMS4Model):     # pylint: disable=R0903
 
     chart = ForeignKeyField(
         Booking, column_name='chart', backref='bookable_mappings',
-        on_delete='CASCADE')
+        on_delete='CASCADE', lazy_load=False)
     bookable = ForeignKeyField(
-        Bookable, column_name='bookable', on_delete='CASCADE')
+        Bookable, column_name='bookable', on_delete='CASCADE', lazy_load=False)
