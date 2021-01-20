@@ -2,7 +2,6 @@
 
 from peewee import JOIN, ForeignKeyField, ModelSelect
 
-from his.messages.data import MISSING_DATA
 from mdb import Company, Customer
 from peeweeplus import Transaction
 
@@ -29,11 +28,7 @@ class Chart(DSCMS4Model):
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates a chart from a JSON-ish dict."""
-        try:
-            base_dict = json.pop('base')
-        except KeyError:
-            raise MISSING_DATA.update(key='base') from None
-
+        base_dict = json.pop('base')
         chart = super().from_json(json, **kwargs)
         transaction = BaseChart.from_json(base_dict)
         chart.base = transaction.primary
