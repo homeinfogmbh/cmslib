@@ -168,10 +168,11 @@ class Configuration(CustomerModel):
 
         dummy_picture = File.alias()
         args = {cls, *args, Colors, File, dummy_picture}
-        return super().select(*args, cascade=cascade, **kwargs).join_from(
-            cls, Colors).join_from(
-            cls, File, on=cls.logo == File.id,
-            join_type=JOIN.LEFT_OUTER).join_from(
+        return super().select(
+            *args, cascade=cascade, **kwargs
+        ).join_from(cls, Colors).join_from(
+            cls, File, on=cls.logo == File.id, join_type=JOIN.LEFT_OUTER
+        ).join_from(
             cls, dummy_picture, on=cls.dummy_picture == dummy_picture.id,
             join_type=JOIN.LEFT_OUTER
         )
