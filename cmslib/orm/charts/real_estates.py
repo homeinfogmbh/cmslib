@@ -180,19 +180,17 @@ class RealEstates(Chart):
     @property
     def zip_code_whitelist(self) -> Iterable[ZipCodeFilter]:
         """Yields ZIP code whitelist filters."""
-        return ZipCodeFilter.select().where(
-            (ZipCodeFilter.chart == self) & (ZipCodeFilter.blacklist == 0))
+        return self.zip_code_filters.where(ZipCodeFilter.blacklist == 0)
 
     @property
     def zip_code_blacklist(self) -> Iterable[ZipCodeFilter]:
         """Yields ZIP code blacklist filters."""
-        return ZipCodeFilter.select().where(
-            (ZipCodeFilter.chart == self) & (ZipCodeFilter.blacklist == 1))
+        return self.zip_code_filters.where(ZipCodeFilter.blacklist == 1)
 
     @property
     def real_estates(self) -> Iterable[Immobilie]:
         """Yields filtered real estates for this chart."""
-        return self.filter(Immobilie.select().where(
+        return self.filter(Immobilie.select(cascade=True).where(
             Immobilie.customer == self.customer))
 
     @property
@@ -201,10 +199,10 @@ class RealEstates(Chart):
         filters = defaultdict(list)
         skip = ('id', 'chart')
 
-        for fltr in IdFilter.select().where(IdFilter.chart == self):
+        for fltr in self.id_filters:
             filters['id'].append(fltr.to_json(skip=skip))
 
-        for fltr in ZipCodeFilter.select().where(ZipCodeFilter.chart == self):
+        for fltr in self.zip_code_filters:
             filters['zipCode'].append(fltr.to_json(skip=skip))
 
         return filters
@@ -251,7 +249,7 @@ class RealEstates(Chart):
         if any(fltr(real_estate) for fltr in self.zip_code_blacklist):
             return False
 
-        zip_code_whitelist = tuple(self.zip_code_whitelist)
+        zip_code_whitelist = set(self.zip_code_whitelist)
 
         if zip_code_whitelist:
             # Discard non-whitelisted real estates
@@ -259,7 +257,7 @@ class RealEstates(Chart):
             if not any(fltr(real_estate) for fltr in zip_code_whitelist):
                 return False
 
-        id_filters = tuple(self.id_filters)
+        id_filters = set(self.id_filters)
 
         if id_filters:
             # Discard non-whitelisted real estates
@@ -286,7 +284,7 @@ class RealEstates(Chart):
 
         return json
 
-    def to_dom(self, brief: bool = False) -> DomModel:
+    def to_dom(self, brief: bool = False) -> DomModel:  # pylint: disable=R0915
         """Returns an XML DOM of this chart."""
         if brief:
             return super().to_dom(dom.BriefChart)
