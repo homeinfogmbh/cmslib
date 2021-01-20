@@ -7,8 +7,8 @@ from peewee import Expression, ModelBase, ModelSelect
 from werkzeug.local import LocalProxy
 
 from his import ACCOUNT, CUSTOMER
-from his.messages.data import INVALID_DATA, NOT_AN_INTEGER
 from mdb import Address, Company, Customer
+from wsgilib import JSONMessage, get_bool
 
 from cmslib.messages.charts import INVALID_CHART_TYPE
 from cmslib.messages.charts import NO_CHART_TYPE_SPECIFIED
@@ -81,17 +81,7 @@ CHART_TYPE = LocalProxy(_get_chart_type)
 def _get_trashed() -> Expression:
     """Returns a selection for the trashed status."""
 
-    trashed = request.args.get('trashed')
-
-    if trashed is None:
-        return True     # Don't care.
-
-    try:
-        trashed = int(trashed)
-    except ValueError:
-        raise NOT_AN_INTEGER.update(key='trashed', value=trashed) from None
-
-    if trashed:
+    if get_bool('trashed'):
         return BaseChart.trashed == 1
 
     return BaseChart.trashed == 0
@@ -150,4 +140,5 @@ def get_mode() -> ChartMode:
     try:
         return ChartMode(mode)
     except ValueError:
-        raise INVALID_DATA.update(key='mode', value=mode) from None
+        raise JSONMessage('Invalid chart mode.', mode=mode,
+                          status=400) from None

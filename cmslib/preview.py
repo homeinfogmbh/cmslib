@@ -2,7 +2,6 @@
 
 from typing import Union
 
-from his.messages.request import INVALID_CONTENT_TYPE
 from previewlib import FileAccessToken
 from wsgilib import ACCEPT, JSON, JSONMessage, XML
 
@@ -40,4 +39,4 @@ def make_response(presentation: PresentationMixin) -> Response:
         json['filePreviewToken'] = file_preview_token.hex
         return JSON(json)
 
-    return INVALID_CONTENT_TYPE
+    return JSONMessage('Invalid content type.', status=400)
