@@ -4,9 +4,10 @@ from __future__ import annotations
 from logging import getLogger
 from typing import Iterable, Iterator, Set, Union
 
-from peewee import ForeignKeyField, IntegerField
+from peewee import ForeignKeyField, IntegerField, ModelSelect
 
 from hisfs import get_file, File
+from mdb import Address, Company, Customer
 from peeweeplus import HTMLCharField
 
 from cmslib import dom
@@ -100,6 +101,16 @@ class MenuItem(DSCMS4Model):
             menu_item.icon_image = get_file(icon_image)
 
         return menu_item.move(menu=menu, parent=parent, customer=customer)
+
+    @classmethod
+    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+        """Selects records."""
+        if not cascade:
+            return super().select(*args, **kwargs)
+
+        args = {cls, Menu, Customer, Company, Address, *args}
+        return super().select(*args, cascade=cascade, **kwargs).join_from(
+            cls, Menu).join(Customer).join(Company).join(Address)
 
     @property
     def root(self) -> bool:
