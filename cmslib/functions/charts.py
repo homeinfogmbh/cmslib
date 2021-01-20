@@ -8,7 +8,7 @@ from werkzeug.local import LocalProxy
 
 from his import ACCOUNT, CUSTOMER
 from mdb import Address, Company, Customer
-from wsgilib import JSONMessage, get_bool
+from wsgilib import get_bool
 
 from cmslib.messages.charts import INVALID_CHART_TYPE
 from cmslib.messages.charts import NO_CHART_TYPE_SPECIFIED
@@ -137,8 +137,4 @@ def get_mode() -> ChartMode:
     except KeyError:
         return ChartMode.FULL
 
-    try:
-        return ChartMode(mode)
-    except ValueError:
-        raise JSONMessage('Invalid chart mode.', mode=mode,
-                          status=400) from None
+    return ChartMode(mode)
