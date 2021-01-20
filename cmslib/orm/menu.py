@@ -7,7 +7,7 @@ from typing import Iterable, Iterator, Set, Union
 from peewee import ForeignKeyField, IntegerField, ModelSelect
 
 from hisfs import get_file, File
-from mdb import Address, Company, Customer
+from mdb import Company, Customer
 from peeweeplus import HTMLCharField
 
 from cmslib import dom
@@ -108,9 +108,9 @@ class MenuItem(DSCMS4Model):
         if not cascade:
             return super().select(*args, **kwargs)
 
-        args = {cls, Menu, Customer, Company, Address, *args}
+        args = {cls, Menu, Customer, Company, *args}
         return super().select(*args, cascade=cascade, **kwargs).join_from(
-            cls, Menu).join(Customer).join(Company).join(Address)
+            cls, Menu).join(Customer).join(Company)
 
     @property
     def root(self) -> bool:
@@ -267,9 +267,10 @@ class MenuItemChart(DSCMS4Model):
 
     menu_item = ForeignKeyField(
         MenuItem, column_name='menu_item', backref='menu_item_charts',
-        on_delete='CASCADE')
+        on_delete='CASCADE', lazy_load=False)
     base_chart = ForeignKeyField(
-        BaseChart, column_name='base_chart', on_delete='CASCADE')
+        BaseChart, column_name='base_chart', on_delete='CASCADE',
+        lazy_load=False)
     index = IntegerField(default=0)
 
     @classmethod
@@ -280,6 +281,17 @@ class MenuItemChart(DSCMS4Model):
         menu_item_chart.menu_item = menu_item
         menu_item_chart.base_chart = base_chart
         return menu_item_chart
+
+    @classmethod
+    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+        """Selects records."""
+        if not cascade:
+            return super().select(*args, **kwargs)
+
+        args = {cls, MenuItem, Menu, Customer, Company, BaseChart, *args}
+        return super().select(*args, cascade=cascade, **kwargs).join_from(
+            cls, MenuItem).join(Menu).join(Customer).join(Company).join_from(
+                cls, BaseChart)
 
     def copy(self, menu_item: MenuItem = None) -> MenuItemChart:
         """Copies this menu item chart."""
