@@ -97,12 +97,12 @@ class BaseChart(CustomerModel):
     @classmethod
     def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
         """Selects records."""
-        if cascade:
-            return super().select(
-                *{cls, Schedule, *args}, cascade=cascade, **kwargs).join_from(
-                BaseChart, Schedule, join_type=JOIN.LEFT_OUTER)
+        if not cascade:
+            return super().select(*args, **kwargs)
 
-        return super().select(*args, **kwargs)
+        return super().select(
+            *{cls, Schedule, *args}, cascade=cascade, **kwargs).join_from(
+            BaseChart, Schedule, join_type=JOIN.LEFT_OUTER)
 
     @property
     def active(self) -> bool:

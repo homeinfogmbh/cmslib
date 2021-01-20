@@ -72,12 +72,12 @@ class CustomerModel(DSCMS4Model):
     @classmethod
     def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
         """Selects records."""
-        if cascade:
-            return super().select(
-                *{cls, Customer, Company, Address, *args}, **kwargs).join(
-                Customer).join(Company).join(Address)
+        if not cascade:
+            return super().select(*args, **kwargs)
 
-        return super().select(*args, **kwargs)
+        return super().select(
+            *{cls, Customer, Company, Address, *args}, **kwargs).join(
+            Customer).join(Company).join(Address)
 
     def get_peer(self, record_or_id: Union[Model, int]) -> Model:
         """Ensures that the provided record or ID is of the same
