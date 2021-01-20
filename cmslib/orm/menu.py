@@ -76,10 +76,11 @@ class MenuItem(DSCMS4Model):
         table_name = 'menu_item'
 
     menu = ForeignKeyField(
-        Menu, column_name='menu', on_delete='CASCADE', backref='items')
+        Menu, column_name='menu', on_delete='CASCADE', backref='items',
+        lazy_load=False)
     parent = ForeignKeyField(
         'self', column_name='parent', null=True, on_delete='CASCADE',
-        backref='_children')
+        backref='_children', lazy_load=True)
     name = HTMLCharField(255)
     icon = HTMLCharField(255, null=True)
     icon_image = ForeignKeyField(File, column_name='icon_image', null=True)

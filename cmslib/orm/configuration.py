@@ -120,12 +120,13 @@ class Configuration(CustomerModel):
     design = EnumField(Design)
     effects = BooleanField()
     ticker_speed = SmallIntegerField()
-    colors = ForeignKeyField(Colors, column_name='colors')
+    colors = ForeignKeyField(Colors, column_name='colors', lazy_load=False)
     title_size = SmallIntegerField()
     text_size = SmallIntegerField()
-    logo = ForeignKeyField(File, column_name='logo', null=True)
+    logo = ForeignKeyField(
+        File, column_name='logo', null=True, lazy_load=False)
     dummy_picture = ForeignKeyField(
-        File, column_name='dummy_picture', null=True)
+        File, column_name='dummy_picture', null=True, lazy_load=False)
     hide_cursor = BooleanField(default=True)
     rotation = SmallIntegerField(default=0)
     email_form = BooleanField()
@@ -354,7 +355,7 @@ class Background(DSCMS4Model):
 
     configuration = ForeignKeyField(
         Configuration, column_name='configuration', backref='backgrounds',
-        on_delete='CASCADE')
+        on_delete='CASCADE', lazy_load=False)
     file = ForeignKeyField(File, column_name='file')
 
     def to_json(self, *args, **kwargs) -> dict:
@@ -368,7 +369,7 @@ class Ticker(DSCMS4Model):
 
     configuration = ForeignKeyField(
         Configuration, column_name='configuration', backref='tickers',
-        on_delete='CASCADE')
+        on_delete='CASCADE', lazy_load=False)
     type_ = EnumField(TickerTypes, column_name='type')
     content = HTMLTextField()
 
@@ -393,7 +394,7 @@ class Backlight(DSCMS4Model):
 
     configuration = ForeignKeyField(
         Configuration, column_name='configuration', backref='backlights',
-        on_delete='CASCADE')
+        on_delete='CASCADE', lazy_load=False)
     time = TimeField()
     brightness = SmallIntegerField()   # Brightness in percent.
 

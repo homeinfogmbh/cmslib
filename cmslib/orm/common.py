@@ -42,7 +42,8 @@ class DSCMS4Model(JSONModel):
 class CustomerModel(DSCMS4Model):
     """Entity that relates to a customer."""
 
-    customer = ForeignKeyField(Customer, column_name='customer')
+    customer = ForeignKeyField(
+        Customer, column_name='customer', lazy_load=False)
 
     def __str__(self):
         """Returns the models's ID and class."""

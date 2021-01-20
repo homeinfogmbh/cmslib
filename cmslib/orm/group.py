@@ -23,7 +23,8 @@ class Group(CustomerModel):
     name = HTMLCharField(255)
     description = HTMLTextField(null=True)
     parent = ForeignKeyField(
-        'self', column_name='parent', null=True, backref='children')
+        'self', column_name='parent', null=True, backref='children',
+        lazy_load=True)
     index = IntegerField(default=0)
 
     @classmethod
