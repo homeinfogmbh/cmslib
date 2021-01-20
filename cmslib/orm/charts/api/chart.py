@@ -1,6 +1,6 @@
 """Basic abstract chart type."""
 
-from peewee import ForeignKeyField
+from peewee import ForeignKeyField, ModelSelect
 
 from his.messages.data import MISSING_DATA
 from peeweeplus import Transaction
@@ -36,6 +36,14 @@ class Chart(DSCMS4Model):
         chart.base = transaction.primary
         transaction.add(chart, primary=True)
         return transaction
+
+    @classmethod
+    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+        """Selects records."""
+        if cascade:
+            return super().select(*args, BaseChart, **kwargs).join(BaseChart)
+
+        return super().select(*args, **kwargs)
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the chart from a JSON-ish dict."""

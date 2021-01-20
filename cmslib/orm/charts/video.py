@@ -2,7 +2,7 @@
 
 from typing import Set, Union
 
-from peewee import ForeignKeyField
+from peewee import ForeignKeyField, ModelSelect
 
 from hisfs import get_file, File
 from peeweeplus import Transaction
@@ -38,6 +38,15 @@ class Video(Chart):
             chart.file = get_file(file)
 
         return transaction
+
+    @classmethod
+    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+        """Selects records."""
+        if cascade:
+            return super().select(
+                *args, File, cascade=cascade, **kwargs).join(File)
+
+        return super().select(*args, **kwargs)
 
     @property
     def files(self) -> Set[File]:
