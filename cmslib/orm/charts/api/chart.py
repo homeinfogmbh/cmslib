@@ -1,14 +1,16 @@
 """Basic abstract chart type."""
 
-from peewee import ForeignKeyField, ModelSelect
+from peewee import JOIN, ForeignKeyField, ModelSelect
 
 from his.messages.data import MISSING_DATA
+from mdb import Company, Customer
 from peeweeplus import Transaction
 
 from cmslib import dom  # pylint: disable=E0611
 from cmslib.orm.charts.api.base_chart import BaseChart
 from cmslib.orm.charts.api.common import CHARTS, ChartMode
 from cmslib.orm.common import DSCMS4Model
+from cmslib.orm.schedule import Schedule
 
 
 __all__ = ['Chart']
@@ -41,7 +43,10 @@ class Chart(DSCMS4Model):
     def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
         """Selects records."""
         if cascade:
-            return super().select(*args, BaseChart, **kwargs).join(BaseChart)
+            return super().select(
+                *args, BaseChart, Customer, Company, Schedule, **kwargs).join(
+                BaseChart).join(Customer).join(Company).join_from(
+                BaseChart, Schedule, join_type=JOIN.LEFT_OUTER)
 
         return super().select(*args, **kwargs)
 
