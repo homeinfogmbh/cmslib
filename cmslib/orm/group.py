@@ -5,7 +5,6 @@ from typing import Iterator, Union
 
 from peewee import ForeignKeyField, IntegerField, ModelSelect
 
-from his.messages.data import MISSING_KEY_ERROR, INVALID_KEYS
 from hwdb import Deployment
 from mdb import Address, Company, Customer
 from peeweeplus import HTMLCharField, HTMLTextField
@@ -139,17 +138,8 @@ class GroupMemberDeployment(DSCMS4Model):
         """Creates a member for the given group
         from the respective JSON-ish dictionary.
         """
-        try:
-            deployment = json.pop('deployment')
-        except KeyError:
-            raise MISSING_KEY_ERROR.update(keys=['deployment']) from None
-
-        deployment = get_deployment(deployment)
+        deployment = get_deployment(json.pop('deployment'))
         index = json.pop('index', 0)
-
-        if json:
-            raise INVALID_KEYS.update(keys=tuple(json))
-
         return cls(group=group, deployment=deployment, index=index)
 
     @classmethod
