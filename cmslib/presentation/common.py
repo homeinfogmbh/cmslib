@@ -20,7 +20,7 @@ from cmslib.exceptions import OrphanedBaseChart
 from cmslib.menutree import merge, MenuTreeItem
 from cmslib.orm.charts import BaseChart, ChartMode, Chart
 from cmslib.orm.content.group import GroupBaseChart, GroupMenu
-from cmslib.orm.configuration import Configuration
+from cmslib.orm.configuration import Configuration, Colors
 from cmslib.orm.content.group import GroupConfiguration
 from cmslib.orm.group import Group
 from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
@@ -62,7 +62,8 @@ def get_index(item: Any) -> int:
 def level_configs(level: int) -> Iterable[Configuration]:
     """Yields all configurations of a certain group level."""
 
-    return Configuration.select().join(GroupConfiguration).where(
+    return Configuration.select(Configuration, Colors).join(Colors).join_from(
+        Configuration, GroupConfiguration).where(
         GroupConfiguration.group << level)
 
 
