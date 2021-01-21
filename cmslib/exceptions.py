@@ -10,6 +10,7 @@ __all__ = [
     'AmbiguousConfigurationsError',
     'CircularReference',
     'DifferentMenus',
+    'InvalidChartType',
     'MissingMenu',
     'NoConfigurationFound',
     'OrphanedBaseChart',
@@ -56,6 +57,10 @@ class DifferentMenus(Exception):
         super().__init__(menu, other)
         self.menu = menu
         self.other = other
+
+
+class InvalidChartType(Exception):
+    """Indicates that an invalid chart type was selected."""
 
 
 class MissingMenu(Exception):
