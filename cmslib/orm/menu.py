@@ -12,11 +12,11 @@ from peeweeplus import HTMLCharField
 
 from cmslib import dom
 from cmslib.attachments import attachment_json
-from cmslib.exceptions import OrphanedBaseChart, AmbiguousBaseChart
-from cmslib.messages.data import CIRCULAR_REFERENCE
-from cmslib.messages.menu import DIFFERENT_MENUS
-from cmslib.messages.menu import NO_MENU_SPECIFIED
-from cmslib.messages.menu import NO_SUCH_MENU_ITEM
+from cmslib.exceptions import AmbiguousBaseChart
+from cmslib.exceptions import CircularReference
+from cmslib.exceptions import DifferentMenus
+from cmslib.exceptions import MissingMenu
+from cmslib.exceptions import OrphanedBaseChart
 from cmslib.orm.common import UNCHANGED, CustomerModel, DSCMS4Model
 from cmslib.orm.charts import BaseChart, Chart, ChartMode
 
@@ -81,7 +81,7 @@ class MenuItem(DSCMS4Model):
         lazy_load=False)
     parent = ForeignKeyField(
         'self', column_name='parent', null=True, on_delete='CASCADE',
-        backref='_children', lazy_load=True)
+        backref='children', lazy_load=True)
     name = HTMLCharField(255)
     icon = HTMLCharField(255, null=True)
     icon_image = ForeignKeyField(File, column_name='icon_image', null=True)
@@ -118,19 +118,16 @@ class MenuItem(DSCMS4Model):
         return self.menu is not None
 
     @property
-    def children(self) -> Iterable[MenuItem]:
+    def ordered_children(self) -> ModelSelect:
         """Returns the children."""
-        if self.id is None:     # Fix #351.
-            return ()
-
-        return self._children.order_by(type(self).index)
+        return self.children.order_by(type(self).index)
 
     @property
     def tree(self) -> Iterator[MenuItem]:
         """Recursively yields all submenus."""
         yield self
 
-        for child in self.children:
+        for child in self.ordered_children:
             yield from child.tree
 
     @property
@@ -149,7 +146,7 @@ class MenuItem(DSCMS4Model):
     def _get_menu(self, menu: int, customer: int = None) -> Menu:
         """Returns the respective menu."""
         if menu is None:
-            raise NO_MENU_SPECIFIED
+            raise MissingMenu()
 
         if menu is UNCHANGED:
             return self.menu
@@ -178,25 +175,22 @@ class MenuItem(DSCMS4Model):
              customer: int = None) -> MenuItemGroup:
         """Moves the menu item to another menu and / or parent."""
         menu = self._get_menu(menu, customer=customer)
-
-        try:
-            parent = self._get_parent(parent, customer=customer)
-        except self.DoesNotExist:
-            raise NO_SUCH_MENU_ITEM from None
+        parent = self._get_parent(parent, customer=customer)
 
         if parent is not None:
             if parent.menu != menu:
-                raise DIFFERENT_MENUS
+                raise DifferentMenus()
 
             if parent in self.tree:
-                raise CIRCULAR_REFERENCE
+                raise CircularReference()
 
         self.parent = parent
         menu_items = []
 
-        for menu_item in self.tree:
-            menu_item.menu = menu
-            menu_items.append(menu_item)
+        if self.id is not None:     # Fix #351.
+            for menu_item in self.tree:
+                menu_item.menu = menu
+                menu_items.append(menu_item)
 
         return MenuItemGroup(menu_items)
 
@@ -212,7 +206,7 @@ class MenuItem(DSCMS4Model):
         for menu_item_chart in self.menu_item_charts:
             yield menu_item_chart.copy(menu_item=copy)
 
-        for child in self.children:
+        for child in self.ordered_children:
             yield from child.copy(menu=menu, parent=copy)
 
     def delete_instance(self, update_children: bool = False, **kwargs) -> int:
@@ -253,7 +247,7 @@ class MenuItem(DSCMS4Model):
         if children:
             json['items'] = [
                 item.to_json(charts=charts, children=children, **kwargs)
-                for item in self.children
+                for item in self.ordered_children
             ]
 
         return json
