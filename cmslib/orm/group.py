@@ -28,10 +28,11 @@ class Group(CustomerModel):
     index = IntegerField(default=0)
 
     @classmethod
-    def from_json(cls, json: dict, **kwargs) -> Group:
+    def from_json(cls, json: dict, customer: Union[Customer, int],
+                  parent: Union[Group, int], **kwargs) -> Group:
         """Creates a group from a JSON-ish dictionary."""
-        parent = json.pop('parent', None)
         record = super().from_json(json, **kwargs)
+        record.customer = customer
         record.set_parent(parent)
         return record
 
