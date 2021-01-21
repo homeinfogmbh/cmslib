@@ -13,6 +13,12 @@ from cmslib.exceptions import NoConfigurationFound
 from cmslib.exceptions import OrphanedBaseChart
 from cmslib.orm.charts import CHARTS, BaseChart
 from cmslib.orm.configuration import Configuration
+from cmslib.orm.content.deployment import DeploymentBaseChart
+from cmslib.orm.content.deployment import DeploymentConfiguration
+from cmslib.orm.content.deployment import DeploymentMenu
+from cmslib.orm.content.group import GroupBaseChart
+from cmslib.orm.content.group import GroupConfiguration
+from cmslib.orm.content.group import GroupMenu
 from cmslib.orm.group import Group
 from cmslib.orm.group import Menu, MenuItem, MenuItemChart
 from cmslib.orm.schedule import Schedule
@@ -42,10 +48,22 @@ ERRORS = {
         model=error.model.to_json(), status=400),
     Deployment.DoesNotExist: lambda _: JSONMessage(
         'No such deployment.', status=404),
+    DeploymentBaseChart.DoesNotExist: lambda _: JSONMessage(
+        'No such deployment base chart.', status=404),
+    DeploymentConfiguration.DoesNotExist: lambda _: JSONMessage(
+        'No such deployment configuration.', status=404),
+    DeploymentMenu.DoesNotExist: lambda _: JSONMessage(
+        'No such deployment menu.', status=404),
     DifferentMenus: lambda error: JSONMessage(
         'Different menus.', menu=error.menu.to_json(),
         other=error.other.to_json(), status=400),
     Group.DoesNotExist: lambda _: JSONMessage('No such group.', status=404),
+    GroupBaseChart.DoesNotExist: lambda _: JSONMessage(
+        'No such group base chart.', status=404),
+    GroupConfiguration.DoesNotExist: lambda _: JSONMessage(
+        'No such group configuration.', status=404),
+    GroupMenu.DoesNotExist: lambda _: JSONMessage(
+        'No such group menu.', status=404),
     InvalidChartType: lambda error: JSONMessage(
         'Invalid chart type.', name=str(error), status=400),
     Menu.DoesNotExist: lambda _: JSONMessage('No such menu.', status=404),
