@@ -6,6 +6,8 @@ from itertools import chain
 from logging import getLogger
 from typing import Any, Callable, Iterable, Iterator, Set
 
+from peewee import ModelSelect
+
 from functoolsplus import coerce    # pylint: disable=E0401
 from hisfs import File
 
@@ -27,6 +29,12 @@ __all__ = ['PresentationMixin']
 
 
 LOGGER = getLogger(__file__)
+
+
+def get_files(ids: Iterator[int]) -> ModelSelect:
+    """Yields files from their IDs."""
+
+    return File.select(cascade=True).where(File.id << set(ids))
 
 
 @coerce(tuple)
@@ -109,7 +117,7 @@ class PresentationMixin:
 
     @property
     @lru_cache()
-    @coerce(set)
+    @coerce(get_files)
     def files(self) -> Iterator[File]:
         """Yields the presentation's used file IDs."""
         yield from self._configuration.files
