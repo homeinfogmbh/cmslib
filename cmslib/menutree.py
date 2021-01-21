@@ -93,7 +93,8 @@ class MenuTreeItem(NamedTuple):
     @classmethod
     def from_menu(cls, menu: Menu) -> Iterator[MenuTreeItem]:
         """Yields menu tree items from the respective menu."""
-        for menu_item in menu.root_items:
+        for menu_item in MenuItem.select(cascade=True).where(
+                MenuItem.id << menu.root_items):
             yield cls.from_menu_item(menu_item)
 
     @property
