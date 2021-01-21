@@ -7,13 +7,11 @@ from peewee import Expression, ModelBase, ModelSelect
 from werkzeug.local import LocalProxy
 
 from his import ACCOUNT, CUSTOMER
-from mdb import Address, Company, Customer
 from wsgilib import get_bool
 
 from cmslib.exceptions import InvalidChartType
 from cmslib.orm.chart_acl import ChartACL
 from cmslib.orm.charts import CHARTS, BaseChart, Chart, ChartMode
-from cmslib.orm.schedule import Schedule
 
 
 __all__ = [
@@ -97,13 +95,8 @@ def get_base_chart(ident: int) -> BaseChart:
 def _get_charts(cls: ModelBase) -> ModelSelect:
     """Selects charts of the given type for the current customer."""
 
-    return cls.select(
-        cls, BaseChart, Customer, Company, Address, Schedule
-    ).join(BaseChart).join(Customer).join(Company).join(Address).join_from(
-        BaseChart, Schedule).where(
-        (BaseChart.customer == CUSTOMER.id)
-        & _get_trashed()
-    )
+    return cls.select(cascade=True).where(
+        (BaseChart.customer == CUSTOMER.id) & _get_trashed())
 
 
 def get_charts() -> Iterator[Chart]:

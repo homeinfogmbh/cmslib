@@ -1,5 +1,6 @@
 """Error messages and mappings."""
 
+from hwdb import Deployment
 from wsgilib import JSONMessage
 
 from cmslib.exceptions import AmbiguousBaseChart
@@ -12,6 +13,9 @@ from cmslib.exceptions import NoConfigurationFound
 from cmslib.exceptions import OrphanedBaseChart
 from cmslib.orm.charts import CHARTS, BaseChart
 from cmslib.orm.configuration import Configuration
+from cmslib.orm.group import Group
+from cmslib.orm.group import Menu, MenuItem, MenuItemChart
+from cmslib.orm.schedule import Schedule
 
 
 __all__ = ['ERRORS']
@@ -36,11 +40,19 @@ ERRORS = {
     CircularReference: lambda error: JSONMessage(
         'Circular reference.', type=type(error.model).__name__,
         model=error.model.to_json(), status=400),
+    Deployment.DoesNotExist: lambda _: JSONMessage(
+        'No such deployment.', status=404),
     DifferentMenus: lambda error: JSONMessage(
         'Different menus.', menu=error.menu.to_json(),
         other=error.other.to_json(), status=400),
+    Group.DoesNotExist: lambda _: JSONMessage('No such group.', status=404),
     InvalidChartType: lambda error: JSONMessage(
         'Invalid chart type.', name=str(error), status=400),
+    Menu.DoesNotExist: lambda _: JSONMessage('No such menu.', status=404),
+    MenuItem.DoesNotExist: lambda _: JSONMessage(
+        'No such menu item.', status=404),
+    MenuItemChart.DoesNotExist: lambda _: JSONMessage(
+        'No such menu item chart.', status=404),
     MissingMenu: lambda _: JSONMessage('Missing Menu.', status=404),
     NoConfigurationFound: lambda _: JSONMessage(
         'No configuration found.', status=404),
@@ -49,4 +61,6 @@ ERRORS = {
     OrphanedBaseChart: lambda error: JSONMessage(
         'Orphaned base chart.', base_chart=error.base_chart.to_json(),
         status=400),
+    Schedule.DoesNotExist: lambda _: JSONMessage(
+        'No such schedule.', status=404),
 }

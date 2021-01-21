@@ -8,8 +8,6 @@ from his import CUSTOMER
 from hwdb import Deployment
 from mdb import Address, Company, Customer
 
-from cmslib.messages.deployment import NO_SUCH_DEPLOYMENT
-
 
 __all__ = ['get_deployment', 'with_deployment']
 
@@ -21,12 +19,9 @@ def list_deployments() -> ModelSelect:
     lpt_address = Address.alias()
     select = Deployment.select(
         Deployment, Customer, Company, Address, deployment_address,
-        lpt_address)
-    select = select.join(Customer).join(Company).join(Address)
-    select = select.join_from(
+        lpt_address).join(Customer).join(Company).join(Address).join_from(
         Deployment, deployment_address,
-        on=Deployment.address == deployment_address.id)
-    select = select.join_from(
+        on=Deployment.address == deployment_address.id).join_from(
         Deployment, lpt_address, on=Deployment.lpt_address == lpt_address.id)
     return select.where(Deployment.customer == CUSTOMER.id)
 
@@ -34,10 +29,7 @@ def list_deployments() -> ModelSelect:
 def get_deployment(ident: int) -> Deployment:
     """Returns the respective deployment."""
 
-    try:
-        return list_deployments().where(Deployment.id == ident).get()
-    except Deployment.DoesNotExist:
-        raise NO_SUCH_DEPLOYMENT from None
+    return list_deployments().where(Deployment.id == ident).get()
 
 
 def with_deployment(function: Callable) -> Callable:
