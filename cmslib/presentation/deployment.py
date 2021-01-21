@@ -1,9 +1,9 @@
 """Content accumulation for digital signage deployment."""
 
-from typing import Iterable, Iterator
+from typing import Iterable, Iterator, Union
 
 from hwdb import Deployment
-from mdb import Address, Customer
+from mdb import Address, Customer, Company
 
 from cmslib import dom  # pylint: disable=E0611
 from cmslib.exceptions import NoConfigurationFound
@@ -49,12 +49,21 @@ def deployment_to_dom(deployment: Deployment) -> dom.Deployment:
     return deployment_dom
 
 
+def get_deployment(deployment: Union[Deployment, int]) -> Deployment:
+    """Returns a deep-joined deployment."""
+
+    return Deployment.select(Deployment, Customer, Company, Address).join(
+        Customer).join(Company).join_from(
+        Deployment, Address, on=Deployment.address==Address.id).where(
+        Deployment.id == deployment).get()
+
+
 class Presentation(PresentationMixin):
     """Accumulates content for a deployment."""
 
     def __init__(self, deployment: Deployment):
         """Sets the respective deployment."""
-        self.deployment = deployment
+        self.deployment = get_deployment(deployment)
         self.cache = {}
 
     @property
