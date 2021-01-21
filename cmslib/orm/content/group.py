@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from peewee import ForeignKeyField, IntegerField
+from peewee import ForeignKeyField, IntegerField, ModelSelect
+
+from mdb import Address, Company, Customer
 
 from cmslib.orm.charts import BaseChart, Chart, ChartMode
 from cmslib.orm.common import DSCMS4Model
@@ -23,6 +25,16 @@ class _GroupContent(DSCMS4Model):
 
     group = ForeignKeyField(Group, column_name='group', on_delete='CASCADE')
 
+    @classmethod
+    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+        """Selects records."""
+        if not cascade:
+            return super().select(*args, **kwargs)
+
+        args = {cls, Group, Customer, Company, Address}
+        return super().select(*args, **kwargs).join_from(
+            cls, Group).join(Customer).join(Company).join(Address)
+
 
 class GroupBaseChart(_GroupContent):
     """Association of a base chart with a group."""
@@ -42,6 +54,23 @@ class GroupBaseChart(_GroupContent):
         record.group = group
         record.base_chart = base_chart
         return record
+
+    @classmethod
+    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+        """Selects records."""
+        if not cascade:
+            return super().select(*args, **kwargs)
+
+        base_chart_customer = Customer.alias()
+        base_chart_company = Company.alias()
+        base_chart_address = Address.alias()
+        args = {
+            cls, BaseChart, base_chart_customer, base_chart_company,
+            base_chart_address
+        }
+        return super().select(*args, **kwargs).join_from(
+            cls, BaseChart).join(base_chart_customer).join(
+            base_chart_company).join(base_chart_address)
 
     @property
     def chart(self) -> Chart:
@@ -66,6 +95,23 @@ class GroupConfiguration(_GroupContent):
     configuration = ForeignKeyField(
         Configuration, column_name='configuration', on_delete='CASCADE')
 
+    @classmethod
+    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+        """Selects records."""
+        if not cascade:
+            return super().select(*args, **kwargs)
+
+        configuration_customer = Customer.alias()
+        configuration_company = Company.alias()
+        configuration_address = Address.alias()
+        args = {
+            cls, Configuration, configuration_customer, configuration_company,
+            configuration_address
+        }
+        return super().select(*args, **kwargs).join_from(
+            cls, Configuration).join(configuration_customer).join(
+            configuration_company).join(configuration_address)
+
     def to_json(self) -> dict:
         """Returns a JSON-ish dict."""
         return {'id': self.id, 'configuration': self.configuration_id}
@@ -78,6 +124,20 @@ class GroupMenu(_GroupContent):
         table_name = 'group_menu'
 
     menu = ForeignKeyField(Menu, column_name='menu', on_delete='CASCADE')
+
+    @classmethod
+    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+        """Selects records."""
+        if not cascade:
+            return super().select(*args, **kwargs)
+
+        menu_customer = Customer.alias()
+        menu_company = Company.alias()
+        menu_address = Address.alias()
+        args = {cls, Menu, menu_customer, menu_company, menu_address}
+        return super().select(*args, **kwargs).join_from(
+            cls, Menu).join(menu_customer).join(menu_company).join(
+            menu_address)
 
     def to_json(self) -> dict:
         """Returns a JSON-ish dict."""

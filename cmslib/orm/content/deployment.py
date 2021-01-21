@@ -38,8 +38,9 @@ class DeploymentContent(DSCMS4Model):
             cls, Deployment, Customer, Company, Address,
             deployment_address, lpt_address, *args
         }
-        return super().select(*args, **kwargs).join(
-            Deployment).join(Customer).join(Company).join(Address).join_from(
+        return super().select(*args, **kwargs).join_from(
+            cls, Deployment).join(Customer).join(Company).join(
+            Address).join_from(
             Deployment, deployment_address,
             on=Deployment.address == deployment_address.id).join_from(
             Deployment, lpt_address,
@@ -80,9 +81,9 @@ class DeploymentBaseChart(DeploymentContent):
             cls, BaseChart, base_chart_customer, base_chart_company,
             base_chart_address
         }
-        return super().select(*args, **kwargs).join(
-            BaseChart).join(base_chart_customer).join(base_chart_company).join(
-            base_chart_address)
+        return super().select(*args, **kwargs).join_from(
+            cls, BaseChart).join(base_chart_customer).join(
+            base_chart_company).join(base_chart_address)
 
     @property
     def chart(self) -> Chart:
@@ -120,8 +121,8 @@ class DeploymentConfiguration(DeploymentContent):
             cls, Configuration, configuration_customer, configuration_company,
             configuration_address
         }
-        return super().select(*args, **kwargs).join(
-            Configuration).join(configuration_customer).join(
+        return super().select(*args, **kwargs).join_from(
+            cls, Configuration).join(configuration_customer).join(
             configuration_company).join(configuration_address)
 
     def to_json(self) -> dict:
@@ -147,8 +148,9 @@ class DeploymentMenu(DeploymentContent):
         menu_company = Company.alias()
         menu_address = Address.alias()
         args = {cls, Menu, menu_customer, menu_company, menu_address}
-        return super().select(*args, **kwargs).join(
-            Menu).join(menu_customer).join(menu_company).join(menu_address)
+        return super().select(*args, **kwargs).join_from(
+            cls, Menu).join(menu_customer).join(menu_company).join(
+            menu_address)
 
     def to_json(self) -> dict:
         """Returns a JSON-ish dict."""
