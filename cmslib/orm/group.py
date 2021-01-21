@@ -9,8 +9,8 @@ from hwdb import Deployment
 from mdb import Address, Company, Customer
 from peeweeplus import HTMLCharField, HTMLTextField
 
+from cmslib.exceptions import CircularReference
 from cmslib.functions.deployment import get_deployment
-from cmslib.messages.data import CIRCULAR_REFERENCE
 from cmslib.orm.common import DSCMS4Model, CustomerModel
 
 
@@ -74,13 +74,19 @@ class Group(CustomerModel):
         json['children'] = [child.json_tree for child in self.ordered_children]
         return json
 
-    def set_parent(self, parent: Union[Group, None]) -> None:
+    def set_parent(self, parent: Union[Group, int, None]) -> None:
         """Changes the parent reference of the group."""
-        if parent is not None:
-            parent = self.get_peer(parent)
+        if parent is None:
+            self.parent = None
+            return
 
-            if parent in self.tree:
-                raise CIRCULAR_REFERENCE
+        if not isinstance(parent, Group):
+            cls = type(self)
+            condition = (cls.id == parent) & (cls.customer == self.customer)
+            parent = cls.select().where(condition).get()
+
+        if parent in self.tree:
+            raise CircularReference(parent)
 
         self.parent = parent
 
