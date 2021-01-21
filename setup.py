@@ -1,18 +1,39 @@
 #! /usr/bin/env python3
+"""Install script."""
 
-from distutils.core import setup
+from setuptools import setup
 
 
 setup(
     name='cmslib',
-    version='latest',
+    use_scm_version={
+        "local_scheme": "node-and-timestamp"
+    },
+    setup_requires=['setuptools_scm'],
     author='HOMEINFO - Digitale Informationssysteme GmbH',
     author_email='<info at homeinfo dot de>',
     maintainer='Richard Neumann',
     maintainer_email='<r dot neumann at homeinfo period de>',
-    requires=[
-        'configlib', 'flask', 'functoolsplus', 'his', 'hisfs', 'mdb',
-        'peewee', 'peeweeplus', 'pyxb', 'terminallib'],
+    install_requires=[
+        'bookings',
+        'configlib',
+        'ferengi',
+        'filedb',
+        'flask',
+        'functoolsplus',
+        'his',
+        'hisfs',
+        'hwdb',
+        'mdb',
+        'newslib',
+        'openimmodb',
+        'peewee',
+        'peeweeplus',
+        'previewlib',
+        'pyxb',
+        'werkzeug',
+        'wsgilib'
+    ],
     packages=[
         'cmslib',
         'cmslib.functions',
@@ -22,4 +43,5 @@ setup(
         'cmslib.orm.charts.api',
         'cmslib.orm.content',
         'cmslib.presentation'],
-    description='Conent Management Systemd library.')
+    description='Conent Management Systemd library.'
+)
