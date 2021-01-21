@@ -10,10 +10,7 @@ from his import ACCOUNT, CUSTOMER
 from mdb import Address, Company, Customer
 from wsgilib import get_bool
 
-from cmslib.messages.charts import INVALID_CHART_TYPE
-from cmslib.messages.charts import NO_CHART_TYPE_SPECIFIED
-from cmslib.messages.charts import NO_SUCH_BASE_CHART
-from cmslib.messages.charts import NO_SUCH_CHART
+from cmslib.exceptions import InvalidChartType
 from cmslib.orm.chart_acl import ChartACL
 from cmslib.orm.charts import CHARTS, BaseChart, Chart, ChartMode
 from cmslib.orm.schedule import Schedule
@@ -42,7 +39,7 @@ def _get_chart_types() -> Iterator[Chart]:
         try:
             yield CHARTS[type_name]
         except KeyError:
-            raise INVALID_CHART_TYPE from None
+            raise InvalidChartType(type_name) from None
 
 
 def _filtered_chart_types() -> Iterator[Chart]:
@@ -59,20 +56,17 @@ CHART_TYPES = LocalProxy(_filtered_chart_types)
 def _get_chart_type() -> Chart:
     """Returns the selected chart type."""
 
-    try:
-        chart_type = request.args['type']
-    except KeyError:
-        raise NO_CHART_TYPE_SPECIFIED from None
+    chart_type = request.args['type']
 
     try:
         chart_type = CHARTS[chart_type]
     except KeyError:
-        raise INVALID_CHART_TYPE from None
+        raise InvalidChartType(chart_type) from None
 
     if ACCOUNT.root or ChartACL.can_use(CUSTOMER.id, chart_type):
         return chart_type
 
-    raise INVALID_CHART_TYPE
+    raise InvalidChartType(chart_type)
 
 
 CHART_TYPE = LocalProxy(_get_chart_type)
@@ -92,11 +86,7 @@ def get_base_chart(ident: int) -> BaseChart:
 
     condition = BaseChart.id == ident
     condition &= BaseChart.customer == CUSTOMER
-
-    try:
-        return BaseChart.get(condition)
-    except BaseChart.DoesNotExist:
-        raise NO_SUCH_BASE_CHART from None
+    return BaseChart.get(condition)
 
 
 def _get_charts(cls: ModelBase) -> ModelSelect:
@@ -121,10 +111,7 @@ def get_charts() -> Iterator[Chart]:
 def get_chart(ident: int, cls: ModelBase = CHART_TYPE) -> Chart:
     """Returns the selected chart."""
 
-    try:
-        return _get_charts(cls).where(cls.id == ident).get()
-    except cls.DoesNotExist:
-        raise NO_SUCH_CHART from None
+    return _get_charts(cls).where(cls.id == ident).get()
 
 
 def get_mode() -> ChartMode:
