@@ -7,7 +7,6 @@ from datetime import datetime
 from enum import Enum
 from typing import Iterable, Set
 
-from peewee import JOIN
 from peewee import BooleanField
 from peewee import ForeignKeyField
 from peewee import IntegerField
@@ -167,16 +166,9 @@ class Configuration(CustomerModel):
         if not cascade:
             return super().select(*args, **kwargs)
 
-        dummy_picture = File.alias()
-        args = {cls, *args, Colors, File, dummy_picture}
-        return super().select(
-            *args, cascade=cascade, **kwargs
-        ).join_from(cls, Colors).join_from(
-            cls, File, on=cls.logo == File.id, join_type=JOIN.LEFT_OUTER
-        ).join_from(
-            cls, dummy_picture, on=cls.dummy_picture == dummy_picture.id,
-            join_type=JOIN.LEFT_OUTER
-        )
+        args = {cls, *args, Colors}
+        return super().select(*args, cascade=cascade, **kwargs).join_from(
+            cls, Colors)
 
     @property
     def files(self) -> Set[File]:
