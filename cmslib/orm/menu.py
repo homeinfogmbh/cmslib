@@ -110,8 +110,8 @@ class MenuItem(DSCMS4Model):
             return super().select(*args, **kwargs)
 
         args = {cls, Menu, Customer, Company, *args}
-        return super().select(*args, cascade=cascade, **kwargs).join_from(
-            cls, Menu).join(Customer).join(Company)
+        return super().select(*args, **kwargs).join_from(cls, Menu).join(
+            Customer).join(Company)
 
     @property
     def root(self) -> bool:
@@ -284,9 +284,8 @@ class MenuItemChart(DSCMS4Model):
             return super().select(*args, **kwargs)
 
         args = {cls, MenuItem, Menu, Customer, Company, BaseChart, *args}
-        return super().select(*args, cascade=cascade, **kwargs).join_from(
-            cls, MenuItem).join(Menu).join(Customer).join(Company).join_from(
-                cls, BaseChart)
+        return super().select(*args, **kwargs).join_from(cls, MenuItem).join(
+            Menu).join(Customer).join(Company).join_from(cls, BaseChart)
 
     def copy(self, menu_item: MenuItem = None) -> MenuItemChart:
         """Copies this menu item chart."""
