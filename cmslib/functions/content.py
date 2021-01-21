@@ -1,6 +1,6 @@
 """Content-related functions."""
 
-from typing import Union
+from typing import Optional, Union
 
 from peewee import ModelSelect
 
@@ -30,12 +30,17 @@ __all__ = [
 
 
 def get_deployment_base_charts(
-        deployment: Union[Deployment, int]) -> ModelSelect:
+        deployment: Union[Deployment, int],
+        trashed: Optional[bool] = None) -> ModelSelect:
     """Selects deployment base charts."""
 
-    return DeploymentBaseChart.select(cascade=True).where(
-        (DeploymentBaseChart.deployment == deployment)
-        & (BaseChart.customer == CUSTOMER.id))
+    condition = DeploymentBaseChart.deployment == deployment
+    condition &= BaseChart.customer == CUSTOMER.id
+
+    if trashed is not None:
+        condition &= BaseChart.trashed == trashed
+
+    return DeploymentBaseChart.select(cascade=True).where(condition)
 
 
 def get_deployment_configurations(
@@ -55,12 +60,18 @@ def get_deployment_menus(deployment: Union[Deployment, int]) -> ModelSelect:
         & (Menu.customer == CUSTOMER.id))
 
 
-def get_group_base_charts(group: Union[Group, int]) -> ModelSelect:
+def get_group_base_charts(
+        group: Union[Group, int],
+        trashed: Optional[bool] = None) -> ModelSelect:
     """Selects deployment base charts."""
 
-    return GroupBaseChart.select(cascade=True).where(
-        (GroupBaseChart.group == group)
-        & (BaseChart.customer == CUSTOMER.id))
+    condition = GroupBaseChart.group == group
+    condition &= BaseChart.customer == CUSTOMER.id
+
+    if trashed is not None:
+        condition &= BaseChart.trashed == trashed
+
+    return GroupBaseChart.select(cascade=True).where(condition)
 
 
 def get_group_configurations(group: Union[Group, int]) -> ModelSelect:
