@@ -85,11 +85,10 @@ class MenuTreeItem(NamedTuple):
     def from_menu_item(cls, menu_item: MenuItem) -> MenuTreeItem:
         """Creates a menu item tree from the given menu item."""
         children = [cls.from_menu_item(child) for child in menu_item.children]
-        menu_item_charts = list(menu_item.menu_item_charts)
         return cls(
             menu_item.name, menu_item.icon, menu_item.icon_image,
             menu_item.text_color, menu_item.background_color, menu_item.index,
-            menu_item_charts, children)
+            list(menu_item.menu_item_charts), children)
 
     @classmethod
     def from_menu(cls, menu: Menu) -> Iterator[MenuTreeItem]:
