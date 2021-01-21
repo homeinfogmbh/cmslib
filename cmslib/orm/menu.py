@@ -179,10 +179,10 @@ class MenuItem(DSCMS4Model):
 
         if parent is not None:
             if parent.menu != menu:
-                raise DifferentMenus()
+                raise DifferentMenus(menu, parent.menu)
 
             if parent in self.tree:
-                raise CircularReference()
+                raise CircularReference(parent)
 
         self.parent = parent
         menu_items = []
