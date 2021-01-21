@@ -21,7 +21,7 @@ def attachment_dom(file: Union[File, int, None], format: str = None,
 
     if isinstance(file, int):
         file = File.select(File, FileDBFile).join(FileDBFile).where(
-            File.id == file)
+            File.id == file).get()
 
     xml = Attachment()
     xml.id = file.id

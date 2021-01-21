@@ -84,7 +84,8 @@ class MenuItem(DSCMS4Model):
         backref='children', lazy_load=True)
     name = HTMLCharField(255)
     icon = HTMLCharField(255, null=True)
-    icon_image = ForeignKeyField(File, column_name='icon_image', null=True)
+    icon_image = ForeignKeyField(
+        File, column_name='icon_image', null=True, lazy_load=False)
     text_color = IntegerField(default=0x000000)
     background_color = IntegerField(default=0xffffff)
     index = IntegerField(default=0)

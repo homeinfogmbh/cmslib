@@ -356,7 +356,7 @@ class Background(DSCMS4Model):
     configuration = ForeignKeyField(
         Configuration, column_name='configuration', backref='backgrounds',
         on_delete='CASCADE', lazy_load=False)
-    file = ForeignKeyField(File, column_name='file')
+    file = ForeignKeyField(File, column_name='file', lazy_load=False)
 
     def to_json(self, *args, **kwargs) -> dict:
         """Returns a JSON-ish dict."""
