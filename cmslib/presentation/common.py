@@ -8,6 +8,7 @@ from typing import Any, Callable, Iterable, Iterator, Set
 
 from peewee import ModelSelect
 
+from filedb import File ad FileDBFile
 from functoolsplus import coerce    # pylint: disable=E0401
 from hisfs import File
 
@@ -34,7 +35,8 @@ LOGGER = getLogger(__file__)
 def get_files(ids: Iterator[int]) -> ModelSelect:
     """Yields files from their IDs."""
 
-    return File.select(cascade=True).where(File.id << set(ids))
+    return File.select(File, FileDBFile).join(FileDBFile).where(
+        File.id << set(ids))
 
 
 @coerce(tuple)
