@@ -73,7 +73,8 @@ class Presentation(PresentationMixin):
     def configuration(self) -> Configuration:
         """Returns the deployment's configuration."""
         try:
-            return Configuration.select().join(DeploymentConfiguration).where(
+            return Configuration.select(cascade=True).join_from(
+                Configuration, DeploymentConfiguration).where(
                 DeploymentConfiguration.deployment == self.deployment).get()
         except Configuration.DoesNotExist:
             raise NoConfigurationFound() from None
