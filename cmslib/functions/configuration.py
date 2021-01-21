@@ -7,10 +7,10 @@ from his import CUSTOMER
 from cmslib.orm.configuration import Configuration
 
 
-__all__ = ['get_configuration', 'list_configurations']
+__all__ = ['get_configuration', 'get_configurations']
 
 
-def list_configurations() -> ModelSelect:
+def get_configurations() -> ModelSelect:
     """Returns the respective configuration."""
 
     return Configuration.select(cascade=True).where(
@@ -20,4 +20,4 @@ def list_configurations() -> ModelSelect:
 def get_configuration(ident: int) -> Configuration:
     """Returns the respective configuration."""
 
-    return list_configurations().where(Configuration.id == ident).get()
+    return get_configurations().where(Configuration.id == ident).get()

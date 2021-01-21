@@ -9,10 +9,10 @@ from hwdb import Deployment
 from mdb import Address, Company, Customer
 
 
-__all__ = ['get_deployment', 'with_deployment']
+__all__ = ['get_deployment', 'get_deployments', 'with_deployment']
 
 
-def list_deployments() -> ModelSelect:
+def get_deployments() -> ModelSelect:
     """Selects the deployments of the current customer."""
 
     deployment_address = Address.alias()
@@ -29,7 +29,7 @@ def list_deployments() -> ModelSelect:
 def get_deployment(ident: int) -> Deployment:
     """Returns the respective deployment."""
 
-    return list_deployments().where(Deployment.id == ident).get()
+    return get_deployments().where(Deployment.id == ident).get()
 
 
 def with_deployment(function: Callable) -> Callable:

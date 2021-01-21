@@ -7,10 +7,10 @@ from his import CUSTOMER
 from cmslib.orm.schedule import Schedule
 
 
-__all__ = ['get_schedule', 'list_schedules']
+__all__ = ['get_schedule', 'get_schedules']
 
 
-def list_schedules() -> ModelSelect:
+def get_schedules() -> ModelSelect:
     """Selects the schedules of the current customer."""
 
     return Schedule.select(cascade=True).where(
@@ -20,4 +20,4 @@ def list_schedules() -> ModelSelect:
 def get_schedule(ident: int) -> Schedule:
     """Returns the respective schedule."""
 
-    return list_schedules().where(Schedule.id == ident).get()
+    return get_schedules().where(Schedule.id == ident).get()
