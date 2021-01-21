@@ -8,7 +8,7 @@ from typing import Any, Callable, Iterable, Iterator, Set
 
 from peewee import ModelSelect
 
-from filedb import File ad FileDBFile
+from filedb import File as FileDBFile
 from functoolsplus import coerce    # pylint: disable=E0401
 from hisfs import File
 
