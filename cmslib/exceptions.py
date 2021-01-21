@@ -9,6 +9,8 @@ __all__ = [
     'AmbiguousBaseChart',
     'AmbiguousConfigurationsError',
     'CircularReference',
+    'DifferentMenus',
+    'MissingMenu',
     'NoConfigurationFound',
     'OrphanedBaseChart',
 ]
@@ -54,6 +56,10 @@ class DifferentMenus(Exception):
         super().__init__(menu, other)
         self.menu = menu
         self.other = other
+
+
+class MissingMenu(Exception):
+    """Indicates that a menu is missing for a menu item."""
 
 
 class NoConfigurationFound(Exception):
