@@ -20,8 +20,9 @@ __all__ = [
     'CHART_TYPES',
     'CHART_TYPE',
     'get_base_chart',
-    'get_charts',
+    'get_base_charts',
     'get_chart',
+    'get_charts',
     'get_mode'
 ]
 
@@ -81,12 +82,16 @@ def _get_trashed() -> Expression:
     return BaseChart.trashed == 0
 
 
+def get_base_charts() -> ModelSelect:
+    """Returns the base charts of the current customer."""
+
+    return BaseChart.select(cascade=True).where(BaseChart.customer == CUSTOMER)
+
+
 def get_base_chart(ident: int) -> BaseChart:
     """Returns the respective base chart."""
 
-    condition = BaseChart.id == ident
-    condition &= BaseChart.customer == CUSTOMER
-    return BaseChart.get(condition)
+    return get_base_charts().where(BaseChart.id == ident).get()
 
 
 def _get_charts(cls: ModelBase) -> ModelSelect:
