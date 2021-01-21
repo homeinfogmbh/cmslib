@@ -1,17 +1,15 @@
 """Common ORM models."""
 
 from __future__ import annotations
-from typing import Union
 
 from flask import has_request_context
-from peewee import ForeignKeyField, Model, ModelSelect
+from peewee import ForeignKeyField, ModelSelect
 
 from his import CUSTOMER
 from mdb import Address, Company, Customer
 from peeweeplus import MySQLDatabase, JSONModel
 
 from cmslib.config import CONFIG, LOGGER
-from cmslib.messages.data import INVALID_REFERENCE
 
 
 __all__ = [
@@ -79,24 +77,3 @@ class CustomerModel(DSCMS4Model):
         return super().select(
             *{cls, Customer, Company, Address, *args}, **kwargs).join(
             Customer).join(Company).join(Address)
-
-    def get_peer(self, record_or_id: Union[Model, int]) -> Model:
-        """Ensures that the provided record or ID is of the same
-        model and for the same customer as this record itself.
-        """
-        if record_or_id is None:
-            return None
-
-        cls = type(self)
-
-        if isinstance(record_or_id, cls):
-            if record_or_id.customer == self.customer:
-                return record_or_id
-
-            raise INVALID_REFERENCE
-
-        try:
-            return cls.get(
-                (cls.id == record_or_id) & (cls.customer == self.customer))
-        except cls.DoesNotExist:
-            raise INVALID_REFERENCE from None
