@@ -42,6 +42,7 @@ setup(
         'cmslib.orm.charts',
         'cmslib.orm.charts.api',
         'cmslib.orm.content',
-        'cmslib.presentation'],
+        'cmslib.presentation'
+    ],
     description='Conent Management Systemd library.'
 )
