@@ -5,10 +5,6 @@ from typing import Union
 from previewlib import FileAccessToken
 from wsgilib import ACCEPT, JSON, JSONMessage, XML
 
-from cmslib.exceptions import AmbiguousConfigurationsError
-from cmslib.exceptions import NoConfigurationFound
-from cmslib.messages.presentation import NO_CONFIGURATION_ASSIGNED
-from cmslib.messages.presentation import AMBIGUOUS_CONFIGURATIONS
 from cmslib.presentation.common import PresentationMixin
 
 
@@ -24,13 +20,7 @@ def make_response(presentation: PresentationMixin) -> Response:
     file_preview_token = FileAccessToken.token_for_presentation(presentation)
 
     if  'application/xml' in ACCEPT or '*/*' in ACCEPT:
-        try:
-            presentation = presentation.to_dom()
-        except AmbiguousConfigurationsError:
-            return AMBIGUOUS_CONFIGURATIONS
-        except NoConfigurationFound:
-            return NO_CONFIGURATION_ASSIGNED
-
+        presentation = presentation.to_dom()
         presentation.file_preview_token = file_preview_token.hex
         return XML(presentation)
 
