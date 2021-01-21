@@ -11,14 +11,15 @@ from cmslib.exceptions import MissingMenu
 from cmslib.exceptions import NoConfigurationFound
 from cmslib.exceptions import OrphanedBaseChart
 from cmslib.orm.charts import CHARTS, BaseChart
+from cmslib.orm.configuration import Configuration
 
 
 __all__ = ['ERRORS']
 
 
 CHART_ERRORS = {
-    model.DoesNotExist: lambda _: JSONMessage('No such chart.', status=404)
-    for model in CHARTS.values()
+    chart.DoesNotExist: lambda _: JSONMessage('No such chart.', status=404)
+    for chart in CHARTS.values()
 }
 
 
@@ -43,6 +44,8 @@ ERRORS = {
     MissingMenu: lambda _: JSONMessage('Missing Menu.', status=404),
     NoConfigurationFound: lambda _: JSONMessage(
         'No configuration found.', status=404),
+    Configuration.DoesNotExist: lambda _: JSONMessage(
+        'No such configuration.', status=404),
     OrphanedBaseChart: lambda error: JSONMessage(
         'Orphaned base chart.', base_chart=error.base_chart.to_json(),
         status=400),
