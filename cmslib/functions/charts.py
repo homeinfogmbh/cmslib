@@ -102,15 +102,13 @@ def get_base_chart(ident: int) -> BaseChart:
 def _get_charts(cls: ModelBase) -> ModelSelect:
     """Selects charts of the given type for the current customer."""
 
-    condition = BaseChart.customer == CUSTOMER.id
-    condition &= _get_trashed()
-    select = cls.select(cls, BaseChart, Customer, Company, Address, Schedule)
-    select = cls.join(BaseChart)
-    select = select.join(Customer)
-    select = select.join(Company)
-    select = select.join(Address)
-    select = select.join_from(BaseChart, Schedule)
-    return select.where(condition)
+    return cls.select(
+        cls, BaseChart, Customer, Company, Address, Schedule
+    ).join(BaseChart).join(Customer).join(Company).join(Address).join_from(
+        BaseChart, Schedule).where(
+        (BaseChart.customer == CUSTOMER.id)
+        & _get_trashed()
+    )
 
 
 def get_charts() -> Iterator[Chart]:
