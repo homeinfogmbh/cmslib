@@ -1,6 +1,7 @@
 """Error messages and mappings."""
 
 from hwdb import Deployment
+from mdb import Customer
 from wsgilib import JSONMessage
 
 from cmslib.exceptions import AmbiguousBaseChart
@@ -46,6 +47,8 @@ ERRORS = {
     CircularReference: lambda error: JSONMessage(
         'Circular reference.', type=type(error.model).__name__,
         model=error.model.to_json(), status=400),
+    Customer.DoesNotExist: lambda _: JSONMessage(
+        'No such customer.', status=404),
     Deployment.DoesNotExist: lambda _: JSONMessage(
         'No such deployment.', status=404),
     DeploymentBaseChart.DoesNotExist: lambda _: JSONMessage(
