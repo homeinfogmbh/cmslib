@@ -1,6 +1,6 @@
 """Booking chart."""
 
-from typing import Iterable, Iterator, Union
+from typing import Iterable, Union
 
 from peewee import BooleanField, ForeignKeyField
 
@@ -36,12 +36,6 @@ class Booking(Chart):
         transaction.primary.update_bookable_mappings(bookables, transaction)
         return transaction
 
-    @property
-    def bookables(self) -> Iterator[Bookable]:
-        """Yields the respective bookables."""
-        for bookable_mapping in self.bookable_mappings:
-            yield bookable_mapping.bookable
-
     def update_bookable_mappings(self, bookables: Iterable[int],
                                  transaction: Transaction) -> None:
         """Updates the bookable objects."""
@@ -70,7 +64,8 @@ class Booking(Chart):
 
         if mode == ChartMode.FULL:
             json['bookables'] = [
-                bookable.to_json() for bookable in self.bookables]
+                bmap.bookable_id for bmap in self.bookable_mappings
+            ]
 
         return json
 
