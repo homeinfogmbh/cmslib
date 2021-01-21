@@ -30,12 +30,14 @@ __all__ = [
 
 
 def get_deployment_base_charts(
-        deployment: Union[Deployment, int],
+        deployment: Optional[Union[Deployment, int]] = None,
         trashed: Optional[bool] = None) -> ModelSelect:
     """Selects deployment base charts."""
 
-    condition = DeploymentBaseChart.deployment == deployment
-    condition &= BaseChart.customer == CUSTOMER.id
+    condition = BaseChart.customer == CUSTOMER.id
+
+    if deployment is not None:
+        condition &= DeploymentBaseChart.deployment == deployment
 
     if trashed is not None:
         condition &= BaseChart.trashed == trashed
@@ -44,29 +46,38 @@ def get_deployment_base_charts(
 
 
 def get_deployment_configurations(
-        deployment: Union[Deployment, int]) -> ModelSelect:
+        deployment: Optional[Union[Deployment, int]] = None) -> ModelSelect:
     """Selects deployment configurations."""
 
-    return DeploymentConfiguration.select(cascade=True).where(
-        (DeploymentConfiguration.deployment == deployment)
-        & (Configuration.customer == CUSTOMER.id))
+    condition = Configuration.customer == CUSTOMER.id
+
+    if deployment is not None:
+        condition &= DeploymentConfiguration.deployment == deployment
+
+    return DeploymentConfiguration.select(cascade=True).where(condition)
 
 
-def get_deployment_menus(deployment: Union[Deployment, int]) -> ModelSelect:
+def get_deployment_menus(deployment: Optional[Union[Deployment, int]] = None
+        ) -> ModelSelect:
     """Selects deployment menus."""
 
-    return DeploymentMenu.select(cascade=True).where(
-        (DeploymentMenu.deployment == deployment)
-        & (Menu.customer == CUSTOMER.id))
+    condition = Menu.customer == CUSTOMER.id
+
+    if deployment is not None:
+        condition &= DeploymentMenu.deployment == deployment
+
+    return DeploymentMenu.select(cascade=True).where(condition)
 
 
 def get_group_base_charts(
-        group: Union[Group, int],
+        group: Optional[Union[Group, int]] = None,
         trashed: Optional[bool] = None) -> ModelSelect:
     """Selects deployment base charts."""
 
-    condition = GroupBaseChart.group == group
-    condition &= BaseChart.customer == CUSTOMER.id
+    condition = BaseChart.customer == CUSTOMER.id
+
+    if group is not None:
+        condition &= GroupBaseChart.group == group
 
     if trashed is not None:
         condition &= BaseChart.trashed == trashed
@@ -74,16 +85,24 @@ def get_group_base_charts(
     return GroupBaseChart.select(cascade=True).where(condition)
 
 
-def get_group_configurations(group: Union[Group, int]) -> ModelSelect:
+def get_group_configurations(group: Optional[Union[Group, int]] = None
+        ) -> ModelSelect:
     """Selects deployment configurations."""
 
-    return GroupConfiguration.select(cascade=True).where(
-        (GroupConfiguration.group == group)
-        & (Configuration.customer == CUSTOMER.id))
+    condition = Configuration.customer == CUSTOMER.id
+
+    if group is not None:
+        condition &= GroupConfiguration.group == group
+
+    return GroupConfiguration.select(cascade=True).where(condition)
 
 
-def get_group_menus(group: Union[Group, int]) -> ModelSelect:
+def get_group_menus(group: Optional[Union[Group, int]] = None) -> ModelSelect:
     """Selects deployment menus."""
 
-    return GroupMenu.select(cascade=True).where(
-        (GroupMenu.group == group) & (Menu.customer == CUSTOMER.id))
+    condition = Menu.customer == CUSTOMER.id
+
+    if group is not None:
+        condition &= GroupMenu.group == group
+
+    return GroupMenu.select(cascade=True).where(condition)
