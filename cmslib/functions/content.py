@@ -27,6 +27,7 @@ __all__ = [
     'get_deployment_menus',
     'get_deployment_menu',
     'get_group_base_charts',
+    'get_group_base_chart',
     'get_group_configurations',
     'get_group_configuration',
     'get_group_menus',
@@ -108,6 +109,12 @@ def get_group_base_charts(
         condition &= BaseChart.trashed == trashed
 
     return GroupBaseChart.select(cascade=True).where(condition)
+
+
+def get_group_base_chart(ident: int) -> GroupBaseChart:
+    """Returns the respective group base chart."""
+
+    return get_group_base_charts().where(GroupBaseChart.id == ident).get()
 
 
 def get_group_configurations(group: Optional[Union[Group, int]] = None
