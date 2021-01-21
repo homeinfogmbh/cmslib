@@ -21,11 +21,16 @@ from cmslib.orm.menu import Menu
 
 __all__ = [
     'get_deployment_base_charts',
+    'get_deployment_base_chart',
     'get_deployment_configurations',
+    'get_deployment_configuration',
     'get_deployment_menus',
+    'get_deployment_menu',
     'get_group_base_charts',
     'get_group_configurations',
-    'get_group_menus'
+    'get_group_configuration',
+    'get_group_menus',
+    'get_group_menu'
 ]
 
 
@@ -45,6 +50,13 @@ def get_deployment_base_charts(
     return DeploymentBaseChart.select(cascade=True).where(condition)
 
 
+def get_deployment_base_chart(ident: int) -> DeploymentBaseChart:
+    """Returns the respective deployment base chart."""
+
+    return get_deployment_base_charts().where(
+        DeploymentBaseChart.id == ident).get()
+
+
 def get_deployment_configurations(
         deployment: Optional[Union[Deployment, int]] = None) -> ModelSelect:
     """Selects deployment configurations."""
@@ -57,6 +69,13 @@ def get_deployment_configurations(
     return DeploymentConfiguration.select(cascade=True).where(condition)
 
 
+def get_deployment_configuration(ident: int) -> DeploymentConfiguration:
+    """Returns the respective deployment configuration."""
+
+    return get_deployment_configurations().where(
+        DeploymentConfiguration.id == ident).get()
+
+
 def get_deployment_menus(deployment: Optional[Union[Deployment, int]] = None
         ) -> ModelSelect:
     """Selects deployment menus."""
@@ -67,6 +86,12 @@ def get_deployment_menus(deployment: Optional[Union[Deployment, int]] = None
         condition &= DeploymentMenu.deployment == deployment
 
     return DeploymentMenu.select(cascade=True).where(condition)
+
+
+def get_deployment_menu(ident: int) -> DeploymentMenu:
+    """Returns the respective deployment menu."""
+
+    return get_deployment_menus().where(DeploymentMenu.id == ident).get()
 
 
 def get_group_base_charts(
@@ -97,6 +122,13 @@ def get_group_configurations(group: Optional[Union[Group, int]] = None
     return GroupConfiguration.select(cascade=True).where(condition)
 
 
+def get_group_configuration(ident: int) -> GroupConfiguration:
+    """Returns the respective group configuration."""
+
+    return get_group_configurations().where(
+        GroupConfiguration.id == ident).get()
+
+
 def get_group_menus(group: Optional[Union[Group, int]] = None) -> ModelSelect:
     """Selects deployment menus."""
 
@@ -106,3 +138,9 @@ def get_group_menus(group: Optional[Union[Group, int]] = None) -> ModelSelect:
         condition &= GroupMenu.group == group
 
     return GroupMenu.select(cascade=True).where(condition)
+
+
+def get_group_menu(ident: int) -> GroupMenu:
+    """Returns the respective group menu."""
+
+    return get_group_menus().where(GroupMenu.id == ident).get()
