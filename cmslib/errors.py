@@ -13,6 +13,7 @@ from cmslib.exceptions import MissingMenu
 from cmslib.exceptions import NoConfigurationFound
 from cmslib.exceptions import OrphanedBaseChart
 from cmslib.orm.charts import CHARTS, BaseChart
+from cmslib.orm.chart_acl import ChartACL
 from cmslib.orm.configuration import Configuration
 from cmslib.orm.content.deployment import DeploymentBaseChart
 from cmslib.orm.content.deployment import DeploymentConfiguration
@@ -44,6 +45,8 @@ ERRORS = {
         status=400),
     BaseChart.DoesNotExist: lambda _: JSONMessage(
         'No such base chart.', status=404),
+    ChartACL.DoesNotExist: lambda _: JSONMessage(
+        'No such chart ACL.', status=404),
     CircularReference: lambda error: JSONMessage(
         'Circular reference.', type=type(error.model).__name__,
         model=error.model.to_json(), status=400),
