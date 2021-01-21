@@ -10,7 +10,7 @@ from hisfs import File
 
 from cmslib import dom  # pylint: disable=E0611
 from cmslib.attachments import attachment_dom, attachment_json
-from cmslib.orm.menu import Menu, MenuItem
+from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
 
 
 __all__ = ['add', 'merge', 'get_index', 'MenuTreeItem']
@@ -56,7 +56,7 @@ class MenuTreeItem(NamedTuple):
     text_color: int
     background_color: int
     index: int
-    menu_item_charts: Iterable
+    menu_item_charts: Iterable[MenuItemChart]
     children: Iterable[MenuTreeItem]
 
     def __str__(self):
@@ -85,10 +85,12 @@ class MenuTreeItem(NamedTuple):
     def from_menu_item(cls, menu_item: MenuItem) -> MenuTreeItem:
         """Creates a menu item tree from the given menu item."""
         children = [cls.from_menu_item(child) for child in menu_item.children]
+        menu_item_charts = MenuItemChart.select(cascade=True).where(
+            MenuItemChart.id << menu_item.menu_item_charts)
         return cls(
             menu_item.name, menu_item.icon, menu_item.icon_image,
             menu_item.text_color, menu_item.background_color, menu_item.index,
-            list(menu_item.menu_item_charts), children)
+            menu_item_charts, children)
 
     @classmethod
     def from_menu(cls, menu: Menu) -> Iterator[MenuTreeItem]:
