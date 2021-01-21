@@ -11,6 +11,16 @@ from cmslib.dom import Attachment   # pylint: disable=E0401,E0611
 __all__ = ['attachment_dom', 'attachment_json']
 
 
+def ensure_file(file: Union[File, int]) -> File:
+    """Ensures a joined file."""
+
+    if isinstance(file, File):
+        return file
+
+    return File.select(File, FileDBFile).join(FileDBFile).where(
+        File.id == file).get()
+
+
 # pylint: disable=W0622
 def attachment_dom(file: Union[File, int, None], format: str = None,
                    index: int = None) -> Attachment:
@@ -19,10 +29,7 @@ def attachment_dom(file: Union[File, int, None], format: str = None,
     if file is None:
         return None
 
-    if isinstance(file, int):
-        file = File.select(File, FileDBFile).join(FileDBFile).where(
-            File.id == file).get()
-
+    file = ensure_file(file)
     xml = Attachment()
     xml.id = file.id
     xml.mimetype = file.mimetype
@@ -40,6 +47,7 @@ def attachment_json(file: File, json: dict = None) -> dict:
     if file is None:
         return json
 
+    file = ensure_file(file)
     result = file.to_json(fk_fields=False)
 
     if json:
