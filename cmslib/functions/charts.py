@@ -21,6 +21,7 @@ __all__ = [
     'get_base_charts',
     'get_chart',
     'get_charts',
+    'get_chart_acls',
     'get_mode'
 ]
 
@@ -110,6 +111,13 @@ def get_chart(ident: int, cls: ModelBase = CHART_TYPE) -> Chart:
     """Returns the selected chart."""
 
     return _get_charts(cls).where(cls.id == ident).get()
+
+
+def get_chart_acls() -> ModelSelect:
+    """Returns chart ACLs of the current customer."""
+
+    return ChartACL.select(cascade=True).where(
+        ChartACL.customer == CUSTOMER.id)
 
 
 def get_mode() -> ChartMode:
