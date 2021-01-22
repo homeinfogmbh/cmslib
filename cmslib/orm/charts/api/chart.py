@@ -32,7 +32,7 @@ class Chart(DSCMS4Model):
         chart = super().from_json(json, **kwargs)
         transaction = BaseChart.from_json(base_dict)
         chart.base = transaction.primary
-        print('Base chart:', chart.base, flush=True)
+        print('Base chart:', chart.base_id, flush=True)
         print('Transaction primary:', transaction.primary, flush=True)
         transaction.add(chart, primary=True)
         return transaction
@@ -89,5 +89,5 @@ class Chart(DSCMS4Model):
 
     def save(self, *args, **kwargs):
         print('Saving chart:', self, flush=True)
-        print('My base chart:', self.base, flush=True)
+        print('My base chart:', self.base_id, flush=True)
         return super().save(*args, **kwargs)
