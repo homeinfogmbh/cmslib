@@ -17,7 +17,8 @@ __all__ = [
     'GroupBaseChart',
     'GroupConfiguration',
     'GroupMenu',
-    'MODELS']
+    'MODELS'
+]
 
 
 class _GroupContent(DSCMS4Model):

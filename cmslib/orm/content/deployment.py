@@ -17,7 +17,8 @@ __all__ = [
     'DeploymentBaseChart',
     'DeploymentConfiguration',
     'DeploymentMenu',
-    'MODELS']
+    'MODELS'
+]
 
 
 class DeploymentContent(DSCMS4Model):
