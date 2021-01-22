@@ -65,8 +65,10 @@ class Group(CustomerModel):
         if self.parent is None:
             return
 
-        yield self.parent
-        yield from self.parent.parents
+        cls = type(self)
+        parent = cls.select(cascade=True).where(cls.id == self.parent)
+        yield parent
+        yield from parent.parents
 
     @property
     def json_tree(self) -> dict:
