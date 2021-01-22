@@ -19,7 +19,7 @@ class Chart(DSCMS4Model):
     """Abstract basic chart."""
 
     base = ForeignKeyField(
-        BaseChart, column_name='base', on_delete='CASCADE', lazy_load=True)
+        BaseChart, column_name='base', on_delete='CASCADE', lazy_load=False)
 
     def __init_subclass__(cls):
         """Registers the subclass as new chart."""
@@ -92,4 +92,5 @@ class Chart(DSCMS4Model):
         print('My base chart:', self.base_id, flush=True)
         print('My base chart:', BaseChart.select().where(BaseChart.id == self.base_id).get(), flush=True)
         print('Super save:', super().save, flush=True)
+        self.base = self.base_id
         return super().save(*args, **kwargs)
