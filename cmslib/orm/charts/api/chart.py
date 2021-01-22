@@ -19,7 +19,7 @@ class Chart(DSCMS4Model):
     """Abstract basic chart."""
 
     base = ForeignKeyField(
-        BaseChart, column_name='base', on_delete='CASCADE', lazy_load=False)
+        BaseChart, column_name='base', on_delete='CASCADE', lazy_load=True)
 
     def __init_subclass__(cls):
         """Registers the subclass as new chart."""
