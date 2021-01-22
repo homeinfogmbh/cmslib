@@ -58,8 +58,7 @@ class Chart(DSCMS4Model):
         """Returns a JSON-ish dictionary."""
         if mode == ChartMode.FULL:
             json = super().to_json(**kwargs)
-            json['base'] = self.base.to_json(
-                autofields=False, fk_fields=fk_fields, **kwargs)
+            json['base'] = self.base.to_json(fk_fields=fk_fields, **kwargs)
         elif mode == ChartMode.BRIEF:
             json = {'id': self.id}
         elif mode == ChartMode.ANON:
