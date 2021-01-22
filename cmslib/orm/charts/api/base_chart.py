@@ -128,8 +128,7 @@ class BaseChart(CustomerModel):
             raise OrphanedBaseChart(self) from None
 
         if superfluous:
-            charts = frozenset([match, *superfluous])
-            raise AmbiguousBaseChart(self, charts)
+            raise AmbiguousBaseChart(self, match, *superfluous)
 
         return match
 

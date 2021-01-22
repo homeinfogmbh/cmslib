@@ -1,7 +1,5 @@
 """Common ORM model exceptions."""
 
-from typing import Iterable
-
 from peewee import Model
 
 
@@ -22,7 +20,8 @@ class AmbiguousBaseChart(Exception):
     is referenced by more than one chart.
     """
 
-    def __init__(self, base_chart: Model, references: Iterable[Model]):
+    def __init__(self, base_chart: Model, *references: Model):
+        references = frozenset(references)
         super().__init__(base_chart, references)
         self.base_chart = base_chart
         self.references = references
