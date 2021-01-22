@@ -92,5 +92,5 @@ class Chart(DSCMS4Model):
         print('My base chart:', self.base_id, flush=True)
         print('My base chart:', BaseChart.select().where(BaseChart.id == self.base_id).get(), flush=True)
         print('Super save:', super().save, flush=True)
-        self.base = self.base_id
+        #self.base = self.base_id
         return super().save(*args, **kwargs)
