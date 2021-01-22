@@ -32,7 +32,7 @@ class _GroupContent(DSCMS4Model):
         if not cascade:
             return super().select(*args, **kwargs)
 
-        args = {cls, Group, Customer, Company, Address}
+        args = {cls, Group, Customer, Company, Address, *args}
         return super().select(*args, **kwargs).join_from(
             cls, Group).join(Customer).join(Company).join(Address)
 
@@ -67,7 +67,7 @@ class GroupBaseChart(_GroupContent):
         base_chart_address = Address.alias()
         args = {
             cls, BaseChart, base_chart_customer, base_chart_company,
-            base_chart_address
+            base_chart_address, *args
         }
         return super().select(*args, **kwargs).join_from(
             cls, BaseChart).join(base_chart_customer).join(
@@ -99,7 +99,7 @@ class GroupConfiguration(_GroupContent):
         configuration_address = Address.alias()
         args = {
             cls, Configuration, configuration_customer, configuration_company,
-            configuration_address
+            configuration_address, *args
         }
         return super().select(*args, **kwargs).join_from(
             cls, Configuration).join(configuration_customer).join(
@@ -123,7 +123,7 @@ class GroupMenu(_GroupContent):
         menu_customer = Customer.alias()
         menu_company = Company.alias()
         menu_address = Address.alias()
-        args = {cls, Menu, menu_customer, menu_company, menu_address}
+        args = {cls, Menu, menu_customer, menu_company, menu_address, *args}
         return super().select(*args, **kwargs).join_from(
             cls, Menu).join(menu_customer).join(menu_company).join(
             menu_address)

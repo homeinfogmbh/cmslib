@@ -166,7 +166,7 @@ class Configuration(CustomerModel):
         if not cascade:
             return super().select(*args, **kwargs)
 
-        args = {cls, *args, Colors}
+        args = {cls, Colors, *args}
         return super().select(*args, cascade=cascade, **kwargs).join_from(
             cls, Colors)
 
