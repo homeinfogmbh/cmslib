@@ -6,7 +6,6 @@ from peewee import ModelSelect
 
 from his import CUSTOMER
 from hwdb import Deployment
-from mdb import Address, Company, Customer
 
 
 __all__ = ['get_deployment', 'get_deployments', 'with_deployment']
@@ -15,15 +14,8 @@ __all__ = ['get_deployment', 'get_deployments', 'with_deployment']
 def get_deployments() -> ModelSelect:
     """Selects the deployments of the current customer."""
 
-    deployment_address = Address.alias()
-    lpt_address = Address.alias()
-    select = Deployment.select(
-        Deployment, Customer, Company, Address, deployment_address,
-        lpt_address).join(Customer).join(Company).join(Address).join_from(
-        Deployment, deployment_address,
-        on=Deployment.address == deployment_address.id).join_from(
-        Deployment, lpt_address, on=Deployment.lpt_address == lpt_address.id)
-    return select.where(Deployment.customer == CUSTOMER.id)
+    return Deployment.select(cascade=True).where(
+        Deployment.customer == CUSTOMER.id)
 
 
 def get_deployment(ident: int) -> Deployment:
