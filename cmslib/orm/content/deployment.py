@@ -7,7 +7,7 @@ from peewee import JOIN, ForeignKeyField, IntegerField, ModelSelect
 from hwdb import Deployment
 from mdb import Address, Company, Customer
 
-from cmslib.orm.charts import BaseChart, Chart, ChartMode
+from cmslib.orm.charts import BaseChart, Chart
 from cmslib.orm.common import DSCMS4Model
 from cmslib.orm.configuration import Configuration
 from cmslib.orm.menu import Menu

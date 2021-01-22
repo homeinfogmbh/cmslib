@@ -77,8 +77,8 @@ def get_deployment_configuration(ident: int) -> DeploymentConfiguration:
         DeploymentConfiguration.id == ident).get()
 
 
-def get_deployment_menus(deployment: Optional[Union[Deployment, int]] = None
-        ) -> ModelSelect:
+def get_deployment_menus(deployment: Optional[Union[Deployment, int]] = None) \
+        -> ModelSelect:
     """Selects deployment menus."""
 
     condition = Menu.customer == CUSTOMER.id
@@ -117,8 +117,8 @@ def get_group_base_chart(ident: int) -> GroupBaseChart:
     return get_group_base_charts().where(GroupBaseChart.id == ident).get()
 
 
-def get_group_configurations(group: Optional[Union[Group, int]] = None
-        ) -> ModelSelect:
+def get_group_configurations(group: Optional[Union[Group, int]] = None) \
+        -> ModelSelect:
     """Selects deployment configurations."""
 
     condition = Configuration.customer == CUSTOMER.id

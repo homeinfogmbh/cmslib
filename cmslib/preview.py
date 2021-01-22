@@ -19,7 +19,7 @@ def make_response(presentation: PresentationMixin) -> Response:
 
     file_preview_token = FileAccessToken.token_for_presentation(presentation)
 
-    if  'application/xml' in ACCEPT or '*/*' in ACCEPT:
+    if 'application/xml' in ACCEPT or '*/*' in ACCEPT:
         presentation = presentation.to_dom()
         presentation.file_preview_token = file_preview_token.hex
         return XML(presentation)

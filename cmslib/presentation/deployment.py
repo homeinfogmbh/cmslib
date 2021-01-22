@@ -54,7 +54,7 @@ def get_deployment(deployment: Union[Deployment, int]) -> Deployment:
 
     return Deployment.select(Deployment, Customer, Company, Address).join(
         Customer).join(Company).join_from(
-        Deployment, Address, on=Deployment.address==Address.id).where(
+        Deployment, Address, on=Deployment.address == Address.id).where(
         Deployment.id == deployment).get()
 
 
