@@ -66,7 +66,7 @@ class Group(CustomerModel):
             return
 
         cls = type(self)
-        parent = cls.select(cascade=True).where(cls.id == self.parent)
+        parent = cls.select(cascade=True).where(cls.id == self.parent).get()
         yield parent
         yield from parent.parents
 
