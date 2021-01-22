@@ -90,14 +90,6 @@ class DeploymentBaseChart(DeploymentContent):
         """Returns the respective chart."""
         return self.base_chart.chart
 
-    def to_json(self) -> dict:
-        """Returns a JSON-ish dict."""
-        return {
-            'id': self.id,
-            'chart': self.chart.to_json(mode=ChartMode.BRIEF),
-            'index': self.index
-        }
-
 
 class DeploymentConfiguration(DeploymentContent):
     """Association of a configuration with a Deployment."""
@@ -125,10 +117,6 @@ class DeploymentConfiguration(DeploymentContent):
             cls, Configuration).join(configuration_customer).join(
             configuration_company).join(configuration_address)
 
-    def to_json(self) -> dict:
-        """Returns a JSON-ish dict."""
-        return {'id': self.id, 'configuration': self.configuration_id}
-
 
 class DeploymentMenu(DeploymentContent):
     """Association of a menu with a Deployment."""
@@ -151,10 +139,6 @@ class DeploymentMenu(DeploymentContent):
         return super().select(*args, **kwargs).join_from(
             cls, Menu).join(menu_customer).join(menu_company).join(
             menu_address)
-
-    def to_json(self) -> dict:
-        """Returns a JSON-ish dict."""
-        return {'id': self.id, 'menu': self.menu_id}
 
 
 MODELS = (DeploymentBaseChart, DeploymentConfiguration, DeploymentMenu)

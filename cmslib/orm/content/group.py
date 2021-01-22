@@ -77,14 +77,6 @@ class GroupBaseChart(_GroupContent):
         """Returns the respective chart."""
         return self.base_chart.chart
 
-    def to_json(self) -> dict:
-        """Returns a JSON-ish dict."""
-        return {
-            'id': self.id,
-            'chart': self.chart.to_json(mode=ChartMode.BRIEF),
-            'index': self.index
-        }
-
 
 class GroupConfiguration(_GroupContent):
     """Association of a configuration with a group."""
@@ -112,10 +104,6 @@ class GroupConfiguration(_GroupContent):
             cls, Configuration).join(configuration_customer).join(
             configuration_company).join(configuration_address)
 
-    def to_json(self) -> dict:
-        """Returns a JSON-ish dict."""
-        return {'id': self.id, 'configuration': self.configuration_id}
-
 
 class GroupMenu(_GroupContent):
     """Association of a menu with a group."""
@@ -138,10 +126,6 @@ class GroupMenu(_GroupContent):
         return super().select(*args, **kwargs).join_from(
             cls, Menu).join(menu_customer).join(menu_company).join(
             menu_address)
-
-    def to_json(self) -> dict:
-        """Returns a JSON-ish dict."""
-        return {'id': self.id, 'menu': self.menu_id}
 
 
 MODELS = (GroupBaseChart, GroupConfiguration, GroupMenu)
