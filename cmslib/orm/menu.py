@@ -183,8 +183,12 @@ class MenuItem(DSCMS4Model):
             if parent in self.tree:
                 raise CircularReference(parent)
 
-        self.menu = menu
-        self.parent = parent
+        if menu is not UNCHANGED:
+            self.menu = menu
+
+        if parent is not UNCHANGED:
+            self.parent = parent
+
         menu_items = [self]
 
         if self.id is not None:     # Fix #351.
