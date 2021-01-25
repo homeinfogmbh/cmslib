@@ -133,8 +133,9 @@ def get_playlist(*base_charts: Iterable[BaseChart]) -> List[Chart]:
     charts = []
 
     for chart_type in CHARTS.values():
-        charts.append(chart_type.select(cascade=True).where(
-            chart_type.base << base_charts))
+        for chart in chart_type.select(cascade=True).where(
+                chart_type.base << base_charts):
+            charts.append(chart)
 
     return sorted(charts, key=lambda chart: chart.base.index)
 
