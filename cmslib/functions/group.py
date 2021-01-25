@@ -53,7 +53,7 @@ def get_children(groups: Iterable[Group], group: Group) -> dict:
     """Returns the children of the group."""
 
     children = filter(lambda child: child.parent == group, groups)
-    return {child: list(get_children(groups, child)) for child in children}
+    return {child: get_children(groups, child) for child in children}
 
 
 def get_tree(groups: Iterable[Group], ident: Optional[int] = None) -> dict:
@@ -65,6 +65,6 @@ def get_tree(groups: Iterable[Group], ident: Optional[int] = None) -> dict:
         condition = lambda group: group.id == ident
 
     return {
-        root: list(get_children(groups, root))
+        root: get_children(groups, root)
         for root in filter(condition, groups)
     }
