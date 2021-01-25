@@ -93,16 +93,18 @@ class MenuItem(DSCMS4Model):
     @classmethod
     def from_json(cls, json: dict, customer: Union[int],
                   menu: Union[Menu, int], parent: Union[MenuItem, int],
-                  **kwargs) -> Union[MenuItem, MenuItemGroup]:
+                  **kwargs) -> MenuItem:
         """Creates a new menu item from the provided dictionary."""
         icon_image = json.pop('iconImage', None)
         menu_item = super().from_json(json, **kwargs)
         menu_item.customer = customer
+        menu_item.menu = menu
+        menu_item.parent = parent
 
         if icon_image is not None:
             menu_item.icon_image = get_file(icon_image)
 
-        return menu_item.move(menu=menu, parent=parent)
+        return menu_item
 
     @classmethod
     def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
@@ -174,7 +176,7 @@ class MenuItem(DSCMS4Model):
             (Menu.customer == customer) & (cls.id == parent)).get()
 
     def move(self, *, menu: Menu = UNCHANGED, parent: MenuItem = UNCHANGED) \
-            -> Union[MenuItem, MenuItemGroup]:
+            -> MenuItemGroup:
         """Moves the menu item to another menu and / or parent."""
         if parent is not None:
             if parent.menu != menu:
@@ -185,10 +187,6 @@ class MenuItem(DSCMS4Model):
 
         if parent is not UNCHANGED:
             self.parent = parent
-
-        if self.id is None:
-            self.menu = menu
-            return self
 
         menu_items = []
 
