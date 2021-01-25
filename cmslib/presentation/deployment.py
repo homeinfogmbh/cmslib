@@ -90,7 +90,7 @@ class Presentation(Presentation):   # pylint: disable=E0102
 
     def get_menus(self) -> ModelSelect:
         """Selects menus of this deployment."""
-        return Menu.select(cascade=True).join(DeploymentMenu).where(
+        return Menu.select(cascade=True).join_from(Menu, DeploymentMenu).where(
             DeploymentMenu.deployment == self.deployment)
 
     def to_dom(self) -> dom.presentation:
