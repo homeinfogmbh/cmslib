@@ -186,7 +186,7 @@ class MenuItem(DSCMS4Model):
                 raise CircularReference(parent)
 
         self.parent = parent
-        menu_items = []
+        menu_items = [self]
 
         if self.id is not None:     # Fix #351.
             for menu_item in self.tree:
