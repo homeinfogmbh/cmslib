@@ -47,7 +47,7 @@ class Group(CustomerModel):
         if self.id is None:
             return ()
 
-        return self._children.order_by(type(self).index)
+        return self.children.order_by(type(self).index)
 
     @property
     def tree(self) -> Iterator[Group]:

@@ -49,11 +49,11 @@ def get_group_member_deployment(ident: int) -> GroupMemberDeployment:
         GroupMemberDeployment.id == ident).get()
 
 
-def get_children(groups: Iterable[Group], group: Group) -> dict:
+def get_children(groups: Iterable[Group], parent: Group) -> dict:
     """Returns the children of the group."""
 
-    children = filter(lambda child: child.parent == group, groups)
-    return {child: get_children(groups, child) for child in children}
+    children = filter(lambda group: group.parent == parent, groups)
+    return sorted(children, key=lambda group: group.index)
 
 
 def get_tree(groups: Iterable[Group], ident: Optional[int] = None) -> dict:
