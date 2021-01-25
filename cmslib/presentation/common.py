@@ -3,7 +3,7 @@
 from contextlib import suppress
 from itertools import chain
 from logging import getLogger
-from typing import Iterable, Iterator, List, Set
+from typing import Iterable, Iterator, List, Set, Tuple
 
 from peewee import Model, ModelSelect
 
@@ -85,14 +85,15 @@ def get_configuration(*configs: Iterable[Configuration]) -> Configuration:
     raise NoConfigurationFound()
 
 
-def get_group_base_charts(groups: Set[Group]) -> ModelSelect:
+def get_group_base_charts(groups: Set[Group]) \
+        -> Iterator[Tuple[int, BaseChart]]:
     """Charts attached to groups, the object is a member of."""
 
-    return BaseChart.select(cascade=True).join_from(
-        BaseChart, GroupBaseChart).where(
-        (GroupBaseChart.group << groups)
-        & (BaseChart.trashed == 0)
-    ).order_by(GroupBaseChart.index)
+    for base_chart in BaseChart.select(cascade=True).join_from(
+            BaseChart, GroupBaseChart).where(
+            (GroupBaseChart.group << groups)
+            & (BaseChart.trashed == 0)):
+        yield (base_chart.groupbasechart.index, base_chart)
 
 
 def get_unique_charts(*charts: Iterable[Chart]) -> List[Chart]:
@@ -129,15 +130,16 @@ def get_menutree(menus: Iterable[Menu]) -> Iterable[MenuTreeItem]:
 def get_playlist(*base_charts: Iterable[BaseChart]) -> List[Chart]:
     """Yields the playlist."""
 
-    base_charts = set(chain(*base_charts))
+    base_charts = {base_chart: index for index, base_chart in base_charts}
+    base_chart_set = set(base_charts)
     charts = []
 
     for chart_type in CHARTS.values():
         for chart in chart_type.select(cascade=True).where(
-                chart_type.base << base_charts):
+                chart_type.base << base_chart_set):
             charts.append(chart)
 
-    return sorted(charts, key=lambda chart: chart.base.index)
+    return sorted(charts, key=lambda chart: base_charts[chart.base])
 
 
 class Presentation:
@@ -194,7 +196,7 @@ class Presentation:
 
             yield from files
 
-    def get_base_charts(self) -> Iterable[BaseChart]:
+    def get_base_charts(self) -> Iterable[Tuple[int, BaseChart]]:
         """Yields base charts directly attached to the target."""
         raise NotImplementedError()
 

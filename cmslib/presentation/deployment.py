@@ -1,6 +1,6 @@
 """Content accumulation for digital signage deployment."""
 
-from typing import Union
+from typing import Iterator, Tuple, Union
 
 from peewee import ModelSelect
 
@@ -67,13 +67,14 @@ class Presentation(Presentation):   # pylint: disable=E0102
         self.deployment = get_deployment(deployment)
         super().__init__(self.deployment.customer)
 
-    def get_base_charts(self) -> ModelSelect:
+    def get_base_charts(self) -> Iterator[Tuple[int, BaseChart]]:
         """Selects charts directy attached to the deployment."""
-        return BaseChart.select(cascade=True).join_from(
-            BaseChart, DeploymentBaseChart).where(
-            (DeploymentBaseChart.deployment == self.deployment)
-            & (BaseChart.trashed == 0)
-        ).order_by(DeploymentBaseChart.index)
+        for base_chart in BaseChart.select(
+                DeploymentBaseChart, cascade=True).join_from(
+                BaseChart, DeploymentBaseChart).where(
+                (DeploymentBaseChart.deployment == self.deployment)
+                & (BaseChart.trashed == 0)):
+            yield (base_chart.deploymentbasechart.index, base_chart)
 
     def get_configurations(self) -> ModelSelect:
         """Selects directly attached configurations."""
