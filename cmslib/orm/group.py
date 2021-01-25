@@ -1,7 +1,7 @@
 """ORM model to represent groups."""
 
 from __future__ import annotations
-from typing import Iterator, Union
+from typing import Union
 
 from peewee import ForeignKeyField, IntegerField, ModelSelect
 
@@ -9,7 +9,6 @@ from hwdb import Deployment
 from mdb import Address, Company, Customer
 from peeweeplus import HTMLCharField, HTMLTextField
 
-from cmslib.exceptions import CircularReference
 from cmslib.functions.deployment import get_deployment
 from cmslib.orm.common import DSCMS4Model, CustomerModel
 
@@ -36,47 +35,6 @@ class Group(CustomerModel):
         record.set_parent(parent)
         return record
 
-    @property
-    def root(self) -> bool:
-        """Determines whether this group is on the root level."""
-        return self.parent is None
-
-    @property
-    def ordered_children(self) -> ModelSelect:
-        """Yields the children in order."""
-        if self.id is None:
-            return ()
-
-        return self.children.order_by(type(self).index)
-
-    @property
-    def tree(self) -> Iterator[Group]:
-        """Recursively yields this group's
-        children in a depth-first search.
-        """
-        yield self
-
-        for child in self.ordered_children:
-            yield from child.tree
-
-    @property
-    def parents(self) -> Iterator[Group]:
-        """Yields all parents."""
-        if self.parent is None:
-            return
-
-        cls = type(self)
-        parent = cls.select(cascade=True).where(cls.id == self.parent).get()
-        yield parent
-        yield from parent.parents
-
-    @property
-    def json_tree(self) -> dict:
-        """Returns the tree for this group."""
-        json = self.to_json(parent=False)
-        json['children'] = [child.json_tree for child in self.ordered_children]
-        return json
-
     def set_parent(self, parent: Union[Group, int, None]) -> None:
         """Changes the parent reference of the group."""
         if parent is None:
@@ -87,9 +45,6 @@ class Group(CustomerModel):
             cls = type(self)
             condition = (cls.id == parent) & (cls.customer == self.customer)
             parent = cls.select().where(condition).get()
-
-        if parent in self.tree:
-            raise CircularReference(parent)
 
         self.parent = parent
 

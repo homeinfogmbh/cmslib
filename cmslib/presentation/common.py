@@ -1,24 +1,22 @@
 """Common functions."""
 
 from contextlib import suppress
-from functools import lru_cache, partial
 from itertools import chain
 from logging import getLogger
-from typing import Any, Callable, Iterable, Iterator, Set
+from typing import Iterable, Iterator, List, Set
 
-from peewee import ModelSelect
+from peewee import Model, ModelSelect
 
 from filedb import File as FileDBFile
 from functoolsplus import coerce    # pylint: disable=E0401
 from hisfs import File
+from mdb import Customer
 
 from cmslib import dom  # pylint: disable=E0611
-from cmslib.exceptions import AmbiguousBaseChart
-from cmslib.exceptions import AmbiguousConfigurationsError
 from cmslib.exceptions import NoConfigurationFound
-from cmslib.exceptions import OrphanedBaseChart
+from cmslib.groups import Groups
 from cmslib.menutree import merge, MenuTreeItem
-from cmslib.orm.charts import BaseChart, ChartMode, Chart
+from cmslib.orm.charts import CHARTS, BaseChart, ChartMode, Chart
 from cmslib.orm.content.group import GroupBaseChart, GroupMenu
 from cmslib.orm.configuration import Configuration
 from cmslib.orm.content.group import GroupConfiguration
@@ -26,106 +24,165 @@ from cmslib.orm.group import Group
 from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
 
 
-__all__ = ['PresentationMixin']
+__all__ = ['Presentation']
 
 
 LOGGER = getLogger(__file__)
 
 
-def get_files(ids: Iterator[int]) -> ModelSelect:
+def select_files(ids: Iterator[int]) -> ModelSelect:
     """Yields files from their IDs."""
 
     return File.select(File, FileDBFile).join(FileDBFile).where(
         File.id << set(ids))
 
 
-@coerce(tuple)
-def resolve_charts(base_charts: Iterable[BaseChart]) -> Iterator[Chart]:
-    """Yields the charts of the respective base charts."""
+def key(model: Model) -> int:
+    """Returns the model's index."""
 
-    for base_chart in base_charts:
-        try:
-            yield base_chart.chart
-        except OrphanedBaseChart:
-            LOGGER.error('Base chart is orphaned: %s.', base_chart)
-        except AmbiguousBaseChart:
-            LOGGER.error('Base chart is ambiguous: %s.', base_chart)
+    return model.index
 
 
-def get_index(item: Any) -> int:
-    """Returns the item's index."""
+def get_group_levels(groups: Groups, memberships: Iterable[Group]) \
+        -> Iterator[List[Group]]:
+    """Yields group levels."""
 
-    return item.index
+    return groups.levels(memberships)
 
 
-@coerce(set)
-def level_configs(level: int) -> Iterable[Configuration]:
-    """Yields all configurations of a certain group level."""
+def get_group_set(group_levels: Iterator[List[Group]]) -> Set[Group]:
+    """Returns a set of groups the target
+    is directly or indirectly a member of.
+    """
 
-    return Configuration.select(cascade=True).join_from(
+    return set(chain(group_levels))
+
+
+def get_group_configurations(group_levels: Iterator[List[Group]],
+                             groups: Set[Group]) -> Iterator[Configuration]:
+    """Yields group configurations."""
+
+    configurations = Configuration.select(cascade=True).join_from(
         Configuration, GroupConfiguration).where(
-        GroupConfiguration.group << level)
+        GroupConfiguration.group << groups)
+    configurations = {
+        configuration.group.id: configuration
+        for configuration in configurations
+    }
+
+    for level in group_levels:
+        for group in level:
+            with suppress(AttributeError):
+                yield configurations[group.id]
 
 
-def uniquesort(iterable: Iterable[Any], *, key: Callable = None,
-               reverse: bool = False) -> Iterable[Any]:
-    """Uniquely sorts an iterable."""
+def get_configuration(*configs: Iterable[Configuration]) -> Configuration:
+    """Returns the first best configuration."""
 
-    return sorted(set(iterable), key=key, reverse=reverse)
+    for config in chain(configs):
+        return config
+
+    raise NoConfigurationFound()
 
 
-class PresentationMixin:
-    """Common presentation mixin."""
+def get_group_base_charts(groups: Set[Group]) -> ModelSelect:
+    """Charts attached to groups, the object is a member of."""
 
-    @property
-    def _configuration(self) -> Configuration:
-        """Returns the accumulated object's configuration."""
-        with suppress(NoConfigurationFound):
-            return self.configuration
+    return BaseChart.select(cascade=True).join_from(
+        BaseChart, GroupBaseChart).where(
+        (GroupBaseChart.group << groups)
+        & (BaseChart.trashed == 0)
+    ).order_by(GroupBaseChart.index)
 
-        for configuration in self.groupconfigs:
-            return configuration
 
-        raise NoConfigurationFound()
+def get_unique_charts(*charts: Iterable[Chart]) -> List[Chart]:
+    """Yields all charts for this object."""
 
-    @property
-    def _group_base_charts(self) -> Iterable[GroupBaseChart]:
-        """Charts attached to groups, the object is a member of."""
-        return GroupBaseChart.select().join(BaseChart).where(
-            (GroupBaseChart.group << self._groups)
-            & (BaseChart.trashed == 0)
-        ).order_by(GroupBaseChart.index)
+    return sorted(set(chain(charts)), key=lambda chart: chart.id)
 
-    @property
-    @lru_cache()
-    @coerce(set)
-    def _groups(self) -> Iterator[Group]:
-        """Yields all groups in a breadth-first search."""
-        for level in self.grouplevels:
-            for group in level:
-                yield group
 
-    @property
-    @lru_cache()
-    @coerce(set)
-    def _menus(self) -> Iterator[Menu]:
-        """Yields the accumulated menus of this object."""
-        return chain(self.menus, self.group_menus)
+def get_menu_charts(menus: Iterable[Menu]) -> Iterable[Chart]:
+    """Yields charts of the object's menu."""
 
-    @property
-    @coerce(partial(uniquesort, key=lambda item: item.id))
-    def charts(self) -> Iterator[Chart]:
-        """Yields all charts for this object."""
-        return chain(self.playlist, self.menu_charts)
+    base_charts = BaseChart.select().join(
+        MenuItemChart).join(MenuItem).where(
+        (BaseChart.trashed == 0) & (MenuItem.menu << menus))
 
-    @property
-    @lru_cache()
-    @coerce(get_files)
-    def files(self) -> Iterator[File]:
+    for chart_type in CHARTS.values():
+        yield from chart_type.select(cascade=True).where(
+            chart_type.base << base_charts)
+
+
+def get_group_menus(groups: Set[Group]) -> Iterable[Menu]:
+    """Yields menus attached to groups the object is a member of."""
+
+    return Menu.select().join(GroupMenu).where(GroupMenu.group << groups)
+
+
+def get_menutree(menus: Iterable[Menu]) -> Iterable[MenuTreeItem]:
+    """Returns the merged menu tree."""
+
+    items = chain(*map(MenuTreeItem.from_menu, menus))
+    return sorted(merge(items), key=key)
+
+
+def get_playlist(*base_charts: Iterable[BaseChart]) -> List[Chart]:
+    """Yields the playlist."""
+
+    base_charts = set(chain(base_charts))
+    charts = []
+
+    for chart_type in CHARTS.values():
+        charts.append(chart_type.select(cascade=True).where(
+            chart_type.base << base_charts))
+
+    return sorted(charts, key=lambda chart: chart.base.index)
+
+
+class Presentation:
+    """A presentation object."""
+
+    def __init__(self, customer: Customer):
+        """Initializes the presentation."""
+        self.customer = customer
+        self.groups = Groups.for_customer(customer)
+        group_levels = get_group_levels(self.groups, self.get_memberships())
+        group_set = get_group_set(group_levels)
+        group_base_charts = get_group_base_charts(group_set)
+
+        try:
+            base_charts = self.get_base_charts()
+        except NotImplementedError:
+            base_charts = []
+
+        self.playlist = get_playlist(group_base_charts, base_charts)
+
+        try:
+            menus = self.get_menus()
+        except NotImplementedError:
+            menus = []
+
+        self.menus = set(chain(get_group_menus(group_set), menus))
+        self.charts = get_unique_charts(
+            self.playlist, get_menu_charts(self.menus))
+        self.menu_tree = get_menutree(self.menus)
+        group_configurations = get_group_configurations(
+            group_levels, group_set)
+
+        try:
+            configs = self.get_configurations()
+        except NotImplementedError:
+            configs = []
+
+        self.configuration = get_configuration(configs, group_configurations)
+
+    @coerce(select_files)
+    def get_files(self) -> Iterator[File]:
         """Yields the presentation's used file IDs."""
-        yield from self._configuration.files
 
-        for menu in self._menus:
+        yield from self.configuration.files
+
+        for menu in self.menus:
             yield from menu.files
 
         for chart in self.charts:
@@ -136,67 +193,29 @@ class PresentationMixin:
 
             yield from files
 
-    @property
-    def groupconfigs(self) -> Iterator[Configuration]:
-        """Returns a configuration for the object's groups."""
-        for index, level in enumerate(self.grouplevels):
-            try:
-                configuration, *superfluous = level_configs(level)
-            except ValueError:
-                continue
+    def get_base_charts(self) -> Iterable[BaseChart]:
+        """Yields base charts directly attached to the target."""
+        raise NotImplementedError()
 
-            if superfluous:
-                raise AmbiguousConfigurationsError(level, index)
+    def get_configurations(self) -> Iterable[Configuration]:
+        """Yields configurations."""
+        raise NotImplementedError()
 
-            yield configuration
+    def get_memberships(self) -> Iterable[Group]:
+        """Yields group memberships."""
+        raise NotImplementedError()
 
-        raise NoConfigurationFound()
-
-    @property
-    def grouplevels(self) -> Iterator[Set[Group]]:
-        """Yields group levels in a breadth-first search."""
-        level = set(self.groups)
-
-        while level:
-            yield level
-            level = set(group.parent for group in level if group.parent)
-
-    @property
-    @lru_cache()
-    @coerce(resolve_charts)
-    def menu_charts(self) -> Iterable[BaseChart]:
-        """Yields charts of the object's menu."""
-        return BaseChart.select().join(MenuItemChart).join(MenuItem).where(
-            (BaseChart.trashed == 0) & (MenuItem.menu << self._menus))
-
-    @property
-    def group_menus(self) -> Iterable[Menu]:
-        """Yields menus attached to groups the object is a member of."""
-        return Menu.select().join(GroupMenu).where(
-            GroupMenu.group << self._groups)
-
-    @property
-    def menutree(self) -> Iterable[MenuTreeItem]:
-        """Returns the merged menu tree."""
-        items = chain(*(MenuTreeItem.from_menu(menu) for menu in self._menus))
-        return sorted(merge(items), key=get_index)
-
-    @property
-    @lru_cache()
-    @coerce(resolve_charts)
-    def playlist(self) -> Iterator[BaseChart]:
-        """Yields the playlist."""
-        base_charts = chain(self._group_base_charts, self.base_charts)
-
-        for base_chart_mapping in sorted(base_charts, key=get_index):
-            yield base_chart_mapping.base_chart
+    def get_menus(self) -> Iterable[Menu]:
+        """Yields menus directly attached to the target."""
+        raise NotImplementedError()
 
     def to_dom(self) -> dom.presentation:
         """Returns an XML dom presentation."""
         xml = dom.presentation()
-        xml.configuration = self._configuration.to_dom()
+        xml.customer = self.customer.id
+        xml.configuration = self.configuration.to_dom()
         xml.playlist = [chart.to_dom(brief=True) for chart in self.playlist]
-        xml.menu_item = [item.to_dom() for item in self.menutree]
+        xml.menu_item = [item.to_dom() for item in self.menu_tree]
         xml.chart = [chart.to_dom() for chart in self.charts]
         return xml
 
@@ -204,12 +223,14 @@ class PresentationMixin:
         """Returns a JSON presentation."""
         return {
             'charts': [
-                chart.to_json(fk_fields=False) for chart in self.charts],
-            'configuration': self._configuration.to_json(
+                chart.to_json(fk_fields=False) for chart in self.charts
+            ],
+            'configuration': self.configuration.to_json(
                 cascade=True, fk_fields=False),
             'customer': self.customer.id,
-            'menuItems': [item.to_json() for item in self.menutree],
+            'menuItems': [item.to_json() for item in self.menu_tree],
             'playlist': [
                 chart.to_json(mode=ChartMode.BRIEF, fk_fields=False)
-                for chart in self.playlist]
+                for chart in self.playlist
+            ]
         }
