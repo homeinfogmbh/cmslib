@@ -98,13 +98,11 @@ class MenuItem(DSCMS4Model):
         icon_image = json.pop('iconImage', None)
         menu_item = super().from_json(json, **kwargs)
         menu_item.customer = customer
-        menu_item.menu = menu
-        menu_item.parent = parent
 
         if icon_image is not None:
             menu_item.icon_image = get_file(icon_image)
 
-        return menu_item
+        return menu_item.move(menu=menu, parent=parent)
 
     @classmethod
     def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
