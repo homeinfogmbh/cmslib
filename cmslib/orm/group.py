@@ -162,7 +162,7 @@ class GroupMemberDeployment(DSCMS4Model):
         args = {
             cls, Group, Customer, Company, Deployment, deployment_customer,
             deployment_company, *args}
-        return super().select(*args, cascade=cascade, **kwargs).join_from(
+        return super().select(*args, **kwargs).join_from(
             cls, Group).join(Customer).join(Company).join_from(
             cls, Deployment).join_from(Deployment, deployment_customer).join(
             deployment_company).join_from(
