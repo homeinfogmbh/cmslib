@@ -55,7 +55,7 @@ def get_group_set(group_levels: Iterator[List[Group]]) -> Set[Group]:
     is directly or indirectly a member of.
     """
 
-    return set(chain(group_levels))
+    return set(chain(*group_levels))
 
 
 def get_group_configurations(group_levels: Iterator[List[Group]],
