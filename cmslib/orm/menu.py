@@ -182,7 +182,7 @@ class MenuItem(DSCMS4Model):
 
             self.parent = parent
 
-        menu_items = []
+        menu_items = {self}
 
         if menu is not UNCHANGED:   # Fix #351.
             if self.parent and self.parent.menu != menu:
@@ -190,7 +190,7 @@ class MenuItem(DSCMS4Model):
 
             for menu_item in self.tree:
                 menu_item.menu = menu
-                menu_items.append(menu_item)
+                menu_items.add(menu_item)
 
         return MenuItemGroup(menu_items)
 
@@ -323,7 +323,7 @@ class MenuItemChart(DSCMS4Model):
         return xml
 
 
-class MenuItemGroup(tuple):
+class MenuItemGroup(list):
     """A group of menu items."""
 
     @property
