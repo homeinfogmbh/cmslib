@@ -15,8 +15,8 @@ class Presentation(Presentation):   # pylint: disable=E0102,W0223
 
     def __init__(self, group: Group):
         """Sets the respective group."""
-        super().__init__(group.customer)
         self.group = group
+        super().__init__(group.customer)
 
     def get_memberships(self) -> Iterator[Group]:
         """Yields this group itself."""
