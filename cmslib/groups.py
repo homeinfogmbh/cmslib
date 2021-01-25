@@ -46,8 +46,8 @@ class Groups:
         """Yields parents of the given group."""
         groups = {group.id: group for group in self.groups}
 
-        while group.parent is not None:
-            parent = groups[group.parent]
+        while group.parent_id is not None:
+            parent = groups[group.parent_id]
             yield parent
 
     def rtree(self, leaf: Group) -> Iterator[Group]:
