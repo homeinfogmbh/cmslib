@@ -35,7 +35,7 @@ def select_files(ids: Iterator[int]) -> ModelSelect:
     """Yields files from their IDs."""
 
     return File.select(File, FileDBFile).join(FileDBFile).where(
-        File.id << set(ids))
+        File.id << set(ids)).iterator()
 
 
 def key(model: Model) -> int:
