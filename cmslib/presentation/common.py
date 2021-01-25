@@ -1,5 +1,6 @@
 """Common functions."""
 
+from collections import defaultdict
 from contextlib import suppress
 from itertools import chain
 from logging import getLogger
@@ -62,18 +63,18 @@ def get_group_configurations(group_levels: Iterator[List[Group]],
                              groups: Set[Group]) -> Iterator[Configuration]:
     """Yields group configurations."""
 
-    configurations = Configuration.select(cascade=True).join_from(
-        Configuration, GroupConfiguration).where(
-        GroupConfiguration.group << groups)
-    configurations = {
-        configuration.group.id: configuration
-        for configuration in configurations
-    }
+    configurations = defaultdict(set)
+
+    for config in Configuration.select(
+            GroupConfiguration, cascade=True).join_from(
+            Configuration, GroupConfiguration).where(
+            GroupConfiguration.group << groups):
+        configurations[config.groupconfiguration.group_id].add(config)
 
     for level in group_levels:
         for group in level:
             with suppress(AttributeError):
-                yield configurations[group.id]
+                yield from configurations[group.id]
 
 
 def get_configuration(*configs: Iterable[Configuration]) -> Configuration:
