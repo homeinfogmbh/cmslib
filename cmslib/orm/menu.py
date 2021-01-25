@@ -91,10 +91,10 @@ class MenuItem(DSCMS4Model):
     index = IntegerField(default=0)
 
     @classmethod
-    def from_json(cls, json: dict, customer: int, **kwargs) -> MenuItem:
+    def from_json(cls, json: dict, customer: Union[int],
+                  menu: Union[Menu, int], parent: Union[MenuItem, int],
+                  **kwargs) -> MenuItem:
         """Creates a new menu item from the provided dictionary."""
-        menu = json.pop('menu')
-        parent = json.pop('parent', None)
         icon_image = json.pop('iconImage', None)
         menu_item = super().from_json(json, **kwargs)
 
@@ -218,10 +218,9 @@ class MenuItem(DSCMS4Model):
 
         return super().delete_instance(**kwargs)
 
-    def patch_json(self, json: dict, **kwargs) -> MenuItemGroup:
+    def patch_json(self, json: dict, menu: Union[Menu, int],
+                   parent: Union[MenuItem, int], **kwargs) -> MenuItemGroup:
         """Patches the menu item."""
-        menu = json.pop('menu', UNCHANGED)
-        parent = json.pop('parent', UNCHANGED)
         icon_image = json.pop('iconImage', UNCHANGED)
         super().patch_json(json, **kwargs)
 
