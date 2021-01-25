@@ -130,7 +130,7 @@ def get_menutree(menus: Iterable[Menu]) -> Iterable[MenuTreeItem]:
 def get_playlist(*base_charts: Iterable[BaseChart]) -> List[Chart]:
     """Yields the playlist."""
 
-    base_charts = {base_chart: index for index, base_chart in base_charts}
+    base_charts = {bc: index for index, bc in chain(*base_charts)}
     base_chart_set = set(base_charts)
     charts = []
 
