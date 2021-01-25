@@ -79,7 +79,7 @@ def get_group_configurations(group_levels: Iterator[List[Group]],
 def get_configuration(*configs: Iterable[Configuration]) -> Configuration:
     """Returns the first best configuration."""
 
-    for config in chain(configs):
+    for config in chain(*configs):
         return config
 
     raise NoConfigurationFound()
@@ -98,7 +98,7 @@ def get_group_base_charts(groups: Set[Group]) -> ModelSelect:
 def get_unique_charts(*charts: Iterable[Chart]) -> List[Chart]:
     """Yields all charts for this object."""
 
-    return sorted(set(chain(charts)), key=lambda chart: chart.id)
+    return sorted(set(chain(*charts)), key=lambda chart: chart.id)
 
 
 def get_menu_charts(menus: Iterable[Menu]) -> Iterable[Chart]:
@@ -129,7 +129,7 @@ def get_menutree(menus: Iterable[Menu]) -> Iterable[MenuTreeItem]:
 def get_playlist(*base_charts: Iterable[BaseChart]) -> List[Chart]:
     """Yields the playlist."""
 
-    base_charts = set(chain(base_charts))
+    base_charts = set(chain(*base_charts))
     charts = []
 
     for chart_type in CHARTS.values():
