@@ -73,7 +73,7 @@ def get_group_configurations(group_levels: Iterator[List[Group]],
 
     for level in group_levels:
         for group in level:
-            with suppress(AttributeError):
+            with suppress(KeyError):
                 yield from configurations[group.id]
 
 
