@@ -180,8 +180,9 @@ class Presentation:
 
         self.configuration = get_configuration(configs, group_configurations)
 
+    @property
     @coerce(select_files)
-    def get_files(self) -> Iterator[File]:
+    def files(self) -> Iterator[File]:
         """Yields the presentation's used file IDs."""
 
         yield from self.configuration.files
