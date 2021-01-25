@@ -1,6 +1,6 @@
 """Group related functions."""
 
-from typing import Optional, Union
+from typing import Dict, Iterable, Optional, Union
 
 from peewee import ModelSelect
 
@@ -13,7 +13,8 @@ __all__ = [
     'get_group',
     'get_groups',
     'get_group_member_deployment',
-    'get_group_member_deployments'
+    'get_group_member_deployments',
+    'get_tree'
 ]
 
 
@@ -46,3 +47,28 @@ def get_group_member_deployment(ident: int) -> GroupMemberDeployment:
 
     return get_group_member_deployments().where(
         GroupMemberDeployment.id == ident).get()
+
+
+def get_children(groups: Iterable[Group], group: Group) -> Dict[Group]:
+    """Returns the children of the group."""
+
+    return {
+        child: list(get_children(groups, group))
+        for child in filter(lambda child: child.parent == group, groups)
+    }
+
+
+def get_tree(ident: Optional[int] = None) -> Dict[Group]:
+    """Returns a dict of groups representing the groups tree."""
+
+    groups = Group.select(cascade=True).where(Group.customer == CUSTOMER.id)
+
+    if ident is None:
+        condition = lambda group: group.parent is None
+    else:
+        condition = lambda group: group.id == ident
+
+    return {
+        root: list(get_children(groups, root))
+        for root in filter(condition, groups)
+    }
