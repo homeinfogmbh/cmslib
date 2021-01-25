@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from peewee import ForeignKeyField, IntegerField, ModelSelect
+from peewee import JOIN, ForeignKeyField, IntegerField, ModelSelect
 
 from mdb import Address, Company, Customer
 
@@ -34,7 +34,8 @@ class _GroupContent(DSCMS4Model):
 
         args = {cls, Group, Customer, Company, Address, *args}
         return super().select(*args, **kwargs).join_from(
-            cls, Group).join(Customer).join(Company).join(Address)
+            cls, Group).join(Customer).join(Company).join(
+            Address, join_type=JOIN.LEFT_OUTER)
 
 
 class GroupBaseChart(_GroupContent):
@@ -70,8 +71,10 @@ class GroupBaseChart(_GroupContent):
             base_chart_address, *args
         }
         return super().select(*args, **kwargs).join_from(
-            cls, BaseChart).join(base_chart_customer).join(
-            base_chart_company).join(base_chart_address)
+            cls, BaseChart).join(
+            base_chart_customer).join(
+            base_chart_company).join(
+            base_chart_address, join_type=JOIN.LEFT_OUTER)
 
     @property
     def chart(self) -> Chart:
@@ -102,8 +105,10 @@ class GroupConfiguration(_GroupContent):
             configuration_address, *args
         }
         return super().select(*args, **kwargs).join_from(
-            cls, Configuration).join(configuration_customer).join(
-            configuration_company).join(configuration_address)
+            cls, Configuration).join(
+            configuration_customer).join(
+            configuration_company).join(
+            configuration_address, join_type=JOIN.LEFT_OUTER)
 
 
 class GroupMenu(_GroupContent):
@@ -125,8 +130,10 @@ class GroupMenu(_GroupContent):
         menu_address = Address.alias()
         args = {cls, Menu, menu_customer, menu_company, menu_address, *args}
         return super().select(*args, **kwargs).join_from(
-            cls, Menu).join(menu_customer).join(menu_company).join(
-            menu_address)
+            cls, Menu).join(
+            menu_customer).join(
+            menu_company).join(
+            menu_address, join_type=JOIN.LEFT_OUTER)
 
 
 MODELS = (GroupBaseChart, GroupConfiguration, GroupMenu)

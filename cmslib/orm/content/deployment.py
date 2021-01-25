@@ -83,8 +83,10 @@ class DeploymentBaseChart(DeploymentContent):
             base_chart_address, *args
         }
         return super().select(*args, **kwargs).join_from(
-            cls, BaseChart).join(base_chart_customer).join(
-            base_chart_company).join(base_chart_address)
+            cls, BaseChart).join(
+            base_chart_customer).join(
+            base_chart_company).join(
+            base_chart_address, join_type=JOIN.LEFT_OUTER)
 
     @property
     def chart(self) -> Chart:
