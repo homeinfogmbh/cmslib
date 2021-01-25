@@ -89,7 +89,7 @@ def get_group_base_charts(groups: Set[Group]) \
         -> Iterator[Tuple[int, BaseChart]]:
     """Charts attached to groups, the object is a member of."""
 
-    for base_chart in BaseChart.select(cascade=True).join_from(
+    for base_chart in BaseChart.select(GroupBaseChart, cascade=True).join_from(
             BaseChart, GroupBaseChart).where(
             (GroupBaseChart.group << groups)
             & (BaseChart.trashed == 0)):
