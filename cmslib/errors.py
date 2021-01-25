@@ -22,7 +22,7 @@ from cmslib.orm.content.group import GroupBaseChart
 from cmslib.orm.content.group import GroupConfiguration
 from cmslib.orm.content.group import GroupMenu
 from cmslib.orm.group import Group
-from cmslib.orm.group import Menu, MenuItem, MenuItemChart
+from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
 from cmslib.orm.schedule import Schedule
 
 
