@@ -177,18 +177,17 @@ class MenuItem(DSCMS4Model):
             -> MenuItemGroup:
         """Moves the menu item to another menu and / or parent."""
         if parent is not UNCHANGED:
-            if parent is not None:
-                if parent.menu != menu:
-                    raise DifferentMenus(menu, parent.menu)
-
-                if parent in self.tree:
-                    raise CircularReference(parent)
+            if parent is not None and parent in self.tree:
+                raise CircularReference(parent)
 
             self.parent = parent
 
         menu_items = []
 
         if menu is not UNCHANGED:   # Fix #351.
+            if self.parent and self.parent.menu != menu:
+                raise DifferentMenus(menu, parent.menu)
+
             for menu_item in self.tree:
                 menu_item.menu = menu
                 menu_items.append(menu_item)
