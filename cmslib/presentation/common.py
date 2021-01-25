@@ -51,7 +51,7 @@ def get_group_levels(groups: Groups, memberships: Iterable[Group]) \
     return groups.levels(memberships)
 
 
-def get_group_set(group_levels: Iterator[List[Group]]) -> Set[Group]:
+def get_group_set(group_levels: Iterable[List[Group]]) -> Set[Group]:
     """Returns a set of groups the target
     is directly or indirectly a member of.
     """
@@ -59,7 +59,7 @@ def get_group_set(group_levels: Iterator[List[Group]]) -> Set[Group]:
     return set(chain(*group_levels))
 
 
-def get_group_configurations(group_levels: Iterator[List[Group]],
+def get_group_configurations(group_levels: Iterable[List[Group]],
                              groups: Set[Group]) -> Iterator[Configuration]:
     """Yields group configurations."""
 
@@ -151,9 +151,10 @@ class Presentation:
         """Initializes the presentation."""
         self.customer = customer
         self.groups = Groups.for_customer(customer)
-        group_levels = get_group_levels(self.groups, self.get_memberships())
+        group_levels = list(get_group_levels(
+            self.groups, self.get_memberships()))
         group_set = get_group_set(group_levels)
-        group_base_charts = get_group_base_charts(group_set)
+        group_base_charts = list(get_group_base_charts(group_set))
 
         try:
             base_charts = self.get_base_charts()
@@ -171,8 +172,8 @@ class Presentation:
         self.charts = get_unique_charts(
             self.playlist, get_menu_charts(self.menus))
         self.menu_tree = get_menutree(self.menus)
-        group_configurations = get_group_configurations(
-            group_levels, group_set)
+        group_configurations = list(get_group_configurations(
+            group_levels, group_set))
 
         try:
             configs = self.get_configurations()
