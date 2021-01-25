@@ -97,11 +97,12 @@ class MenuItem(DSCMS4Model):
         """Creates a new menu item from the provided dictionary."""
         icon_image = json.pop('iconImage', None)
         menu_item = super().from_json(json, **kwargs)
+        menu_item.customer = customer
 
         if icon_image is not None:
             menu_item.icon_image = get_file(icon_image)
 
-        return menu_item.move(menu=menu, parent=parent, customer=customer)
+        return menu_item.move(menu=menu, parent=parent)
 
     @classmethod
     def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
@@ -172,12 +173,9 @@ class MenuItem(DSCMS4Model):
         return cls.select().join(Menu).where(
             (Menu.customer == customer) & (cls.id == parent)).get()
 
-    def move(self, *, menu: int = UNCHANGED, parent: int = UNCHANGED,
-             customer: int = None) -> MenuItemGroup:
+    def move(self, *, menu: Menu = UNCHANGED, parent: MenuItem = UNCHANGED) \
+            -> MenuItemGroup:
         """Moves the menu item to another menu and / or parent."""
-        menu = self._get_menu(menu, customer=customer)
-        parent = self._get_parent(parent, customer=customer)
-
         if parent is not None:
             if parent.menu != menu:
                 raise DifferentMenus(menu, parent.menu)
@@ -185,6 +183,7 @@ class MenuItem(DSCMS4Model):
             if parent in self.tree:
                 raise CircularReference(parent)
 
+        self.menu = menu
         self.parent = parent
         menu_items = [self]
 
