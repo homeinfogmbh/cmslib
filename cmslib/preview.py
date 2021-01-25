@@ -5,7 +5,7 @@ from typing import Union
 from previewlib import FileAccessToken
 from wsgilib import ACCEPT, JSON, JSONMessage, XML
 
-from cmslib.presentation.common import PresentationMixin
+from cmslib.presentation.common import Presentation
 
 
 __all__ = ['Response', 'make_response']
@@ -14,7 +14,7 @@ __all__ = ['Response', 'make_response']
 Response = Union[JSON, JSONMessage, XML]
 
 
-def make_response(presentation: PresentationMixin) -> Response:
+def make_response(presentation: Presentation) -> Response:
     """Creates a response for the respective presentation."""
 
     file_preview_token = FileAccessToken.token_for_presentation(presentation)
