@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from flask import has_request_context
-from peewee import ForeignKeyField, ModelSelect
+from peewee import JOIN, ForeignKeyField, ModelSelect
 
 from his import CUSTOMER
 from mdb import Address, Company, Customer
@@ -74,6 +74,6 @@ class CustomerModel(DSCMS4Model):
         if not cascade:
             return super().select(*args, **kwargs)
 
-        return super().select(
-            *{cls, Customer, Company, Address, *args}, **kwargs).join(
-            Customer).join(Company).join(Address)
+        args = {cls, Customer, Company, Address, *args}
+        return super().select(*args, **kwargs).join(Customer).join(
+            Company).join(Address, join_type=JOIN.LEFT_OUTER)
