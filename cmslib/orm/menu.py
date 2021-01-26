@@ -127,8 +127,8 @@ class MenuItem(DSCMS4Model):
     @property
     def children(self) -> ModelSelect:
         """Returns the children."""
-        if self.id is None:
-            return []   # Prevent cascading over all menu items.
+        if self.id is None:     # Prevent cascading over all menu items.
+            return type(self).select().where(False)
 
         return self._children.order_by(type(self).index)
 
