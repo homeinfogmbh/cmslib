@@ -187,17 +187,19 @@ class MenuItem(DSCMS4Model):
 
             self.parent = parent
 
-        menu_items = {self}
+        if menu is UNCHANGED:   # Fix #351.
+            return self
 
-        if menu is not UNCHANGED:   # Fix #351.
-            if self.parent and self.parent.menu != menu:
-                raise DifferentMenus(menu, parent.menu)
+        if self.parent and self.parent.menu != menu:
+            raise DifferentMenus(menu, parent.menu)
 
-            for menu_item in self.tree:
-                menu_item.menu = menu
-                menu_items.add(menu_item)
+        menu_items = MenuItemGroup()
 
-        return MenuItemGroup(menu_items)
+        for menu_item in self.tree:
+            menu_item.menu = menu
+            menu_items.append(menu_item)
+
+        return menu_items
 
     def copy(self, menu: Menu = None, parent: MenuItem = None) \
             -> Iterator[Union[MenuItem, MenuItemChart]]:
