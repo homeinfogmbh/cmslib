@@ -155,6 +155,7 @@ class Presentation:
         print('Group levels:', group_levels, flush=True)
         group_set = get_group_set(group_levels)
         print('Group set:', group_set, flush=True)
+        print('Group names:', [group.name for group in group_set], flush=True)
         group_base_charts = list(get_group_base_charts(group_set))
 
         try:
