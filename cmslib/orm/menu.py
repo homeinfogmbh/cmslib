@@ -18,7 +18,7 @@ from cmslib.exceptions import DifferentMenus
 from cmslib.exceptions import MissingMenu
 from cmslib.exceptions import OrphanedBaseChart
 from cmslib.orm.common import UNCHANGED, CustomerModel, DSCMS4Model
-from cmslib.orm.charts import BaseChart, Chart, ChartMode
+from cmslib.orm.charts import BaseChart, Chart
 
 
 __all__ = ['Menu', 'MenuItem', 'MODELS']
@@ -57,14 +57,19 @@ class Menu(CustomerModel):
         for root_item in self.root_items:
             yield from root_item.copy(menu=copy)
 
-    def to_json(self, *args, items: bool = False, **kwargs) -> dict:
+    def to_json(self, *args, menu_items: Iterable[MenuItem] = None,
+                menu_item_charts: Iterable[MenuItemChart] = None,
+                **kwargs) -> dict:
         """Returns the menu as a dictionary."""
         json = super().to_json(*args, **kwargs)
 
-        if items:
+        if menu_items:
             json['items'] = [
-                item.to_json(charts=True, children=True, fk_fields=False)
-                for item in self.root_items.order_by(MenuItem.index)
+                menu_item.to_json(
+                    menu_items=menu_items, menu_item_charts=menu_item_charts,
+                    fk_fields=False)
+                for menu_item in menu_items
+                if menu_item.menu_id == self.id
             ]
 
         return json
@@ -228,25 +233,28 @@ class MenuItem(DSCMS4Model):
 
         return self.move(menu=menu, parent=parent)
 
-    def to_json(self, charts: bool = False, children: bool = False,
+    def to_json(self, menu_items: Iterable[MenuItem] = None,
+                menu_item_charts: Iterable[MenuItemChart] = None,
                 **kwargs) -> dict:
         """Returns a JSON-ish dictionary."""
         json = super().to_json(**kwargs)
         json['iconImage'] = attachment_json(self.icon_image)
 
-        if charts:
+        if menu_item_charts:
             json['charts'] = [
-                menu_item_chart.to_json(
-                    menu_item=False, base_chart=False, chart=True)
-                for menu_item_chart in self.menu_item_charts.order_by(
-                    MenuItemChart.index)
-                if not menu_item_chart.base_chart.trashed
+                menu_item_chart.to_json(menu_item=False, base_chart=True)
+                for menu_item_chart in menu_item_charts
+                if menu_item_chart.menu_item_id == self.id
+                and not menu_item_chart.base_chart.trashed
             ]
 
-        if children:
+        if menu_items:
             json['items'] = [
-                item.to_json(charts=charts, children=children, **kwargs)
-                for item in self.ordered_children
+                menu_item.to_json(
+                    menu_items=menu_items, menu_item_charts=menu_item_charts,
+                    **kwargs)
+                for menu_item in menu_items
+                if menu_item.parent_id == self.id
             ]
 
         return json
@@ -292,10 +300,9 @@ class MenuItemChart(DSCMS4Model):
         copy.menu_item = menu_item or self.menu_item
         return copy
 
-    def to_json(self, menu_item: bool = True, base_chart: bool = True,
-                chart: bool = False) -> dict:
+    def to_json(self, menu_item: bool = True, base_chart: bool = True) -> dict:
         """Returns a JSON-ish dictionary."""
-        if menu_item and base_chart and not chart:
+        if menu_item and base_chart:
             return super().to_json()
 
         skip = set()
@@ -306,12 +313,7 @@ class MenuItemChart(DSCMS4Model):
         if not base_chart:
             skip.add('baseChart')
 
-        json = super().to_json(skip=skip)
-
-        if chart:
-            json['chart'] = self.base_chart.chart.to_json(mode=ChartMode.BRIEF)
-
-        return json
+        return super().to_json(skip=skip)
 
     def to_dom(self) -> dom.MenuItemChart:
         """Returns an XML DOM of the model."""
