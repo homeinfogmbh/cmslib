@@ -98,7 +98,7 @@ class MenuItem(DSCMS4Model):
     @classmethod
     def from_json(cls, json: dict, customer: Union[int],
                   menu: Union[Menu, int], parent: Union[MenuItem, int],
-                  **kwargs) -> MenuItemGroup:
+                  **kwargs) -> Union[MenuItem, MenuItemGroup]:
         """Creates a new menu item from the provided dictionary."""
         icon_image = json.pop('iconImage', None)
         menu_item = super().from_json(json, **kwargs)
@@ -179,7 +179,7 @@ class MenuItem(DSCMS4Model):
             (Menu.customer == customer) & (cls.id == parent)).get()
 
     def move(self, *, menu: Menu = UNCHANGED, parent: MenuItem = UNCHANGED) \
-            -> MenuItemGroup:
+            -> Union[MenuItem, MenuItemGroup]:
         """Moves the menu item to another menu and / or parent."""
         if parent is not UNCHANGED:
             if parent is not None and parent in self.tree:
@@ -225,7 +225,8 @@ class MenuItem(DSCMS4Model):
         return super().delete_instance(**kwargs)
 
     def patch_json(self, json: dict, menu: Union[Menu, int],
-                   parent: Union[MenuItem, int], **kwargs) -> MenuItemGroup:
+                   parent: Union[MenuItem, int],
+                   **kwargs) -> Union[MenuItem, MenuItemGroup]:
         """Patches the menu item."""
         icon_image = json.pop('iconImage', UNCHANGED)
         super().patch_json(json, **kwargs)
