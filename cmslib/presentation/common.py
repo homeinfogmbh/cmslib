@@ -168,9 +168,11 @@ class Presentation:
             menus = []
 
         self.menus = set(chain(get_group_menus(group_set), menus))
+        print('Menus:', self.menus, flush=True)
         self.charts = get_unique_charts(
             self.playlist, get_menu_charts(self.menus))
         self.menu_tree = get_menutree(self.menus)
+        print('Menu tree:', self.menu_tree, flush=True)
         group_configurations = list(get_group_configurations(
             group_levels, group_set))
 
