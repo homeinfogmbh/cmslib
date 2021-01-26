@@ -152,7 +152,9 @@ class Presentation:
         self.groups = Groups.for_customer(customer)
         group_levels = list(get_group_levels(
             self.groups, self.get_memberships()))
+        print('Group levels:', group_levels, flush=True)
         group_set = get_group_set(group_levels)
+        print('Group set:', group_set, flush=True)
         group_base_charts = list(get_group_base_charts(group_set))
 
         try:
