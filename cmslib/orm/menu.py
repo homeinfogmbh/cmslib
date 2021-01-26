@@ -86,7 +86,7 @@ class MenuItem(DSCMS4Model):
         lazy_load=False)
     parent = ForeignKeyField(
         'self', column_name='parent', null=True, on_delete='CASCADE',
-        backref='children', lazy_load=True)
+        backref='_children', lazy_load=True)
     name = HTMLCharField(255)
     icon = HTMLCharField(255, null=True)
     icon_image = ForeignKeyField(
@@ -125,16 +125,19 @@ class MenuItem(DSCMS4Model):
         return self.menu is not None
 
     @property
-    def ordered_children(self) -> ModelSelect:
+    def children(self) -> ModelSelect:
         """Returns the children."""
-        return self.children.order_by(type(self).index)
+        if self.id is None:
+            return []   # Prevent cascading over all menu items.
+
+        return self._children.order_by(type(self).index)
 
     @property
     def tree(self) -> Iterator[MenuItem]:
         """Recursively yields all submenus."""
         yield self
 
-        for child in self.ordered_children:
+        for child in self.children:
             yield from child.tree
 
     @property
@@ -189,7 +192,7 @@ class MenuItem(DSCMS4Model):
 
             self.parent = parent
 
-        if menu is UNCHANGED:   # Fix #351.
+        if menu is UNCHANGED:
             return self
 
         if self.parent and self.parent.menu != menu:
@@ -215,7 +218,7 @@ class MenuItem(DSCMS4Model):
         for menu_item_chart in self.menu_item_charts:
             yield menu_item_chart.copy(menu_item=copy)
 
-        for child in self.ordered_children:
+        for child in self.children:
             yield from child.copy(menu=menu, parent=copy)
 
     def delete_instance(self, update_children: bool = False, **kwargs) -> int:
