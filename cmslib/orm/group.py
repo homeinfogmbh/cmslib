@@ -9,7 +9,6 @@ from hwdb import Deployment
 from mdb import Address, Company, Customer
 from peeweeplus import HTMLCharField, HTMLTextField
 
-from cmslib.functions.deployment import get_deployment
 from cmslib.orm.common import DSCMS4Model, CustomerModel
 
 
@@ -98,13 +97,15 @@ class GroupMemberDeployment(DSCMS4Model):
     index = IntegerField(default=0)
 
     @classmethod
-    def from_json(cls, json: dict, group: Group) -> GroupMemberDeployment:
+    def from_json(cls, json: dict, group: Group, deployment: Deployment) \
+            -> GroupMemberDeployment:
         """Creates a member for the given group
         from the respective JSON-ish dictionary.
         """
-        deployment = get_deployment(json.pop('deployment'))
-        index = json.pop('index', 0)
-        return cls(group=group, deployment=deployment, index=index)
+        record = super().from_json(json)
+        record.group = group
+        record.deployment = deployment
+        return record
 
     @classmethod
     def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
