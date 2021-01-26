@@ -181,6 +181,8 @@ class MenuItem(DSCMS4Model):
     def move(self, *, menu: Menu = UNCHANGED, parent: MenuItem = UNCHANGED) \
             -> Union[MenuItem, MenuItemGroup]:
         """Moves the menu item to another menu and / or parent."""
+        print('Moving:', self, 'from', self.menu_id, self.parent_id, 'to',
+              menu, parent, flush=True)
         if parent is not UNCHANGED:
             if parent is not None and parent in self.tree:
                 raise CircularReference(parent)
