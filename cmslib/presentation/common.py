@@ -16,7 +16,7 @@ from mdb import Customer
 from cmslib import dom  # pylint: disable=E0611
 from cmslib.exceptions import NoConfigurationFound
 from cmslib.groups import Groups
-from cmslib.menutree import merge, MenuTreeItem
+from cmslib.menutree import MenuTreeItem
 from cmslib.orm.charts import CHARTS, BaseChart, ChartMode, Chart
 from cmslib.orm.content.group import GroupBaseChart, GroupMenu
 from cmslib.orm.configuration import Configuration
@@ -125,8 +125,7 @@ def get_group_menus(groups: Set[Group]) -> Iterable[Menu]:
 def get_menutree(menus: Iterable[Menu]) -> Iterable[MenuTreeItem]:
     """Returns the merged menu tree."""
 
-    items = chain(*map(MenuTreeItem.from_menu, menus))
-    return sorted(merge(items), key=key)
+    return MenuTreeItem.from_menus(menus)
 
 
 def get_playlist(*base_charts: Iterable[BaseChart]) -> List[Chart]:

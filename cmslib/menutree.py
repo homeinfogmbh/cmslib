@@ -13,7 +13,7 @@ from cmslib.attachments import attachment_dom, attachment_json
 from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
 
 
-__all__ = ['add', 'merge', 'get_index', 'MenuTreeItem']
+__all__ = ['MenuTreeItem']
 
 
 def add(children: Iterable[MenuTreeItem]) -> MenuTreeItem:
@@ -82,22 +82,45 @@ class MenuTreeItem(NamedTuple):
             self.background_color, self.index, menu_item_charts, children)
 
     @classmethod
-    def from_menu_item(cls, menu_item: MenuItem) -> MenuTreeItem:
+    def from_menu_item(cls, menu_item: MenuItem,
+                       menu_items: Iterable[MenuItem],
+                       menu_item_charts: Iterable[MenuItemChart]
+                       ) -> MenuTreeItem:
         """Creates a menu item tree from the given menu item."""
-        children = [cls.from_menu_item(child) for child in menu_item.children]
-        menu_item_charts = MenuItemChart.select(cascade=True).where(
-            MenuItemChart.id << menu_item.menu_item_charts)
+        children = [
+            cls.from_menu_item(child, menu_items, menu_item_charts) for child
+            in filter(lambda item: item.parent_id == menu_item.id, menu_items)
+        ]
+        menu_item_charts = [
+            menu_item_chart for menu_item_chart in menu_item_charts
+            if menu_item_chart.menu_item_id == menu_item.id
+        ]
         return cls(
             menu_item.name, menu_item.icon, menu_item.icon_image,
             menu_item.text_color, menu_item.background_color, menu_item.index,
             menu_item_charts, children)
 
     @classmethod
-    def from_menu(cls, menu: Menu) -> Iterator[MenuTreeItem]:
+    def from_menu(cls, menu: Menu, menu_items: Iterable[MenuItem],
+                  menu_item_charts: Iterable[MenuItemChart]
+                  ) -> Iterator[MenuTreeItem]:
         """Yields menu tree items from the respective menu."""
-        for menu_item in MenuItem.select(cascade=True).where(
-                MenuItem.id << menu.root_items):
-            yield cls.from_menu_item(menu_item)
+        root_items = filter(lambda item: item.menu_id == menu.id, menu_items)
+
+        for root_item in root_items:
+            yield cls.from_menu_item(root_item, menu_items, menu_item_charts)
+
+    @classmethod
+    def from_menus(cls, menus: Iterable[Menu]) -> Iterator[MenuTreeItem]:
+        """Creates a tree from several menus."""
+        menu_items = MenuItem.select(cascade=True).where(True)
+        menu_item_charts = MenuItemChart.select(cascade=True).where(True)
+        trees = [
+            cls.from_menu(menu, menu_items, menu_item_charts)
+            for menu in menus
+        ]
+        return sorted(merge(chain(*trees)), key=get_index)
+
 
     @property
     def signature(self) -> Tuple[str, str, int, int]:
