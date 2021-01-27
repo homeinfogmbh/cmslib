@@ -12,6 +12,7 @@ from wsgilib import get_bool
 from cmslib.exceptions import InvalidChartType
 from cmslib.orm.chart_acl import ChartACL
 from cmslib.orm.charts import CHARTS, BaseChart, Chart, ChartMode
+from cmslib.orm.settings import Settings
 
 
 __all__ = [
@@ -75,10 +76,12 @@ CHART_TYPE = LocalProxy(_get_chart_type)
 def _get_trashed() -> Expression:
     """Returns a selection for the trashed status."""
 
-    if get_bool('trashed'):
-        return BaseChart.trashed == 1
+    trashed = get_bool('trashed', default=None)
 
-    return BaseChart.trashed == 0
+    if trashed is None:
+        trashed = Settings.for_customer(CUSTOMER.id).trashed
+
+    return BaseChart.trashed == trashed
 
 
 def get_base_charts() -> ModelSelect:
