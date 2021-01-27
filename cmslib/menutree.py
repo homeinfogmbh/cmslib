@@ -127,7 +127,7 @@ class MenuTreeItem(NamedTuple):
         """Returns a tuple, identifying the menu tree item."""
         return (self.name, self.icon, self.text_color, self.background_color)
 
-    def to_json(self, trashed: bool = False) -> dict:
+    def to_json(self, *, trashed: bool = False) -> dict:
         """Returns a nested JSON-ish dict."""
         return {
             'name': self.name,
@@ -143,12 +143,12 @@ class MenuTreeItem(NamedTuple):
                 if trashed or not menu_item_chart.base_chart.trashed
             ],
             'menuItems': [
-                child.to_json() for child in sorted(
+                child.to_json(trashed=trashed) for child in sorted(
                     self.children, key=get_index)
             ]
         }
 
-    def to_dom(self, trashed: bool = False) -> dom.MenuItem:
+    def to_dom(self, *, trashed: bool = False) -> dom.MenuItem:
         """Returns an XML DOM of the model."""
         xml = dom.MenuItem()
         xml.name = self.name
@@ -157,7 +157,7 @@ class MenuTreeItem(NamedTuple):
         xml.text_color = self.text_color
         xml.background_color = self.background_color
         xml.index = self.index
-        xml.menu_item = [item.to_dom() for item in self.children]
+        xml.menu_item = [item.to_dom(trashed=trashed) for item in self.children]
         xml.chart = [
             menu_item_chart.to_dom() for menu_item_chart
             in sorted(self.menu_item_charts, key=get_index)
