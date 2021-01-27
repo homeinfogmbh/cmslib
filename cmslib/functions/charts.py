@@ -74,15 +74,20 @@ def _get_chart_type() -> Chart:
 CHART_TYPE = LocalProxy(_get_chart_type)
 
 
-def get_trashed() -> bool:
-    """Returns a flag whether trashed charts should be selected."""
+def get_trashed() -> Expression:
+    """Returns an expression to select base
+    charts with a certain trashed flag.
+    """
 
     trashed = get_bool('trashed', default=None)
 
     if trashed is None:
-        return Settings.for_customer(CUSTOMER.id).trashed
+        trashed = Settings.for_customer(CUSTOMER.id).trashed
 
-    return trashed
+    if trashed is None:
+        return True
+
+    return BaseChart.trashed == trashed
 
 
 def get_base_charts() -> ModelSelect:
@@ -101,8 +106,7 @@ def _get_charts(cls: ModelBase) -> ModelSelect:
     """Selects charts of the given type for the current customer."""
 
     return cls.select(cascade=True).where(
-        (BaseChart.customer == CUSTOMER.id)
-        & (BaseChart.trashed == get_trashed()))
+        (BaseChart.customer == CUSTOMER.id) & get_trashed())
 
 
 def get_charts() -> Iterator[Chart]:
