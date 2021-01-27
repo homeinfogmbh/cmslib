@@ -23,6 +23,7 @@ from cmslib.orm.configuration import Configuration
 from cmslib.orm.content.group import GroupConfiguration
 from cmslib.orm.group import Group
 from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
+from cmslib.orm.settings import Settings
 
 
 __all__ = ['Presentation']
@@ -86,14 +87,14 @@ def get_configuration(*configs: Iterable[Configuration]) -> Configuration:
     raise NoConfigurationFound()
 
 
-def get_group_base_charts(groups: Set[Group]) \
+def get_group_base_charts(groups: Set[Group], *, trashed: bool = False) \
         -> Iterator[Tuple[int, BaseChart]]:
     """Charts attached to groups, the object is a member of."""
 
     for base_chart in BaseChart.select(GroupBaseChart, cascade=True).join_from(
             BaseChart, GroupBaseChart).where(
             (GroupBaseChart.group << groups)
-            & (BaseChart.trashed == 0)):
+            & (BaseChart.trashed == trashed)):
         yield (base_chart.groupbasechart.index, base_chart)
 
 
@@ -103,12 +104,14 @@ def get_unique_charts(*charts: Iterable[Chart]) -> List[Chart]:
     return sorted(set(chain(*charts)), key=lambda chart: chart.id)
 
 
-def get_menu_charts(menus: Iterable[Menu]) -> Iterable[Chart]:
+def get_menu_charts(menus: Iterable[Menu], *, trashed: bool = False) \
+        -> Iterable[Chart]:
     """Yields charts of the object's menu."""
 
     base_charts = BaseChart.select().join(
         MenuItemChart).join(MenuItem).where(
-        (BaseChart.trashed == 0) & (MenuItem.menu << menus))
+        (BaseChart.trashed == trashed)
+        & (MenuItem.menu << menus))
 
     for chart_type in CHARTS.values():
         yield from chart_type.select(cascade=True).where(
@@ -149,11 +152,13 @@ class Presentation:
     def __init__(self, customer: Customer):
         """Initializes the presentation."""
         self.customer = customer
+        self.settings = Settings.for_customer(self.customer)
         self.groups = Groups.for_customer(customer)
         group_levels = list(get_group_levels(
             self.groups, self.get_memberships()))
         group_set = get_group_set(group_levels)
-        group_base_charts = list(get_group_base_charts(group_set))
+        group_base_charts = list(get_group_base_charts(
+            group_set, trashed=self.settings.trashed))
 
         try:
             base_charts = self.get_base_charts()
@@ -169,7 +174,8 @@ class Presentation:
 
         self.menus = set(chain(get_group_menus(group_set), menus))
         self.charts = get_unique_charts(
-            self.playlist, get_menu_charts(self.menus))
+            self.playlist, get_menu_charts(
+                self.menus, trashed=self.settings.trashed))
         self.menu_tree = get_menutree(self.menus)
         group_configurations = list(get_group_configurations(
             group_levels, group_set))

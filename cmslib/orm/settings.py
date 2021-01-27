@@ -19,6 +19,7 @@ class Settings(CustomerModel):
     """
 
     testing = BooleanField(default=False)   # Show testing deployments.
+    trashed = BooleanField(default=False)   # Select trashed charts.
 
     @classmethod
     def for_customer(cls, customer: Customer) -> Settings:

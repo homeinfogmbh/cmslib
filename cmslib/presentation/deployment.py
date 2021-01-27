@@ -73,7 +73,7 @@ class Presentation(Presentation):   # pylint: disable=E0102
                 DeploymentBaseChart, cascade=True).join_from(
                 BaseChart, DeploymentBaseChart).where(
                 (DeploymentBaseChart.deployment == self.deployment)
-                & (BaseChart.trashed == 0)):
+                & (BaseChart.trashed == self.settings.trashed)):
             yield (base_chart.deploymentbasechart.index, base_chart)
 
     def get_configurations(self) -> ModelSelect:
