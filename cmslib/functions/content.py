@@ -7,6 +7,7 @@ from peewee import ModelSelect
 from his import CUSTOMER
 from hwdb import Deployment
 
+from cmslib.functions.charts import get_trashed
 from cmslib.orm.charts import BaseChart
 from cmslib.orm.configuration import Configuration
 from cmslib.orm.content.deployment import DeploymentBaseChart
@@ -36,17 +37,14 @@ __all__ = [
 
 
 def get_deployment_base_charts(
-        deployment: Optional[Union[Deployment, int]] = None,
-        trashed: Optional[bool] = None) -> ModelSelect:
+        deployment: Optional[Union[Deployment, int]] = None) -> ModelSelect:
     """Selects deployment base charts."""
 
     condition = BaseChart.customer == CUSTOMER.id
+    condition &= BaseChart.trashed == get_trashed()
 
     if deployment is not None:
         condition &= DeploymentBaseChart.deployment == deployment
-
-    if trashed is not None:
-        condition &= BaseChart.trashed == trashed
 
     return DeploymentBaseChart.select(cascade=True).where(condition)
 
@@ -95,18 +93,15 @@ def get_deployment_menu(ident: int) -> DeploymentMenu:
     return get_deployment_menus().where(DeploymentMenu.id == ident).get()
 
 
-def get_group_base_charts(
-        group: Optional[Union[Group, int]] = None,
-        trashed: Optional[bool] = None) -> ModelSelect:
+def get_group_base_charts(group: Optional[Union[Group, int]] = None) \
+        -> ModelSelect:
     """Selects deployment base charts."""
 
     condition = BaseChart.customer == CUSTOMER.id
+    condition &= BaseChart.trashed == get_trashed()
 
     if group is not None:
         condition &= GroupBaseChart.group == group
-
-    if trashed is not None:
-        condition &= BaseChart.trashed == trashed
 
     return GroupBaseChart.select(cascade=True).where(condition)
 
