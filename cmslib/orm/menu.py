@@ -69,7 +69,7 @@ class Menu(CustomerModel):
                     menu_items=menu_items, menu_item_charts=menu_item_charts,
                     fk_fields=False)
                 for menu_item in menu_items
-                if menu_item.menu_id == self.id
+                if menu_item.menu_id == self.id and menu_item.parent is None
             ]
 
         return json
