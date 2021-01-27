@@ -241,7 +241,7 @@ class MenuItem(DSCMS4Model):
 
     def to_json(self, menu_items: Iterable[MenuItem] = None,
                 menu_item_charts: Iterable[MenuItemChart] = None,
-                **kwargs) -> dict:
+                trashed: bool = False, **kwargs) -> dict:
         """Returns a JSON-ish dictionary."""
         json = super().to_json(**kwargs)
         json['iconImage'] = attachment_json(self.icon_image)
@@ -251,7 +251,7 @@ class MenuItem(DSCMS4Model):
                 menu_item_chart.to_json(menu_item=False, base_chart=True)
                 for menu_item_chart in menu_item_charts
                 if menu_item_chart.menu_item_id == self.id
-                and not menu_item_chart.base_chart.trashed
+                and (trashed or not menu_item_chart.base_chart.trashed)
             ]
 
         if menu_items:
