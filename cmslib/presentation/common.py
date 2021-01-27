@@ -227,7 +227,10 @@ class Presentation:
         xml.customer = self.customer.id
         xml.configuration = self.configuration.to_dom()
         xml.playlist = [chart.to_dom(brief=True) for chart in self.playlist]
-        xml.menu_item = [item.to_dom() for item in self.menu_tree]
+        xml.menu_item = [
+            item.to_dom(trashed=self.settings.trashed)
+            for item in self.menu_tree
+        ]
         xml.chart = [chart.to_dom() for chart in self.charts]
         return xml
 
@@ -240,7 +243,10 @@ class Presentation:
             'configuration': self.configuration.to_json(
                 cascade=True, fk_fields=False),
             'customer': self.customer.id,
-            'menuItems': [item.to_json() for item in self.menu_tree],
+            'menuItems': [
+                item.to_json(trashed=self.settings.trashed)
+                for item in self.menu_tree
+            ],
             'playlist': [
                 chart.to_json(mode=ChartMode.BRIEF, fk_fields=False)
                 for chart in self.playlist
