@@ -48,7 +48,7 @@ def attachment_json(file: File, json: dict = None) -> dict:
         return json
 
     file = ensure_file(file)
-    result = file.to_json(fk_fields=False)
+    result = file.to_json()
 
     if json:
         result.update(json)
