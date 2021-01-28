@@ -41,7 +41,7 @@ def get_deployment_base_charts(
     """Selects deployment base charts."""
 
     condition = BaseChart.customer == CUSTOMER.id
-    condition &= BaseChart.trashed == get_trashed()
+    condition &= get_trashed()
 
     if deployment is not None:
         condition &= DeploymentBaseChart.deployment == deployment
@@ -98,7 +98,7 @@ def get_group_base_charts(group: Optional[Union[Group, int]] = None) \
     """Selects deployment base charts."""
 
     condition = BaseChart.customer == CUSTOMER.id
-    condition &= BaseChart.trashed == get_trashed()
+    condition &= get_trashed()
 
     if group is not None:
         condition &= GroupBaseChart.group == group
