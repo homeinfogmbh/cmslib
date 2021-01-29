@@ -29,7 +29,6 @@ setup(
         'openimmodb',
         'peewee',
         'peeweeplus',
-        'previewlib',
         'pyxb',
         'werkzeug',
         'wsgilib'

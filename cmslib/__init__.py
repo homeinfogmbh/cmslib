@@ -109,7 +109,6 @@ from cmslib.orm import Settings
 from cmslib.presentation import DeploymentPresentation
 from cmslib.presentation import GroupPresentation
 from cmslib.presentation import Presentation
-from cmslib.preview import make_response
 
 
 __all__ = [
@@ -233,7 +232,5 @@ __all__ = [
     # Presentation
     'DeploymentPresentation',
     'GroupPresentation',
-    'Presentation',
-    # Preview
-    'make_response'
+    'Presentation'
 ]
