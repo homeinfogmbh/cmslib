@@ -55,7 +55,6 @@ from cmslib.orm.configuration import Design
 from cmslib.orm.configuration import Font
 from cmslib.orm.configuration import Ticker
 from cmslib.orm.configuration import TickerType
-from cmslib.orm.configuration import percentage
 from cmslib.orm.group import MODELS as GROUP_MODELS
 from cmslib.orm.group import Group
 from cmslib.orm.group import GroupMemberDeployment
@@ -126,7 +125,6 @@ __all__ = [
     'Font',
     'Ticker',
     'TickerType',
-    'percentage',
     # Group
     'Group',
     'GroupMemberDeployment',

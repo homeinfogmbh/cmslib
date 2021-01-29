@@ -19,16 +19,22 @@ __all__ = [
 ]
 
 
+def get_menu(ident: int) -> Menu:
+    """Returns the respective menu of the current customer."""
+
+    return get_menus().where(Menu.id == ident).get()
+
+
 def get_menus() -> ModelSelect:
     """Lists the menus of the current customer."""
 
     return Menu.select(cascade=True).where(Menu.customer == CUSTOMER.id)
 
 
-def get_menu(ident: int) -> Menu:
-    """Returns the respective menu of the current customer."""
+def get_menu_item(ident: int) -> MenuItem:
+    """Returns the respective menu item."""
 
-    return get_menus().where(Menu.id == ident).get()
+    return get_menu_items().where(MenuItem.id == ident).get()
 
 
 def get_menu_items(menu: Optional[Union[Menu, int]] = None) -> ModelSelect:
@@ -42,10 +48,10 @@ def get_menu_items(menu: Optional[Union[Menu, int]] = None) -> ModelSelect:
     return MenuItem.select(cascade=True).where(condition)
 
 
-def get_menu_item(ident: int) -> MenuItem:
-    """Returns the respective menu item."""
+def get_menu_item_chart(ident: int) -> MenuItemChart:
+    """Returns the respective MenuItemChart."""
 
-    return get_menu_items().where(MenuItem.id == ident).get()
+    return get_menu_item_charts().where(MenuItemChart.id == ident).get()
 
 
 def get_menu_item_charts(
@@ -58,9 +64,3 @@ def get_menu_item_charts(
         condition &= MenuItemChart.menu == menu
 
     return MenuItemChart.select(cascade=True).where(condition)
-
-
-def get_menu_item_chart(ident: int) -> MenuItemChart:
-    """Returns the respective MenuItemChart."""
-
-    return get_menu_item_charts().where(MenuItemChart.id == ident).get()

@@ -18,16 +18,30 @@ __all__ = [
 ]
 
 
-def get_groups() -> ModelSelect:
-    """Selects the groups of the current customer."""
+def get_children(groups: Iterable[Group], parent: Group) -> dict:
+    """Returns the children of the group."""
 
-    return Group.select(cascade=True).where(Group.customer == CUSTOMER.id)
+    children = filter(lambda group: group.parent == parent, groups)
+    return sorted(children, key=lambda group: group.index)
 
 
 def get_group(ident: int) -> Group:
     """Returns the respective group of the current customer."""
 
     return get_groups().where(Group.id == ident).get()
+
+
+def get_groups() -> ModelSelect:
+    """Selects the groups of the current customer."""
+
+    return Group.select(cascade=True).where(Group.customer == CUSTOMER.id)
+
+
+def get_group_member_deployment(ident: int) -> GroupMemberDeployment:
+    """Selects group members deployments."""
+
+    return get_group_member_deployments().where(
+        GroupMemberDeployment.id == ident).get()
 
 
 def get_group_member_deployments(
@@ -40,20 +54,6 @@ def get_group_member_deployments(
         condition &= GroupMemberDeployment.group == group
 
     return GroupMemberDeployment.select(cascade=True).where(condition)
-
-
-def get_group_member_deployment(ident: int) -> GroupMemberDeployment:
-    """Selects group members deployments."""
-
-    return get_group_member_deployments().where(
-        GroupMemberDeployment.id == ident).get()
-
-
-def get_children(groups: Iterable[Group], parent: Group) -> dict:
-    """Returns the children of the group."""
-
-    children = filter(lambda group: group.parent == parent, groups)
-    return sorted(children, key=lambda group: group.index)
 
 
 def get_tree(groups: Iterable[Group], ident: Optional[int] = None) -> dict:

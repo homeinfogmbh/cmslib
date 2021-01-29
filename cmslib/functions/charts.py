@@ -16,8 +16,8 @@ from cmslib.orm.settings import Settings
 
 
 __all__ = [
-    'CHART_TYPES',
     'CHART_TYPE',
+    'CHART_TYPES',
     'get_base_chart',
     'get_base_charts',
     'get_chart',
@@ -26,6 +26,13 @@ __all__ = [
     'get_mode',
     'get_trashed'
 ]
+
+
+def _get_charts(cls: ModelBase) -> ModelSelect:
+    """Selects charts of the given type for the current customer."""
+
+    return cls.select(cascade=True).where(
+        (BaseChart.customer == CUSTOMER.id) & get_trashed())
 
 
 def _get_chart_types() -> Iterator[Chart]:
@@ -74,20 +81,10 @@ def _get_chart_type() -> Chart:
 CHART_TYPE = LocalProxy(_get_chart_type)
 
 
-def get_trashed() -> Expression:
-    """Returns an expression to select base
-    charts with a certain trashed flag.
-    """
+def get_base_chart(ident: int) -> BaseChart:
+    """Returns the respective base chart."""
 
-    trashed = get_bool('trashed', default=None)
-
-    if trashed is None:
-        trashed = Settings.for_customer(CUSTOMER.id).trashed
-
-    if trashed is None:
-        return True
-
-    return BaseChart.trashed == trashed
+    return get_base_charts().where(BaseChart.id == ident).get()
 
 
 def get_base_charts() -> ModelSelect:
@@ -97,17 +94,10 @@ def get_base_charts() -> ModelSelect:
         BaseChart.customer == CUSTOMER.id)
 
 
-def get_base_chart(ident: int) -> BaseChart:
-    """Returns the respective base chart."""
+def get_chart(ident: int, cls: ModelBase = CHART_TYPE) -> Chart:
+    """Returns the selected chart."""
 
-    return get_base_charts().where(BaseChart.id == ident).get()
-
-
-def _get_charts(cls: ModelBase) -> ModelSelect:
-    """Selects charts of the given type for the current customer."""
-
-    return cls.select(cascade=True).where(
-        (BaseChart.customer == CUSTOMER.id) & get_trashed())
+    return _get_charts(cls).where(cls.id == ident).get()
 
 
 def get_charts() -> Iterator[Chart]:
@@ -115,12 +105,6 @@ def get_charts() -> Iterator[Chart]:
 
     for cls in CHART_TYPES:
         yield from _get_charts(cls)
-
-
-def get_chart(ident: int, cls: ModelBase = CHART_TYPE) -> Chart:
-    """Returns the selected chart."""
-
-    return _get_charts(cls).where(cls.id == ident).get()
 
 
 def get_chart_acls() -> ModelSelect:
@@ -139,3 +123,19 @@ def get_mode() -> ChartMode:
         return ChartMode.FULL
 
     return ChartMode(mode)
+
+
+def get_trashed() -> Expression:
+    """Returns an expression to select base
+    charts with a certain trashed flag.
+    """
+
+    trashed = get_bool('trashed', default=None)
+
+    if trashed is None:
+        trashed = Settings.for_customer(CUSTOMER.id).trashed
+
+    if trashed is None:
+        return True
+
+    return BaseChart.trashed == trashed

@@ -36,6 +36,13 @@ __all__ = [
 ]
 
 
+def get_deployment_base_chart(ident: int) -> DeploymentBaseChart:
+    """Returns the respective deployment base chart."""
+
+    return get_deployment_base_charts().where(
+        DeploymentBaseChart.id == ident).get()
+
+
 def get_deployment_base_charts(
         deployment: Optional[Union[Deployment, int]] = None) -> ModelSelect:
     """Selects deployment base charts."""
@@ -49,11 +56,11 @@ def get_deployment_base_charts(
     return DeploymentBaseChart.select(cascade=True).where(condition)
 
 
-def get_deployment_base_chart(ident: int) -> DeploymentBaseChart:
-    """Returns the respective deployment base chart."""
+def get_deployment_configuration(ident: int) -> DeploymentConfiguration:
+    """Returns the respective deployment configuration."""
 
-    return get_deployment_base_charts().where(
-        DeploymentBaseChart.id == ident).get()
+    return get_deployment_configurations().where(
+        DeploymentConfiguration.id == ident).get()
 
 
 def get_deployment_configurations(
@@ -68,11 +75,10 @@ def get_deployment_configurations(
     return DeploymentConfiguration.select(cascade=True).where(condition)
 
 
-def get_deployment_configuration(ident: int) -> DeploymentConfiguration:
-    """Returns the respective deployment configuration."""
+def get_deployment_menu(ident: int) -> DeploymentMenu:
+    """Returns the respective deployment menu."""
 
-    return get_deployment_configurations().where(
-        DeploymentConfiguration.id == ident).get()
+    return get_deployment_menus().where(DeploymentMenu.id == ident).get()
 
 
 def get_deployment_menus(deployment: Optional[Union[Deployment, int]] = None) \
@@ -87,10 +93,10 @@ def get_deployment_menus(deployment: Optional[Union[Deployment, int]] = None) \
     return DeploymentMenu.select(cascade=True).where(condition)
 
 
-def get_deployment_menu(ident: int) -> DeploymentMenu:
-    """Returns the respective deployment menu."""
+def get_group_base_chart(ident: int) -> GroupBaseChart:
+    """Returns the respective group base chart."""
 
-    return get_deployment_menus().where(DeploymentMenu.id == ident).get()
+    return get_group_base_charts().where(GroupBaseChart.id == ident).get()
 
 
 def get_group_base_charts(group: Optional[Union[Group, int]] = None) \
@@ -106,10 +112,11 @@ def get_group_base_charts(group: Optional[Union[Group, int]] = None) \
     return GroupBaseChart.select(cascade=True).where(condition)
 
 
-def get_group_base_chart(ident: int) -> GroupBaseChart:
-    """Returns the respective group base chart."""
+def get_group_configuration(ident: int) -> GroupConfiguration:
+    """Returns the respective group configuration."""
 
-    return get_group_base_charts().where(GroupBaseChart.id == ident).get()
+    return get_group_configurations().where(
+        GroupConfiguration.id == ident).get()
 
 
 def get_group_configurations(group: Optional[Union[Group, int]] = None) \
@@ -124,11 +131,10 @@ def get_group_configurations(group: Optional[Union[Group, int]] = None) \
     return GroupConfiguration.select(cascade=True).where(condition)
 
 
-def get_group_configuration(ident: int) -> GroupConfiguration:
-    """Returns the respective group configuration."""
+def get_group_menu(ident: int) -> GroupMenu:
+    """Returns the respective group menu."""
 
-    return get_group_configurations().where(
-        GroupConfiguration.id == ident).get()
+    return get_group_menus().where(GroupMenu.id == ident).get()
 
 
 def get_group_menus(group: Optional[Union[Group, int]] = None) -> ModelSelect:
@@ -140,9 +146,3 @@ def get_group_menus(group: Optional[Union[Group, int]] = None) -> ModelSelect:
         condition &= GroupMenu.group == group
 
     return GroupMenu.select(cascade=True).where(condition)
-
-
-def get_group_menu(ident: int) -> GroupMenu:
-    """Returns the respective group menu."""
-
-    return get_group_menus().where(GroupMenu.id == ident).get()
