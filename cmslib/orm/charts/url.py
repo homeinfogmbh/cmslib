@@ -5,7 +5,7 @@ from typing import Union
 
 from peewee import IntegerField, SmallIntegerField
 
-from peeweeplus import EnumField, HTMLCharField
+from peeweeplus import CharField, EnumField
 
 from cmslib import dom
 from cmslib.orm.charts.api import Chart
@@ -30,7 +30,7 @@ class URL(Chart):
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'chart_url'
 
-    url = HTMLCharField()
+    url = CharField()
     mode = EnumField(Mode)
     title_color = IntegerField(default=0x000000)
     font_size_title = SmallIntegerField(default=26)
