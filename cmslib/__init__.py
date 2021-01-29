@@ -1,6 +1,7 @@
 """Library for JSON messages, ORM models and common
 operations regarding HOMEINFO's content management systems.
 """
+from cmslib.dom import presentation
 from cmslib.errors import ERRORS
 from cmslib.exceptions import AmbiguousBaseChart
 from cmslib.exceptions import AmbiguousConfigurationsError
@@ -241,5 +242,6 @@ __all__ = [
     # Presentation
     'DeploymentPresentation',
     'GroupPresentation',
-    'Presentation'
+    'Presentation',
+    'presentation'
 ]
