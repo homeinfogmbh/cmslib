@@ -51,6 +51,7 @@ from cmslib.functions import get_schedules
 from cmslib.groups import Groups
 from cmslib.menutree import MenuTreeItem
 from cmslib.orm import CHARTS
+from cmslib.orm import UNCHANGED
 from cmslib.orm import ChartMode
 from cmslib.orm import BaseChart
 from cmslib.orm import Chart
@@ -113,6 +114,8 @@ from cmslib.presentation import Presentation
 
 
 __all__ = [
+    # Misc.
+    'UNCHANGED',
     # Exceptions
     'AmbiguousBaseChart',
     'AmbiguousConfigurationsError',

@@ -38,6 +38,7 @@ from cmslib.orm.charts import URL
 from cmslib.orm.charts import Video
 from cmslib.orm.charts import Weather
 from cmslib.orm.charts import WeatherImage
+from cmslib.orm.common import UNCHANGED
 from cmslib.orm.content import MODELS as CONTENT_MODELS
 from cmslib.orm.content import DeploymentBaseChart
 from cmslib.orm.content import DeploymentConfiguration
@@ -74,6 +75,7 @@ from cmslib.orm.settings import Settings
 __all__ = [
     # Misc
     'MODELS',
+    'UNCHANGED',
     'create_tables',
     # Charts
     'CHARTS',
