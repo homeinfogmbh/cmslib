@@ -3,9 +3,9 @@
 from enum import Enum
 from typing import Union
 
-from peewee import IntegerField, SmallIntegerField
+from peewee import CharField, IntegerField, SmallIntegerField
 
-from peeweeplus import CharField, EnumField
+from peeweeplus import EnumField
 
 from cmslib import dom
 from cmslib.orm.charts.api import Chart
