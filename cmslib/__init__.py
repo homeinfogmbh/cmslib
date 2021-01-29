@@ -71,6 +71,7 @@ from cmslib.orm import ImageTextText
 from cmslib.orm import News
 from cmslib.orm import NewsProvider
 from cmslib.orm import Poll
+from cmslib.orm import PollMode
 from cmslib.orm import PollOption
 from cmslib.orm import PublicTransport
 from cmslib.orm import Quotes
@@ -187,6 +188,7 @@ __all__ = [
     'News',
     'NewsProvider',
     'Poll',
+    'PollMode',
     'PollOption',
     'PublicTransport',
     'Quotes',

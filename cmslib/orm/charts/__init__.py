@@ -19,7 +19,9 @@ from cmslib.orm.charts.image_text import ImageText
 from cmslib.orm.charts.image_text import Image as ImageTextImage
 from cmslib.orm.charts.image_text import Text as ImageTextText
 from cmslib.orm.charts.news import News, NewsProvider
-from cmslib.orm.charts.poll import Poll, Option as PollOption
+from cmslib.orm.charts.poll import Poll
+from cmslib.orm.charts.poll import Mode as PollMode
+from cmslib.orm.charts.poll import Option as PollOption
 from cmslib.orm.charts.public_transport import PublicTransport
 from cmslib.orm.charts.quotes import Quotes
 from cmslib.orm.charts.real_estates import RealEstates
@@ -54,6 +56,7 @@ __all__ = [
     'News',
     'NewsProvider',
     'Poll',
+    'PollMode',
     'PollOption',
     'PublicTransport',
     'Quotes',

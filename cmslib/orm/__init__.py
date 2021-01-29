@@ -26,6 +26,7 @@ from cmslib.orm.charts import ImageTextText
 from cmslib.orm.charts import News
 from cmslib.orm.charts import NewsProvider
 from cmslib.orm.charts import Poll
+from cmslib.orm.charts import PollMode
 from cmslib.orm.charts import PollOption
 from cmslib.orm.charts import PublicTransport
 from cmslib.orm.charts import Quotes
@@ -96,6 +97,7 @@ __all__ = [
     'News',
     'NewsProvider',
     'Poll',
+    'PollMode',
     'PollOption',
     'PublicTransport',
     'Quotes',
