@@ -23,13 +23,17 @@ from cmslib.orm.common import UNCHANGED, DSCMS4Model, CustomerModel
 
 
 __all__ = [
-    'TIME_FORMAT',
     'MODELS',
+    'TIME_FORMAT',
+    'Background',
+    'Backlight',
     'Colors',
     'Configuration',
-    'Background',
+    'Design',
+    'Font',
     'Ticker',
-    'Backlight'
+    'TickerType',
+    'percentage'
 ]
 
 
@@ -70,7 +74,7 @@ class Design(Enum):
     MUP = 'mup'
 
 
-class TickerTypes(Enum):
+class TickerType(Enum):
     """Valid ticker types."""
 
     TEXT = 'text'
@@ -362,7 +366,7 @@ class Ticker(DSCMS4Model):
     configuration = ForeignKeyField(
         Configuration, column_name='configuration', backref='tickers',
         on_delete='CASCADE', lazy_load=False)
-    type_ = EnumField(TickerTypes, column_name='type')
+    type_ = EnumField(TickerType, column_name='type')
     content = HTMLTextField()
 
     @classmethod

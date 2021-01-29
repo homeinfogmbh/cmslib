@@ -10,7 +10,7 @@ from mdb import Customer
 from cmslib.orm.common import CustomerModel
 
 
-__all__ = ['Settings']
+__all__ = ['MODELS', 'Settings']
 
 
 class Settings(CustomerModel):

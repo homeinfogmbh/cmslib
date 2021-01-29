@@ -21,7 +21,7 @@ from cmslib.orm.common import UNCHANGED, CustomerModel, DSCMS4Model
 from cmslib.orm.charts import BaseChart, Chart
 
 
-__all__ = ['Menu', 'MenuItem', 'MODELS']
+__all__ = ['MODELS', 'Menu', 'MenuItem', 'MenuItemChart', 'MenuItemGroup']
 
 
 LOGGER = getLogger('Menu')
