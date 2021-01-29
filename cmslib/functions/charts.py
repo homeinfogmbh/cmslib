@@ -93,7 +93,8 @@ def get_trashed() -> Expression:
 def get_base_charts() -> ModelSelect:
     """Returns the base charts of the current customer."""
 
-    return BaseChart.select(cascade=True).where(BaseChart.customer == CUSTOMER)
+    return BaseChart.select(cascade=True).where(
+        BaseChart.customer == CUSTOMER.id)
 
 
 def get_base_chart(ident: int) -> BaseChart:
