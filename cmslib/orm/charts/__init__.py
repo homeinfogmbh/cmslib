@@ -28,7 +28,7 @@ from cmslib.orm.charts.real_estates import RealEstates
 from cmslib.orm.charts.real_estates import IdFilter
 from cmslib.orm.charts.real_estates import ZipCodeFilter
 from cmslib.orm.charts.soccer_table import SoccerTable
-from cmslib.orm.charts.url import URL
+from cmslib.orm.charts.url import URL, Mode as URLMode
 from cmslib.orm.charts.video import Video
 from cmslib.orm.charts.weather import Weather, Image as WeatherImage
 
@@ -65,6 +65,7 @@ __all__ = [
     'ZipCodeFilter',    # Filter for real estates.
     'SoccerTable',
     'URL',
+    'URLMode',
     'Video',
     'Weather',
     'WeatherImage'

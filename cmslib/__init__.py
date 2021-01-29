@@ -82,6 +82,7 @@ from cmslib.orm import IdFilter
 from cmslib.orm import ZipCodeFilter
 from cmslib.orm import SoccerTable
 from cmslib.orm import URL
+from cmslib.orm import URLMode
 from cmslib.orm import Video
 from cmslib.orm import Weather
 from cmslib.orm import WeatherImage
@@ -202,6 +203,7 @@ __all__ = [
     'ZipCodeFilter',    # Filter for real estates.
     'SoccerTable',
     'URL',
+    'URLMode',
     'Video',
     'Weather',
     'WeatherImage',
