@@ -280,14 +280,14 @@ class Configuration(CustomerModel):
         backlight = json.pop('backlight', None)
         self.update_backlights(transaction, backlight, delete=True)
         logo = json.pop('logo', UNCHANGED)
-        dummy_picture = json.pop('dummyPicture', UNCHANGED)
+        dpic = json.pop('dummyPicture', UNCHANGED)
         super().patch_json(json, **kwargs)
 
         if logo is not UNCHANGED:
-            self.logo = get_file(logo)
+            self.logo = None if logo is None else get_file(logo)
 
-        if dummy_picture is not UNCHANGED:
-            self.dummy_picture = get_file(dummy_picture)
+        if dpic is not UNCHANGED:
+            self.dummy_picture = None if dpic is None else get_file(dpic)
 
         return transaction
 
