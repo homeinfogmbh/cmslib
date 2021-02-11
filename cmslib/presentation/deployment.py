@@ -53,9 +53,7 @@ def deployment_to_dom(deployment: Deployment) -> dom.Deployment:
 def get_deployment(deployment: Union[Deployment, int]) -> Deployment:
     """Returns a deep-joined deployment."""
 
-    return Deployment.select(Deployment, Customer, Company, Address).join(
-        Customer).join(Company).join_from(
-        Deployment, Address, on=Deployment.address == Address.id).where(
+    return Deployment.select(cascade=True).where(
         Deployment.id == deployment).get()
 
 
