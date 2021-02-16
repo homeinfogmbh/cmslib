@@ -41,7 +41,7 @@ class DeploymentContent(DSCMS4Model):
         }
         return super().select(*args, **kwargs).join_from(
             cls, Deployment).join(Customer).join(Company).join(
-            Address).join_from(
+            Address, join_type=JOIN.LEFT_OUTER).join_from(
             Deployment, deployment_address,
             on=Deployment.address == deployment_address.id).join_from(
             Deployment, lpt_address,
