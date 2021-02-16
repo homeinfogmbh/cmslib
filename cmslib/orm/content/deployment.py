@@ -118,7 +118,8 @@ class DeploymentConfiguration(DeploymentContent):
         }
         return super().select(*args, cascade=True, **kwargs).join_from(
             cls, Configuration).join(configuration_customer).join(
-            configuration_company).join(configuration_address)
+            configuration_company).join(
+            configuration_address, join_type=JOIN.LEFT_OUTER)
 
 
 class DeploymentMenu(DeploymentContent):
@@ -141,7 +142,7 @@ class DeploymentMenu(DeploymentContent):
         args = {cls, Menu, menu_customer, menu_company, menu_address, *args}
         return super().select(*args, cascade=True, **kwargs).join_from(
             cls, Menu).join(menu_customer).join(menu_company).join(
-            menu_address)
+            menu_address, join_type=JOIN.LEFT_OUTER)
 
 
 MODELS = (DeploymentBaseChart, DeploymentConfiguration, DeploymentMenu)
