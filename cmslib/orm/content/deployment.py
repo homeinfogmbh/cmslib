@@ -82,7 +82,7 @@ class DeploymentBaseChart(DeploymentContent):
             cls, BaseChart, base_chart_customer, base_chart_company,
             base_chart_address, *args
         }
-        return super().select(*args, **kwargs).join_from(
+        return super().select(*args, cascade=True, **kwargs).join_from(
             cls, BaseChart).join(
             base_chart_customer).join(
             base_chart_company).join(
@@ -116,7 +116,7 @@ class DeploymentConfiguration(DeploymentContent):
             cls, Configuration, configuration_customer, configuration_company,
             configuration_address, *args
         }
-        return super().select(*args, **kwargs).join_from(
+        return super().select(*args, cascade=True, **kwargs).join_from(
             cls, Configuration).join(configuration_customer).join(
             configuration_company).join(configuration_address)
 
@@ -139,7 +139,7 @@ class DeploymentMenu(DeploymentContent):
         menu_company = Company.alias()
         menu_address = Address.alias()
         args = {cls, Menu, menu_customer, menu_company, menu_address, *args}
-        return super().select(*args, **kwargs).join_from(
+        return super().select(*args, cascade=True, **kwargs).join_from(
             cls, Menu).join(menu_customer).join(menu_company).join(
             menu_address)
 
