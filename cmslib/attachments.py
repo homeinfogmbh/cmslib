@@ -14,7 +14,7 @@ __all__ = ['attachment_dom', 'attachment_json']
 def ensure_file(file: Union[File, int]) -> File:
     """Ensures a joined file."""
 
-    if isinstance(file, File) and isinstance(file.filedb_file, FileDBFile):
+    if isinstance(file, File) and isinstance(file.file, FileDBFile):
         return file
 
     return File.select(File, FileDBFile).join(FileDBFile).where(
