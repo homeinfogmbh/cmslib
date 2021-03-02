@@ -31,7 +31,7 @@ def add(children: Iterable[MenuTreeItem]) -> MenuTreeItem:
 
 
 def merge(children: Iterable[MenuTreeItem]) -> Iterable[MenuTreeItem]:
-    """Merges lists of children by name."""
+    """Merges lists of children by their signature."""
 
     mapping = defaultdict(list)
 
