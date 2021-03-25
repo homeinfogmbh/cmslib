@@ -234,7 +234,9 @@ class MenuItem(DSCMS4Model):
         icon_image = json.pop('iconImage', UNCHANGED)
         super().patch_json(json, **kwargs)
 
-        if icon_image is not UNCHANGED:
+        if icon_image is None:
+            self.icon_image = None
+        elif icon_image is not UNCHANGED:
             self.icon_image = get_file(icon_image)
 
         return self.move(menu=menu, parent=parent)
