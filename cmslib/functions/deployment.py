@@ -1,9 +1,11 @@
 """Deployment-related functions."""
 
+from sys import stdout
 from typing import Callable
 
 from peewee import ModelSelect
 
+from functoolsplus import timeit
 from his import CUSTOMER
 from hwdb import Deployment
 
@@ -17,6 +19,7 @@ def get_deployment(ident: int) -> Deployment:
     return get_deployments().where(Deployment.id == ident).get()
 
 
+@timeit(file=stdout, flush=True)
 def get_deployments() -> ModelSelect:
     """Selects the deployments of the current customer."""
 
