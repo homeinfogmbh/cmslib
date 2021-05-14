@@ -4,6 +4,7 @@ from __future__ import annotations
 from collections import defaultdict
 from itertools import chain
 from json import dumps
+from sys import stdout
 from typing import Any, Iterable, Iterator, List, NamedTuple, Tuple, Union
 
 from functoolsplus import timeit
@@ -17,7 +18,7 @@ from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
 __all__ = ['MenuTreeItem']
 
 
-@timeit
+@timeit(stdout)
 def merge(children: Iterable[MenuTreeItem]) -> List[MenuTreeItem]:
     """Merges lists of children by their signature."""
 
@@ -73,7 +74,7 @@ class MenuTreeItem(NamedTuple):
             self.background_color, self.index, menu_item_charts, children)
 
     @classmethod
-    @timeit
+    @timeit(stdout)
     def from_menu_item(cls, menu_item: MenuItem,
                        menu_items: Iterable[MenuItem],
                        menu_item_charts: Iterable[MenuItemChart]
@@ -119,7 +120,7 @@ class MenuTreeItem(NamedTuple):
         """Returns a tuple, identifying the menu tree item."""
         return (self.name, self.icon, self.text_color, self.background_color)
 
-    @timeit
+    @timeit(stdout)
     def to_json(self) -> dict:
         """Returns a nested JSON-ish dict."""
         return {
@@ -141,7 +142,7 @@ class MenuTreeItem(NamedTuple):
             ]
         }
 
-    @timeit
+    @timeit(stdout)
     def to_dom(self) -> dom.MenuItem:
         """Returns an XML DOM of the model."""
         xml = dom.MenuItem()
