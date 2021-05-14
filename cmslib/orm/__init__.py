@@ -39,7 +39,7 @@ from cmslib.orm.charts import URLMode
 from cmslib.orm.charts import Video
 from cmslib.orm.charts import Weather
 from cmslib.orm.charts import WeatherImage
-from cmslib.orm.common import UNCHANGED
+from cmslib.orm.common import DATABASE, UNCHANGED
 from cmslib.orm.content import MODELS as CONTENT_MODELS
 from cmslib.orm.content import DeploymentBaseChart
 from cmslib.orm.content import DeploymentConfiguration
@@ -75,6 +75,7 @@ from cmslib.orm.settings import Settings
 
 __all__ = [
     # Misc
+    'DATABASE',
     'MODELS',
     'UNCHANGED',
     'create_tables',
