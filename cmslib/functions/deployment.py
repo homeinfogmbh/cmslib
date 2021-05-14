@@ -8,7 +8,6 @@ from peewee import JOIN, ModelSelect
 from functoolsplus import timeit
 from his import CUSTOMER
 from hwdb import Deployment
-from peeweeplus import ChangedConnection
 
 from cmslib.functions.charts import get_trashed
 from cmslib.orm.charts import BaseChart
@@ -38,14 +37,13 @@ def get_deployments(content: bool = False) -> ModelSelect:
 
     condition &= get_trashed()
 
-    with ChangedConnection(Deployment, BaseChart):
-        return select.join_from(
-            Deployment, DeploymentBaseChart, join_type=JOIN.LEFT_OUTER).join(
-            BaseChart).join_from(
-            Deployment, DeploymentConfiguration,
-            join_type=JOIN.LEFT_OUTER).join_from(
-            Deployment, DeploymentMenu, join_type=JOIN.LEFT_OUTER
-        ).where(condition).execute()
+    return select.join_from(
+        Deployment, DeploymentBaseChart, join_type=JOIN.LEFT_OUTER).join(
+        BaseChart).join_from(
+        Deployment, DeploymentConfiguration,
+        join_type=JOIN.LEFT_OUTER).join_from(
+        Deployment, DeploymentMenu, join_type=JOIN.LEFT_OUTER
+    ).where(condition)
 
 
 def with_deployment(function: Callable) -> Callable:
