@@ -36,8 +36,8 @@ def get_deployments(content: bool = False) -> ModelSelect:
         return select.where(condition)
 
     condition &= get_trashed()
-    return select.join(
-        DeploymentBaseChart, join_type=JOIN.LEFT_OUTER).join(
+    return select.join_from(
+        Deployment, DeploymentBaseChart, join_type=JOIN.LEFT_OUTER).join(
         BaseChart).join_from(
         Deployment, DeploymentConfiguration,
         join_type=JOIN.LEFT_OUTER).join_from(
