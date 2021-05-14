@@ -2,6 +2,7 @@
 
 from collections import defaultdict
 from contextlib import suppress
+from functools import lru_cache
 from itertools import chain
 from logging import getLogger
 from typing import Iterable, Iterator, List, Set, Tuple
@@ -150,37 +151,94 @@ class Presentation:
     def __init__(self, customer: Customer):
         """Initializes the presentation."""
         self.customer = customer
-        self.groups = Groups.for_customer(customer)
-        group_levels = list(get_group_levels(
-            self.groups, self.get_memberships()))
-        group_set = get_group_set(group_levels)
-        group_base_charts = list(get_group_base_charts(group_set))
 
+    @property
+    @lru_cache()
+    def groups(self):
+        """Returns Groups."""
+        return Groups.for_customer(self.customer)
+
+    @property
+    @lru_cache()
+    def _group_levels(self):
+        """Returns the group levels."""
+        return list(get_group_levels(self.groups, self.get_memberships()))
+
+    @property
+    @lru_cache()
+    def _group_set(self):
+        """Returns the group set."""
+        return get_group_set(self._group_levels)
+
+    @property
+    @lru_cache()
+    def _group_base_charts(self):
+        """Returns the group base charts."""
+        return list(get_group_base_charts(self._group_set))
+
+    @property
+    @lru_cache()
+    def _base_charts(self):
+        """Returns the base charts."""
         try:
-            base_charts = self.get_base_charts()
+            return self.get_base_charts()
         except NotImplementedError:
-            base_charts = []
+            return []
 
-        self.playlist = get_playlist(group_base_charts, base_charts)
+    @property
+    @lru_cache()
+    def playlist(self):
+        """Returns the playlist."""
+        return get_playlist(self._group_base_charts, self._base_charts)
 
+    @property
+    @lru_cache()
+    def _menus(self):
+        """Returns the menus."""
         try:
-            menus = self.get_menus()
+            return self.get_menus()
         except NotImplementedError:
-            menus = []
+            return []
 
-        self.menus = set(chain(get_group_menus(group_set), menus))
-        self.charts = get_unique_charts(
-            self.playlist, get_menu_charts(self.menus))
-        self.menu_tree = get_menutree(self.menus)
-        group_configurations = list(get_group_configurations(
-            group_levels, group_set))
+    @property
+    @lru_cache()
+    def menus(self):
+        """Returns the menus."""
+        return set(chain(get_group_menus(self._group_set), self._menus))
 
+    @property
+    @lru_cache()
+    def charts(self):
+        """REturns the charts."""
+        return get_unique_charts(self.playlist, get_menu_charts(self._menus))
+
+    @property
+    @lru_cache()
+    def menu_tree(self):
+        """Returns the menu tree."""
+        return get_menutree(self.menus)
+
+    @property
+    @lru_cache()
+    def _group_configurations(self):
+        """Returns the group configurations."""
+        return list(get_group_configurations(
+            self._group_levels, self._group_set))
+
+    @property
+    @lru_cache()
+    def _configs(self):
+        """Returns the configurations."""
         try:
-            configs = self.get_configurations()
+            return self.get_configurations()
         except NotImplementedError:
-            configs = []
+            return []
 
-        self.configuration = get_configuration(configs, group_configurations)
+    @property
+    @lru_cache()
+    def configuration(self):
+        """Returns the configuration."""
+        return get_configuration(self._configs, self._group_configurations)
 
     @property
     @coerce(select_files)
