@@ -5,7 +5,7 @@ from typing import Iterator, Tuple, Union
 from peewee import ModelSelect
 
 from hwdb import Deployment
-from mdb import Address, Customer, Company
+from mdb import Address
 
 from cmslib import dom  # pylint: disable=E0611
 from cmslib.orm.charts import BaseChart
@@ -60,10 +60,14 @@ def get_deployment(deployment: Union[Deployment, int]) -> Deployment:
 class Presentation(Presentation):   # pylint: disable=E0102
     """Accumulates content for a deployment."""
 
-    def __init__(self, deployment: Deployment):
+    def __init__(self, deployment: Deployment):     # pylint: disable=W0231
         """Sets the respective deployment."""
         self.deployment = get_deployment(deployment)
-        super().__init__(self.deployment.customer)
+
+    @property
+    def customer(self):
+        """Returns the customer."""
+        return self.deployment.customer
 
     def get_base_charts(self) -> Iterator[Tuple[int, BaseChart]]:
         """Selects charts directy attached to the deployment."""

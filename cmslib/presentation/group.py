@@ -13,10 +13,14 @@ __all__ = ['Presentation']
 class Presentation(Presentation):   # pylint: disable=E0102,W0223
     """Accumulates content for a group."""
 
-    def __init__(self, group: Group):
+    def __init__(self, group: Group):   # pylint: disable=W0231
         """Sets the respective group."""
         self.group = group
-        super().__init__(group.customer)
+
+    @property
+    def customer(self):
+        """Returns the customer."""
+        return self.group.customer
 
     def get_memberships(self) -> Iterator[Group]:
         """Yields this group itself."""
