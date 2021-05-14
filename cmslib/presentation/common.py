@@ -104,8 +104,7 @@ def get_unique_charts(*charts: Iterable[Chart]) -> List[Chart]:
     return sorted(set(chain(*charts)), key=lambda chart: chart.id)
 
 
-def get_menu_charts(menus: Iterable[Menu]) \
-        -> Iterable[Chart]:
+def get_menu_charts(menus: Iterable[Menu]) -> Iterator[Chart]:
     """Yields charts of the object's menu."""
 
     base_charts = BaseChart.select().join(
@@ -210,7 +209,7 @@ class Presentation:
     @lru_cache()
     def charts(self):
         """REturns the charts."""
-        return get_unique_charts(self.playlist, get_menu_charts(self._menus))
+        return get_unique_charts(self.playlist, get_menu_charts(self.menus))
 
     @property
     @lru_cache()
