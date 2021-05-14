@@ -18,7 +18,7 @@ from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
 __all__ = ['MenuTreeItem']
 
 
-@timeit(stdout)
+@timeit(file=stdout, flush=True)
 def merge(children: Iterable[MenuTreeItem]) -> List[MenuTreeItem]:
     """Merges lists of children by their signature."""
 
@@ -74,7 +74,7 @@ class MenuTreeItem(NamedTuple):
             self.background_color, self.index, menu_item_charts, children)
 
     @classmethod
-    @timeit(stdout)
+    @timeit(file=stdout, flush=True)
     def from_menu_item(cls, menu_item: MenuItem,
                        menu_items: Iterable[MenuItem],
                        menu_item_charts: Iterable[MenuItemChart]
@@ -120,7 +120,7 @@ class MenuTreeItem(NamedTuple):
         """Returns a tuple, identifying the menu tree item."""
         return (self.name, self.icon, self.text_color, self.background_color)
 
-    @timeit(stdout)
+    @timeit(file=stdout, flush=True)
     def to_json(self) -> dict:
         """Returns a nested JSON-ish dict."""
         return {
@@ -142,7 +142,7 @@ class MenuTreeItem(NamedTuple):
             ]
         }
 
-    @timeit(stdout)
+    @timeit(file=stdout, flush=True)
     def to_dom(self) -> dom.MenuItem:
         """Returns an XML DOM of the model."""
         xml = dom.MenuItem()
