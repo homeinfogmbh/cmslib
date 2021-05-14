@@ -4,7 +4,7 @@ from __future__ import annotations
 from collections import defaultdict
 from itertools import chain
 from json import dumps
-from typing import Any, Iterable, Iterator, NamedTuple, Tuple
+from typing import Any, Iterable, Iterator, List, NamedTuple, Tuple, Union
 
 from hisfs import File
 
@@ -16,21 +16,7 @@ from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
 __all__ = ['MenuTreeItem']
 
 
-def add(children: Iterable[MenuTreeItem]) -> MenuTreeItem:
-    """Adds children."""
-
-    child, *children = children
-
-    if not children:
-        return child
-
-    for other in children:
-        child += other
-
-    return child
-
-
-def merge(children: Iterable[MenuTreeItem]) -> Iterable[MenuTreeItem]:
+def merge(children: Iterable[MenuTreeItem]) -> List[MenuTreeItem]:
     """Merges lists of children by their signature."""
 
     mapping = defaultdict(list)
@@ -38,7 +24,7 @@ def merge(children: Iterable[MenuTreeItem]) -> Iterable[MenuTreeItem]:
     for child in children:
         mapping[child.signature].append(child)
 
-    return [add(children) for children in mapping.values()]
+    return [sum(children) for children in mapping.values()]
 
 
 def get_index(obj: Any) -> int:
@@ -63,8 +49,11 @@ class MenuTreeItem(NamedTuple):
         """Returns a nested JSON object."""
         return dumps(self.to_json(), indent=2)
 
-    def __add__(self, other: MenuTreeItem) -> MenuTreeItem:
+    def __add__(self, other: Union[MenuTreeItem, int]) -> MenuTreeItem:
         """Adds two menu tree items."""
+        if other == 0:
+            return self
+
         if self.signature != other.signature:
             raise ValueError('Can only add menu items with same signature.')
 
