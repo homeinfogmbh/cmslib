@@ -49,11 +49,8 @@ class MenuTreeItem(NamedTuple):
         """Returns a nested JSON object."""
         return dumps(self.to_json(), indent=2)
 
-    def __add__(self, other: Union[MenuTreeItem, int]) -> MenuTreeItem:
+    def __add__(self, other: MenuTreeItem) -> MenuTreeItem:
         """Adds two menu tree items."""
-        if other == 0:
-            return self
-
         if self.signature != other.signature:
             raise ValueError('Can only add menu items with same signature.')
 
@@ -69,6 +66,13 @@ class MenuTreeItem(NamedTuple):
         return type(self)(
             self.name, self.icon, self.icon_image, self.text_color,
             self.background_color, self.index, menu_item_charts, children)
+
+    def __radd__(self, other: Union[MenuTreeItem, int]):
+        """Compensate for start=0 on sum() call."""
+        if other == 0:
+            return self
+
+        return self + other
 
     @classmethod
     def from_menu_item(cls, menu_item: MenuItem,
