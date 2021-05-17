@@ -36,7 +36,7 @@ def get_deployments(content: bool = False) -> ModelSelect:
 
     return select.join_from(
         Deployment, DeploymentBaseChart, join_type=JOIN.LEFT_OUTER).join(
-        BaseChart).join_from(
+        BaseChart, join_type=JOIN.LEFT_OUTER).join_from(
         Deployment, DeploymentConfiguration,
         join_type=JOIN.LEFT_OUTER).join_from(
         Deployment, DeploymentMenu, join_type=JOIN.LEFT_OUTER
