@@ -24,6 +24,7 @@ from cmslib.orm.content.group import GroupMenu
 from cmslib.orm.group import Group
 from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
 from cmslib.orm.schedule import Schedule
+from cmslib.orm.vfs import DirectoryNotEmpty, Directory
 
 
 __all__ = ['ERRORS']
@@ -63,6 +64,10 @@ ERRORS = {
     DifferentMenus: lambda error: JSONMessage(
         'Different menus.', menu=error.menu.to_json(),
         other=error.other.to_json(), status=400),
+    Directory.DoesNotExist: lambda _: JSONMessage(
+        'No such directory.', status=404),
+    DirectoryNotEmpty: lambda _: JSONMessage(
+        'Directory is not empty.', status=400),
     Group.DoesNotExist: lambda _: JSONMessage('No such group.', status=404),
     GroupBaseChart.DoesNotExist: lambda _: JSONMessage(
         'No such group base chart.', status=404),
