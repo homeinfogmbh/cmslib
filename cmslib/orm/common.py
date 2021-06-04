@@ -128,7 +128,7 @@ class TreeNode(CustomerModel):
             if self.parent is None:
                 json['parent'] = None
             else:
-                json['parent'] = self.parent.id
+                json['parent'] = self.parent_id
         else:
             json.pop('parent', None)
 
