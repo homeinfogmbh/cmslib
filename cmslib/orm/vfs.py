@@ -81,7 +81,7 @@ class ContentChart(DSCMS4Model):
     """Deployments as members in groups."""
 
     class Meta:     # pylint: disable=C0111,R0903
-        table_name = 'group_member_deployment'
+        table_name = 'content_chart'
 
     directory = ForeignKeyField(
         Directory, column_name='directory', backref='charts',
