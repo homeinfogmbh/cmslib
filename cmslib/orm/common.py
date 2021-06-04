@@ -1,6 +1,7 @@
 """Common ORM models."""
 
 from __future__ import annotations
+from typing import Optional, Union
 
 from flask import has_request_context
 from peewee import JOIN, ForeignKeyField, ModelSelect
@@ -16,7 +17,8 @@ __all__ = [
     'UNCHANGED',
     'DATABASE',
     'DSCMS4Model',
-    'CustomerModel'
+    'CustomerModel',
+    'TreeNode'
 ]
 
 
@@ -77,3 +79,57 @@ class CustomerModel(DSCMS4Model):
         args = {cls, Customer, Company, Address, *args}
         return super().select(*args, **kwargs).join(Customer).join(
             Company).join(Address, join_type=JOIN.LEFT_OUTER)
+
+
+class TreeNode(CustomerModel):
+    """Base class for customer-oriented tree structures."""
+
+    parent = NotImplemented
+
+    @classmethod
+    def from_json(cls, json: dict, customer: Union[Customer, int],
+                  parent: Optional[Union[TreeNode, int]],
+                  **kwargs) -> TreeNode:
+        """Creates a group from a JSON-ish dictionary."""
+        record = super().from_json(json, **kwargs)
+        record.customer = customer
+        record.set_parent(parent)
+        return record
+
+    def set_parent(self, parent: Optional[Union[TreeNode, int]]) -> None:
+        """Changes the parent reference of the group."""
+        if parent is None:
+            self.parent = None
+            return
+
+        if not isinstance(parent, TreeNode):
+            cls = type(self)
+            condition = (cls.id == parent) & (cls.customer == self.customer)
+            parent = cls.select().where(condition).get()
+
+        self.parent = parent
+
+    def patch_json(self, json: dict, **kwargs) -> None:
+        """Creates a group from a JSON-ish dictionary."""
+        try:
+            parent = json.pop('parent')
+        except KeyError:
+            pass
+        else:
+            self.set_parent(parent)
+
+        super().patch_json(json, **kwargs)
+
+    def to_json(self, parent: bool = True, **kwargs) -> dict:
+        """Converts the group to a JSON-ish dictionary."""
+        json = super().to_json(**kwargs)
+
+        if parent:
+            if self.parent is None:
+                json['parent'] = None
+            else:
+                json['parent'] = self.parent.id
+        else:
+            json.pop('parent', None)
+
+        return json
