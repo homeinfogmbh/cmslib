@@ -49,6 +49,9 @@ from cmslib.functions import get_menu_item_chart
 from cmslib.functions import get_menu_item_charts
 from cmslib.functions import get_schedule
 from cmslib.functions import get_schedules
+from cmslib.functions import get_directories
+from cmslib.functions import get_root
+from cmslib.functions import get_directory
 from cmslib.groups import Groups
 from cmslib.menutree import MenuTreeItem
 from cmslib.orm import CHARTS
@@ -173,6 +176,9 @@ __all__ = [
     'get_menu_item_charts',
     'get_schedule',
     'get_schedules',
+    'get_directories',
+    'get_root',
+    'get_directory',
     # Groups utility
     'Groups',
     # Menu tree

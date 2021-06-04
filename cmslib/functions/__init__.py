@@ -38,6 +38,7 @@ from cmslib.functions.menu import get_menu_items
 from cmslib.functions.menu import get_menu_item_chart
 from cmslib.functions.menu import get_menu_item_charts
 from cmslib.functions.schedule import get_schedule, get_schedules
+from cmslib.functions.vfs import get_directories, get_root, get_directory
 
 
 __all__ = [
@@ -79,5 +80,8 @@ __all__ = [
     'get_menu_item_chart',
     'get_menu_item_charts',
     'get_schedule',
-    'get_schedules'
+    'get_schedules',
+    'get_directories',
+    'get_root',
+    'get_directory'
 ]
