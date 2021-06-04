@@ -23,7 +23,7 @@ class Directory(TreeNode):
     name = HTMLCharField(255)
     parent = ForeignKeyField(
         'self', column_name='parent', null=True, backref='children',
-        lazy_load=False)
+        lazy_load=True)
 
     @property
     def empty(self) -> bool:
