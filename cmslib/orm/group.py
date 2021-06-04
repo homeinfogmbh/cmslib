@@ -1,7 +1,6 @@
 """ORM model to represent groups."""
 
 from __future__ import annotations
-from typing import Union
 
 from peewee import ForeignKeyField, IntegerField, ModelSelect
 
@@ -9,13 +8,13 @@ from hwdb import Deployment
 from mdb import Address, Company, Customer
 from peeweeplus import HTMLCharField, HTMLTextField
 
-from cmslib.orm.common import DSCMS4Model, CustomerModel
+from cmslib.orm.common import DSCMS4Model, TreeNode
 
 
 __all__ = ['MODELS', 'Group', 'GroupMemberDeployment']
 
 
-class Group(CustomerModel):
+class Group(TreeNode):
     """Groups of 'clients' that can be assigned content."""
 
     name = HTMLCharField(255)
@@ -24,53 +23,6 @@ class Group(CustomerModel):
         'self', column_name='parent', null=True, backref='children',
         lazy_load=True)
     index = IntegerField(default=0)
-
-    @classmethod
-    def from_json(cls, json: dict, customer: Union[Customer, int],
-                  parent: Union[Group, int], **kwargs) -> Group:
-        """Creates a group from a JSON-ish dictionary."""
-        record = super().from_json(json, **kwargs)
-        record.customer = customer
-        record.set_parent(parent)
-        return record
-
-    def set_parent(self, parent: Union[Group, int, None]) -> None:
-        """Changes the parent reference of the group."""
-        if parent is None:
-            self.parent = None
-            return
-
-        if not isinstance(parent, Group):
-            cls = type(self)
-            condition = (cls.id == parent) & (cls.customer == self.customer)
-            parent = cls.select().where(condition).get()
-
-        self.parent = parent
-
-    def patch_json(self, json: dict, **kwargs) -> None:
-        """Creates a group from a JSON-ish dictionary."""
-        try:
-            parent = json.pop('parent')
-        except KeyError:
-            pass
-        else:
-            self.set_parent(parent)
-
-        super().patch_json(json, **kwargs)
-
-    def to_json(self, parent: bool = True, **kwargs) -> dict:
-        """Converts the group to a JSON-ish dictionary."""
-        json = super().to_json(**kwargs)
-
-        if parent:
-            if self.parent is None:
-                json['parent'] = None
-            else:
-                json['parent'] = self.parent.id
-        else:
-            json.pop('parent', None)
-
-        return json
 
     def delete_instance(self, *args, **kwargs) -> int:
         """Deletes the respective instance from the group hierarchy
