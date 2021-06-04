@@ -52,6 +52,21 @@ class Directory(TreeNode):
 
         return True
 
+    def add_base_chart(self, base_chart: BaseChart):
+        """Adds a base chart to the directory."""
+        try:
+            return self.charts.get(ContentChart.base_chart == base_chart)
+        except ContentChart.DoesNotExist:
+            content_chart = ContentChart(directory=self, base_chart=base_chart)
+            content_chart.save()
+            return content_chart
+
+    def remove_base_chart(self, base_chart: BaseChart):
+        """Removes a base chart from the directory."""
+        for content_chart in self.charts.where(
+                ContentChart.base_chart == base_chart):
+            content_chart.delete_instance()
+
     def delete_instance(self, *args, **kwargs) -> int:
         """Deletes the respective instance from the group hierarchy
         setting all child's parent reference to this groups parent.
@@ -69,8 +84,8 @@ class ContentChart(DSCMS4Model):
         table_name = 'group_member_deployment'
 
     directory = ForeignKeyField(
-        Directory, column_name='directory', on_delete='CASCADE',
-        lazy_load=False)
+        Directory, column_name='directory', backref='charts',
+        on_delete='CASCADE', lazy_load=False)
     base_chart = ForeignKeyField(
         BaseChart, column_name='base_chart', on_delete='CASCADE',
         lazy_load=False)
