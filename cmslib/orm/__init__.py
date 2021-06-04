@@ -71,6 +71,10 @@ from cmslib.orm.schedule import Schedule
 from cmslib.orm.schedule import TimeUnit
 from cmslib.orm.settings import MODELS as SETTINGS_MODELS
 from cmslib.orm.settings import Settings
+from cmslib.orm.vfs import MODELS as VFS_MODELS
+from cmslib.orm.vfs import DirectoryNotEmpty
+from cmslib.orm.vfs import Directory
+from cmslib.orm.vfs import ContentChart
 
 
 __all__ = [
@@ -144,14 +148,19 @@ __all__ = [
     'Schedule',
     'TimeUnit',
     # Settings
-    'Settings'
+    'Settings',
+    # VFS
+    'DirectoryNotEmpty',
+    'Directory',
+    'ContentChart'
 ]
 
 
 # Order matters here!
 MODELS = (
     *CHART_MODELS, *CONFIGURATION_MODELS, *GROUP_MODELS, *MENU_MODELS,
-    *CONTENT_MODELS, *CHART_ACL_MODELS, *SCHEDULE_MODELS,*SETTINGS_MODELS
+    *CONTENT_MODELS, *CHART_ACL_MODELS, *SCHEDULE_MODELS, *SETTINGS_MODELS,
+    *VFS_MODELS
 )
 
 

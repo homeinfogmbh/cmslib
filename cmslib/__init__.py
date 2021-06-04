@@ -111,6 +111,9 @@ from cmslib.orm import MenuItemGroup
 from cmslib.orm import Schedule
 from cmslib.orm import TimeUnit
 from cmslib.orm import Settings
+from cmslib.orm import DirectoryNotEmpty
+from cmslib.orm import Directory
+from cmslib.orm import ContentChart
 from cmslib.presentation import DeploymentPresentation
 from cmslib.presentation import GroupPresentation
 from cmslib.presentation import Presentation
@@ -240,6 +243,10 @@ __all__ = [
     'TimeUnit',
     # Settings
     'Settings',
+    # VFS
+    'DirectoryNotEmpty',
+    'Directory',
+    'ContentChart',
     # Presentation
     'DeploymentPresentation',
     'GroupPresentation',
