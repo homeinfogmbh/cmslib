@@ -5,7 +5,7 @@ from peewee import Model
 
 __all__ = [
     'AmbiguousBaseChart',
-    'AmbiguousConfigurationsError',
+    'AmbiguousConfigurations',
     'CircularReference',
     'DifferentMenus',
     'InvalidChartType',
@@ -32,7 +32,7 @@ class AmbiguousBaseChart(Exception):
         return f'Base chart #{self.base_chart.id} is ambiguous: {charts}.'
 
 
-class AmbiguousConfigurationsError(Exception):
+class AmbiguousConfigurations(Exception):
     """Indicates that ambiguous configurations are defined for an object."""
 
     def __init__(self, level: int, index: int):

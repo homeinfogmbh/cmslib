@@ -5,7 +5,7 @@ from mdb import Customer
 from wsgilib import JSONMessage
 
 from cmslib.exceptions import AmbiguousBaseChart
-from cmslib.exceptions import AmbiguousConfigurationsError
+from cmslib.exceptions import AmbiguousConfigurations
 from cmslib.exceptions import CircularReference
 from cmslib.exceptions import DifferentMenus
 from cmslib.exceptions import InvalidChartType
@@ -41,7 +41,7 @@ ERRORS = {
     AmbiguousBaseChart: lambda error: JSONMessage(
         'Ambiguous base chart.', base_chart=error.base_chart.to_json(),
         references=[ref.to_json() for ref in error.references], status=400),
-    AmbiguousConfigurationsError: lambda error: JSONMessage(
+    AmbiguousConfigurations: lambda error: JSONMessage(
         'Ambiguous configurations.', level=error.level, index=error.index,
         status=400),
     BaseChart.DoesNotExist: lambda _: JSONMessage(

@@ -3,7 +3,7 @@ operations regarding HOMEINFO's content management systems.
 """
 from cmslib.errors import ERRORS
 from cmslib.exceptions import AmbiguousBaseChart
-from cmslib.exceptions import AmbiguousConfigurationsError
+from cmslib.exceptions import AmbiguousConfigurations
 from cmslib.exceptions import CircularReference
 from cmslib.exceptions import DifferentMenus
 from cmslib.exceptions import InvalidChartType
@@ -129,7 +129,7 @@ __all__ = [
     'UNCHANGED',
     # Exceptions
     'AmbiguousBaseChart',
-    'AmbiguousConfigurationsError',
+    'AmbiguousConfigurations',
     'CircularReference',
     'DifferentMenus',
     'InvalidChartType',
