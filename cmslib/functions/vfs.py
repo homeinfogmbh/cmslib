@@ -12,7 +12,7 @@ __all__ = [
     'get_directories',
     'get_root',
     'get_directory',
-    'get_root_base_charts'
+    'get_unassigned_base_charts'
 ]
 
 
@@ -35,8 +35,8 @@ def get_directory(ident: int) -> Directory:
     return get_directories().where(Directory.id == ident).get()
 
 
-def get_root_base_charts() -> ModelSelect:
-    """Lists root directories of the current customer."""
+def get_unassigned_base_charts() -> ModelSelect:
+    """Lists unassigned base charts of the current customer."""
 
     return BaseChart.select(cascade=True).join_from(
         BaseChart, ContentChart, join_type=JOIN.LEFT_OUTER).where(

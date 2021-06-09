@@ -52,7 +52,7 @@ from cmslib.functions import get_schedules
 from cmslib.functions import get_directories
 from cmslib.functions import get_root
 from cmslib.functions import get_directory
-from cmslib.functions import get_root_base_charts
+from cmslib.functions import get_unassigned_base_charts
 from cmslib.groups import Groups
 from cmslib.menutree import MenuTreeItem
 from cmslib.orm import CHARTS
@@ -180,7 +180,7 @@ __all__ = [
     'get_directories',
     'get_root',
     'get_directory',
-    'get_root_base_charts',
+    'get_unassigned_base_charts',
     # Groups utility
     'Groups',
     # Menu tree
