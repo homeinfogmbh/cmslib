@@ -38,7 +38,7 @@ def get_directory(ident: int) -> Directory:
 def get_root_base_charts() -> ModelSelect:
     """Lists root directories of the current customer."""
 
-    return BaseChart.select(cascase=True).join_from(
+    return BaseChart.select(cascade=True).join_from(
         BaseChart, ContentChart, join_type=JOIN.LEFT_OUTER).where(
         (BaseChart.customer == CUSTOMER.id)
         & (ContentChart.directory >> None)
