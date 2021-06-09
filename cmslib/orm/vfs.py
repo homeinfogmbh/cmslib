@@ -41,7 +41,8 @@ class Directory(TreeNode):
     def add_base_chart(self, base_chart: BaseChart):
         """Adds a base chart to the directory."""
         try:
-            return self.charts.get(ContentChart.base_chart == base_chart)
+            return self.charts.where(
+                ContentChart.base_chart == base_chart).get()
         except ContentChart.DoesNotExist:
             content_chart = ContentChart(directory=self, base_chart=base_chart)
             content_chart.save()
