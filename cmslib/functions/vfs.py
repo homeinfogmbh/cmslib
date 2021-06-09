@@ -1,9 +1,10 @@
 """VFS related functions."""
 
-from peewee import ModelSelect
+from peewee import JOIN, ModelSelect
 
 from his import CUSTOMER
 
+from cmslib.orm.charts import BaseChart
 from cmslib.orm.vfs import ContentChart, Directory
 
 
