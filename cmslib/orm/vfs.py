@@ -69,7 +69,7 @@ class Directory(TreeNode):
         json = super().to_json(*args, **kwargs)
 
         if children:
-            json['directories'] = [child.id for child in self.children]
+            json['directories'] = [child.to_json() for child in self.children]
 
         if base_charts:
             json['baseCharts'] = [cc.base_chart_id for cc in self.base_charts]
