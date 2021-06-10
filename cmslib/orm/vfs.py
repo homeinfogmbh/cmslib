@@ -63,13 +63,17 @@ class Directory(TreeNode):
 
         raise DirectoryNotEmpty()
 
-    def to_json(self, *args, children: bool = False, base_charts: bool = False,
-                **kwargs) -> dict:
+    def to_json(self, *args, brief: bool = False, children: bool = False,
+                base_charts: bool = False, **kwargs) -> dict:
         """Returns JSON-ish dict."""
+        if brief:
+            return {'id': self.id, 'name': self.name}
+
         json = super().to_json(*args, **kwargs)
 
         if children:
-            json['directories'] = [child.to_json() for child in self.children]
+            json['directories'] = [
+                child.to_json(brief=True) for child in self.children]
 
         if base_charts:
             json['baseCharts'] = [cc.base_chart_id for cc in self.base_charts]
