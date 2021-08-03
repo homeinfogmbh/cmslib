@@ -153,7 +153,9 @@ def get_playlist(*indexed_base_charts: Iterable[IndexedBaseChart]) \
                 chart_type.base << base_chart_ids):
             charts_by_base_chart[chart.base] = chart
 
-    playlist = [charts_by_base_chart[ibc.chart] for ibc in indexed_base_charts]
+    playlist = [
+        charts_by_base_chart[ibc.base_chart] for ibc in indexed_base_charts
+    ]
     return sorted(playlist, key=lambda chart: base_charts_indices[chart.base])
 
 
