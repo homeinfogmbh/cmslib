@@ -1,6 +1,6 @@
 """Content accumulation for digital signage deployment."""
 
-from typing import Iterator, Tuple, Union
+from typing import Iterator, Union
 
 from peewee import ModelSelect
 
@@ -15,7 +15,7 @@ from cmslib.orm.content.deployment import DeploymentConfiguration
 from cmslib.orm.content.deployment import DeploymentMenu
 from cmslib.orm.group import Group, GroupMemberDeployment
 from cmslib.orm.menu import Menu
-from cmslib.presentation.common import Presentation
+from cmslib.presentation.common import IndexedBaseChart, Presentation
 
 
 __all__ = ['Presentation']
@@ -69,14 +69,15 @@ class Presentation(Presentation):   # pylint: disable=E0102
         """Returns the customer."""
         return self.deployment.customer
 
-    def get_base_charts(self) -> Iterator[Tuple[int, BaseChart]]:
+    def get_base_charts(self) -> Iterator[IndexedBaseChart]:
         """Selects charts directy attached to the deployment."""
         for base_chart in BaseChart.select(
                 DeploymentBaseChart, cascade=True).join_from(
                 BaseChart, DeploymentBaseChart).where(
                 (DeploymentBaseChart.deployment == self.deployment)
                 & (BaseChart.trashed == 0)):
-            yield (base_chart.deploymentbasechart.index, base_chart)
+            yield IndexedBaseChart(base_chart.deploymentbasechart.index,
+                                   base_chart)
 
     def get_configurations(self) -> ModelSelect:
         """Selects directly attached configurations."""

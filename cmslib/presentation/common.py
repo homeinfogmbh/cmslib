@@ -5,7 +5,7 @@ from contextlib import suppress
 from functools import lru_cache
 from itertools import chain
 from logging import getLogger
-from typing import Iterable, Iterator, List, Set, Tuple
+from typing import Iterable, Iterator, List, NamedTuple, Set
 
 from peewee import Model, ModelSelect
 
@@ -26,10 +26,17 @@ from cmslib.orm.group import Group
 from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
 
 
-__all__ = ['Presentation']
+__all__ = ['IndexedBaseChart', 'Presentation']
 
 
 LOGGER = getLogger(__file__)
+
+
+class IndexedBaseChart(NamedTuple):
+    """An indexed base chart."""
+
+    index: int
+    base_chart: BaseChart
 
 
 def select_files(ids: Iterator[int]) -> ModelSelect:
@@ -87,15 +94,14 @@ def get_configuration(*configs: Iterable[Configuration]) -> Configuration:
     raise NoConfigurationFound()
 
 
-def get_group_base_charts(groups: Set[Group]) \
-        -> Iterator[Tuple[int, BaseChart]]:
+def get_group_base_charts(groups: Set[Group]) -> Iterator[IndexedBaseChart]:
     """Charts attached to groups, the object is a member of."""
 
     for base_chart in BaseChart.select(GroupBaseChart, cascade=True).join_from(
             BaseChart, GroupBaseChart).where(
             (GroupBaseChart.group << groups)
             & (BaseChart.trashed == 0)):
-        yield (base_chart.groupbasechart.index, base_chart)
+        yield IndexedBaseChart(base_chart.groupbasechart.index, base_chart)
 
 
 def get_unique_charts(*charts: Iterable[Chart]) -> List[Chart]:
@@ -129,20 +135,28 @@ def get_menutree(menus: Iterable[Menu]) -> Iterable[MenuTreeItem]:
     return MenuTreeItem.from_menus(menus)
 
 
-def get_playlist(*base_charts: Iterable[BaseChart]) -> List[Chart]:
+def get_playlist(*indexed_base_charts: Iterable[IndexedBaseChart]) \
+        -> List[Chart]:
     """Yields the playlist."""
 
-    base_charts = list(chain(*base_charts))
-    base_charts_indices = {bc: index for index, bc in base_charts}
-    base_chart_set = {base_chart.id for base_chart in base_charts}
+    indexed_base_charts = list(chain(*indexed_base_charts))
+    base_charts_indices = {
+        base_chart: index for index, base_chart in indexed_base_charts
+    }
+    base_chart_ids = {
+        base_chart.id for base_chart in base_charts_indices.keys()
+    }
     charts_by_base_chart = {}
 
     for chart_type in CHARTS.values():
         for chart in chart_type.select(cascade=True).where(
-                chart_type.base << base_chart_set):
+                chart_type.base << base_chart_ids):
             charts_by_base_chart[chart.base] = chart
 
-    playlist = [charts_by_base_chart[base_chart] for base_chart in base_charts]
+    playlist = [
+        charts_by_base_chart[base_chart]
+        for base_chart in base_charts_indices.keys()
+    ]
     return sorted(playlist, key=lambda chart: base_charts_indices[chart.base])
 
 
@@ -259,7 +273,7 @@ class Presentation:
 
             yield from files
 
-    def get_base_charts(self) -> Iterable[Tuple[int, BaseChart]]:
+    def get_base_charts(self) -> Iterable[IndexedBaseChart]:
         """Yields base charts directly attached to the target."""
         raise NotImplementedError()
 
