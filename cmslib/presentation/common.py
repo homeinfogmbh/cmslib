@@ -132,16 +132,18 @@ def get_menutree(menus: Iterable[Menu]) -> Iterable[MenuTreeItem]:
 def get_playlist(*base_charts: Iterable[BaseChart]) -> List[Chart]:
     """Yields the playlist."""
 
-    base_charts = {bc: index for index, bc in chain(*base_charts)}
-    base_chart_set = set(base_charts)
-    charts = []
+    base_charts = list(chain(*base_charts))
+    base_charts_indices = {bc: index for index, bc in base_charts}
+    base_chart_set = {base_chart.id for base_chart in base_charts}
+    charts_by_base_chart = {}
 
     for chart_type in CHARTS.values():
         for chart in chart_type.select(cascade=True).where(
                 chart_type.base << base_chart_set):
-            charts.append(chart)
+            charts_by_base_chart[chart.base] = chart
 
-    return sorted(charts, key=lambda chart: base_charts[chart.base])
+    playlist = [charts_by_base_chart[base_chart] for base_chart in base_charts]
+    return sorted(playlist, key=lambda chart: base_charts_indices[chart.base])
 
 
 class Presentation:
