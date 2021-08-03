@@ -160,6 +160,10 @@ def get_playlist(*indexed_base_charts: Iterable[IndexedBaseChart]) \
         charts_by_base_chart[ibc.base_chart] for ibc in indexed_base_charts
     ]
     print('Playlist:', playlist, flush=True)
+
+    for chart in playlist:
+        print('Chart index:', chart, base_charts_indices[chart.base], flush=True)
+
     playlist = sorted(playlist, key=lambda chart: base_charts_indices[chart.base])
     print('Sorted playlist:', playlist, flush=True)
     return playlist
