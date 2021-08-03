@@ -140,9 +140,11 @@ def get_playlist(*indexed_base_charts: Iterable[IndexedBaseChart]) \
     """Yields the playlist."""
 
     indexed_base_charts = list(chain(*indexed_base_charts))
+    print('Indexed base charts:', indexed_base_charts, flus=True)
     base_charts_indices = {
         base_chart: index for index, base_chart in indexed_base_charts
     }
+    print('Base chart indices:', base_charts_indices, flus=True)
     base_chart_ids = {
         base_chart.id for base_chart in base_charts_indices.keys()
     }
@@ -153,9 +155,11 @@ def get_playlist(*indexed_base_charts: Iterable[IndexedBaseChart]) \
                 chart_type.base << base_chart_ids):
             charts_by_base_chart[chart.base] = chart
 
+    print('Charts by base chart:', charts_by_base_chart, flus=True)
     playlist = [
         charts_by_base_chart[ibc.base_chart] for ibc in indexed_base_charts
     ]
+    print('Playlist:', playlist, flus=True)
     return sorted(playlist, key=lambda chart: base_charts_indices[chart.base])
 
 
