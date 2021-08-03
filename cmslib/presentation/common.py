@@ -39,6 +39,30 @@ class IndexedBaseChart(NamedTuple):
     base_chart: BaseChart
 
 
+class IndexedChart(NamedTuple):
+    """An indexed chart."""
+
+    index: int
+    chart: Chart
+
+
+def get_indexed_charts(indexed_base_charts: Iterable[IndexedBaseChart]) \
+        -> Iterator[IndexedChart]:
+    """Yields indexed charts."""
+
+    indexed_base_charts = list(indexed_base_charts)
+    base_chart_ids = {ibc.base_chart.id for ibc in indexed_base_charts}
+    charts_by_base_chart = {}
+
+    for chart_type in CHARTS.values():
+        for chart in chart_type.select(cascade=True).where(
+                chart_type.base << base_chart_ids):
+            charts_by_base_chart[chart.base] = chart
+
+    for ibc in indexed_base_charts:
+        yield IndexedChart(ibc.index, charts_by_base_chart[ibc.base_chart])
+
+
 def select_files(ids: Iterator[int]) -> ModelSelect:
     """Yields files from their IDs."""
 
@@ -139,34 +163,8 @@ def get_playlist(*indexed_base_charts: Iterable[IndexedBaseChart]) \
         -> List[Chart]:
     """Yields the playlist."""
 
-    indexed_base_charts = list(chain(*indexed_base_charts))
-    print('Indexed base charts:', indexed_base_charts, flush=True)
-    base_charts_indices = {
-        base_chart: index for index, base_chart in indexed_base_charts
-    }
-    print('Base chart indices:', base_charts_indices, flush=True)
-    base_chart_ids = {
-        base_chart.id for base_chart in base_charts_indices.keys()
-    }
-    charts_by_base_chart = {}
-
-    for chart_type in CHARTS.values():
-        for chart in chart_type.select(cascade=True).where(
-                chart_type.base << base_chart_ids):
-            charts_by_base_chart[chart.base] = chart
-
-    print('Charts by base chart:', charts_by_base_chart, flush=True)
-    playlist = [
-        charts_by_base_chart[ibc.base_chart] for ibc in indexed_base_charts
-    ]
-    print('Playlist:', playlist, flush=True)
-
-    for chart in playlist:
-        print('Chart index:', chart, chart.base, base_charts_indices[chart.base], flush=True)
-
-    playlist = sorted(playlist, key=lambda chart: base_charts_indices[chart.base])
-    print('Sorted playlist:', playlist, flush=True)
-    return playlist
+    playlist = sorted(get_indexed_charts(chain(*indexed_base_charts)), key=key)
+    return [ic.chart for ic in playlist]
 
 
 class Presentation:
