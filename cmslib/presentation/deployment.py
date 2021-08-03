@@ -71,13 +71,13 @@ class Presentation(Presentation):   # pylint: disable=E0102
 
     def get_base_charts(self) -> Iterator[IndexedBaseChart]:
         """Selects charts directy attached to the deployment."""
-        for base_chart in BaseChart.select(
-                DeploymentBaseChart, cascade=True).join_from(
-                BaseChart, DeploymentBaseChart).where(
-                (DeploymentBaseChart.deployment == self.deployment)
-                & (BaseChart.trashed == 0)):
-            yield IndexedBaseChart(base_chart.deploymentbasechart.index,
-                                   base_chart)
+        for deployment_base_chart in DeploymentBaseChart.select(
+                cascade=True).where(
+                    (DeploymentBaseChart.deployment == self.deployment)
+                    & (BaseChart.trashed == 0)
+                ):
+            yield IndexedBaseChart(deployment_base_chart.index,
+                                   deployment_base_chart.base_chart)
 
     def get_configurations(self) -> ModelSelect:
         """Selects directly attached configurations."""
