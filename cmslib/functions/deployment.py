@@ -30,7 +30,7 @@ def get_deployments(content: bool = False) -> ModelSelect:
     select = Deployment.select(cascade=True)
 
     if not content:
-        return select.where(condition)
+        return select.where(condition).distinct()
 
     condition &= get_trashed()
 
@@ -40,7 +40,7 @@ def get_deployments(content: bool = False) -> ModelSelect:
         Deployment, DeploymentConfiguration,
         join_type=JOIN.LEFT_OUTER).join_from(
         Deployment, DeploymentMenu, join_type=JOIN.LEFT_OUTER
-    ).where(condition)
+    ).where(condition).distinct()
 
 
 def with_deployment(function: Callable) -> Callable:
