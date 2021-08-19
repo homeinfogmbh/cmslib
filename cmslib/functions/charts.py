@@ -130,9 +130,7 @@ def get_trashed() -> Expression:
     charts with a certain trashed flag.
     """
 
-    trashed = get_bool('trashed', default=None)
-
-    if trashed is None:
+    if (trashed := get_bool('trashed', default=None)) is None:
         trashed = Settings.for_customer(CUSTOMER.id).trashed
 
     if trashed is None:
