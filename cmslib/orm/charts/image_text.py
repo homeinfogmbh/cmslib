@@ -1,7 +1,7 @@
 """Image / text charts."""
 
 from __future__ import annotations
-from typing import Set, Union
+from typing import Union
 
 from peewee import BooleanField
 from peewee import ForeignKeyField
@@ -55,9 +55,9 @@ class ImageText(Chart):
         return transaction
 
     @property
-    def files(self) -> Set[File]:
+    def files(self) -> set[File]:
         """Returns a set of IDs of files used by the chart."""
-        return set(image.file for image in self.images)
+        return {image.file for image in self.images}
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the respective chart."""

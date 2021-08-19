@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from enum import Enum
-from typing import Set, Union
+from typing import Union
 
 from peewee import ForeignKeyField, IntegerField
 
@@ -55,9 +55,9 @@ class Blackboard(Chart):
         return transaction
 
     @property
-    def files(self) -> Set[File]:
+    def files(self) -> set[File]:
         """Returns a set of files used by the chart."""
-        return set(image.file for image in self.images)
+        return {image.file for image in self.images}
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the respective chart."""

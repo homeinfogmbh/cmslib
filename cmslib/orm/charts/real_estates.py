@@ -4,7 +4,7 @@ from __future__ import annotations
 from collections import defaultdict
 from enum import Enum
 from itertools import chain
-from typing import Dict, Iterable, Iterator, List, Set, Union
+from typing import Iterable, Iterator, Union
 
 from peewee import BooleanField
 from peewee import ForeignKeyField
@@ -30,8 +30,8 @@ DomModel = Union[dom.BriefChart, dom.RealEstates]
 
 
 def _update_json_transaction(
-        model: ModelBase, json_list: List[dict], transaction: Transaction,
-        delete: List[Model] = None) -> None:
+        model: ModelBase, json_list: list[dict], transaction: Transaction,
+        delete: list[Model] = None) -> None:
     """Adds models for the given JSON data to a transaction."""
 
     if delete:
@@ -194,7 +194,7 @@ class RealEstates(Chart):
             Immobilie.customer == self.customer))
 
     @property
-    def filters_dictionary(self) -> Dict[List[dict]]:
+    def filters_dictionary(self) -> dict[str, list[dict]]:
         """Dictionary of filters."""
         filters = defaultdict(list)
         skip = ('id', 'chart')
@@ -208,7 +208,7 @@ class RealEstates(Chart):
         return filters
 
     @property
-    def files(self) -> Set[File]:
+    def files(self) -> set[File]:
         """Returns the used files."""
         return {contact.file for contact in self.contacts}
 

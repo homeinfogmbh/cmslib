@@ -5,7 +5,7 @@ from contextlib import suppress
 from functools import lru_cache
 from itertools import chain
 from logging import getLogger
-from typing import Iterable, Iterator, List, NamedTuple, Set
+from typing import Iterable, Iterator, NamedTuple
 
 from peewee import Model, ModelSelect
 
@@ -77,13 +77,13 @@ def key(model: Model) -> int:
 
 
 def get_group_levels(groups: Groups, memberships: Iterable[Group]) \
-        -> Iterator[List[Group]]:
+        -> Iterator[list[Group]]:
     """Yields group levels."""
 
     return groups.levels(memberships)
 
 
-def get_group_set(group_levels: Iterable[List[Group]]) -> Set[Group]:
+def get_group_set(group_levels: Iterable[list[Group]]) -> set[Group]:
     """Returns a set of groups the target
     is directly or indirectly a member of.
     """
@@ -91,8 +91,8 @@ def get_group_set(group_levels: Iterable[List[Group]]) -> Set[Group]:
     return set(chain(*group_levels))
 
 
-def get_group_configurations(group_levels: Iterable[List[Group]],
-                             groups: Set[Group]) -> Iterator[Configuration]:
+def get_group_configurations(group_levels: Iterable[list[Group]],
+                             groups: set[Group]) -> Iterator[Configuration]:
     """Yields group configurations."""
 
     configurations = defaultdict(set)
@@ -118,7 +118,7 @@ def get_configuration(*configs: Iterable[Configuration]) -> Configuration:
     raise NoConfigurationFound()
 
 
-def get_group_base_charts(groups: Set[Group]) -> Iterator[IndexedBaseChart]:
+def get_group_base_charts(groups: set[Group]) -> Iterator[IndexedBaseChart]:
     """Charts attached to groups, the object is a member of."""
 
     for base_chart in BaseChart.select(GroupBaseChart, cascade=True).join_from(
@@ -128,7 +128,7 @@ def get_group_base_charts(groups: Set[Group]) -> Iterator[IndexedBaseChart]:
         yield IndexedBaseChart(base_chart.groupbasechart.index, base_chart)
 
 
-def get_unique_charts(*charts: Iterable[Chart]) -> List[Chart]:
+def get_unique_charts(*charts: Iterable[Chart]) -> list[Chart]:
     """Yields all charts for this object."""
 
     return sorted(set(chain(*charts)), key=lambda chart: chart.id)
@@ -146,7 +146,7 @@ def get_menu_charts(menus: Iterable[Menu]) -> Iterator[Chart]:
             chart_type.base << base_charts)
 
 
-def get_group_menus(groups: Set[Group]) -> Iterable[Menu]:
+def get_group_menus(groups: set[Group]) -> Iterable[Menu]:
     """Yields menus attached to groups the object is a member of."""
 
     return Menu.select(cascade=True).join_from(Menu, GroupMenu).where(
@@ -160,7 +160,7 @@ def get_menutree(menus: Iterable[Menu]) -> Iterable[MenuTreeItem]:
 
 
 def get_playlist(*indexed_base_charts: Iterable[IndexedBaseChart]) \
-        -> List[Chart]:
+        -> list[Chart]:
     """Yields the playlist."""
 
     playlist = sorted(get_indexed_charts(chain(*indexed_base_charts)), key=key)

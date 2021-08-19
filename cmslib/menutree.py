@@ -4,7 +4,7 @@ from __future__ import annotations
 from collections import defaultdict
 from itertools import chain
 from json import dumps
-from typing import Any, Iterable, Iterator, List, NamedTuple, Tuple, Union
+from typing import Any, Iterable, Iterator, NamedTuple, Union
 
 from hisfs import File
 
@@ -16,7 +16,7 @@ from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
 __all__ = ['MenuTreeItem']
 
 
-def merge(children: Iterable[MenuTreeItem]) -> List[MenuTreeItem]:
+def merge(children: Iterable[MenuTreeItem]) -> list[MenuTreeItem]:
     """Merges lists of children by their signature."""
 
     mapping = defaultdict(list)
@@ -116,7 +116,7 @@ class MenuTreeItem(NamedTuple):
 
 
     @property
-    def signature(self) -> Tuple[str, str, int, int]:
+    def signature(self) -> tuple[str, str, int, int]:
         """Returns a tuple, identifying the menu tree item."""
         return (self.name, self.icon, self.text_color, self.background_color)
 

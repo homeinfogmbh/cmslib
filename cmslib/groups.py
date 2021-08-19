@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from itertools import zip_longest
-from typing import Iterable, Iterator, List, Optional, Union
+from typing import Iterable, Iterator, Optional, Union
 
 from mdb import Customer
 
@@ -55,7 +55,7 @@ class Groups:
         yield leaf
         yield from self.parents(leaf)
 
-    def levels(self, leafs: Iterable[Group]) -> Iterator[List[Group]]:
+    def levels(self, leafs: Iterable[Group]) -> Iterator[list[Group]]:
         """Yields levels of groups up from this group."""
         for level in zip_longest(*(self.rtree(leaf) for leaf in leafs)):
             yield sorted(filter(None, level), key=key)

@@ -5,7 +5,7 @@ from __future__ import annotations
 from contextlib import suppress
 from datetime import datetime
 from enum import Enum
-from typing import Iterable, Set
+from typing import Iterable
 
 from peewee import BooleanField
 from peewee import ForeignKeyField
@@ -175,7 +175,7 @@ class Configuration(CustomerModel):
             cls, Colors)
 
     @property
-    def files(self) -> Set[File]:
+    def files(self) -> set[File]:
         """Returns a set od IDs of files used by the configuration."""
         files = set()
 

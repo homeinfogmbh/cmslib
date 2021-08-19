@@ -1,6 +1,6 @@
 """Video charts."""
 
-from typing import Set, Union
+from typing import Union
 
 from peewee import JOIN, ForeignKeyField, ModelSelect
 
@@ -50,7 +50,7 @@ class Video(Chart):
             cls, File, on=cls.file == File.id, join_type=JOIN.LEFT_OUTER)
 
     @property
-    def files(self) -> Set[File]:
+    def files(self) -> set[File]:
         """Returns a set of IDs of files used by the chart."""
         return {self.file} if self.file else set()
 

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from logging import getLogger
-from typing import Iterable, Iterator, Set, Union
+from typing import Iterable, Iterator, Union
 
 from peewee import ForeignKeyField, IntegerField, ModelSelect
 
@@ -40,7 +40,7 @@ class Menu(CustomerModel):
         return self.items.where(MenuItem.parent >> None)
 
     @property
-    def files(self) -> Set[File]:
+    def files(self) -> set[File]:
         """Returns a set of IDs of files used by the chart."""
         return {
             item.icon_image for item in self.items
