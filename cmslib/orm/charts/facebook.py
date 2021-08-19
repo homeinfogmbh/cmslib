@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 from datetime import datetime, timedelta
-from typing import Iterator, Union
+from typing import Union
 
 from peewee import BooleanField
 from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import SmallIntegerField
 
-from ferengi.facebook import Facebook as FacebookClient, Post
 from peeweeplus import HTMLCharField, Transaction
 
 from cmslib import dom
@@ -123,13 +122,6 @@ class Account(DSCMS4Model):
     def since(self) -> datetime:
         """Returns the datetime of the first post."""
         return datetime.now() - timedelta(days=self.recent_days)
-
-    @property
-    def posts(self) -> Iterator[Post]:
-        """Yields posts."""
-        facebook = FacebookClient.default_instance()
-        return facebook.get_posts(
-            self.facebook_id, limit=self.max_posts, since=self.since)
 
     def to_dom(self) -> dom.FacebookAccount:
         """Returns an XML DOM of this model."""
