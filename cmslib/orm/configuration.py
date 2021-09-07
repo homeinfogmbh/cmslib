@@ -79,7 +79,6 @@ class TickerType(Enum):
 
     TEXT = 'text'
     RSS = 'RSS'
-    STOCK_PRICES = 'stock prices'
 
 
 class Colors(DSCMS4Model):
