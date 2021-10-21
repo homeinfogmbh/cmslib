@@ -107,12 +107,7 @@ class BaseChart(CustomerModel):
     @property
     def active(self) -> bool:
         """Determines whether the chart is considered active."""
-        return all((
-            any((self.display_from is None,
-                 self.display_from > (now := datetime.now())
-            )),
-            any((self.display_until is None, self.display_until < now))
-        ))
+        return self.is_active_at(datetime.now())
 
     @property
     def charts(self) -> Iterator[DSCMS4Model]:
@@ -162,6 +157,14 @@ class BaseChart(CustomerModel):
             transaction.add(schedule, left=True)
         else:
             self.schedule = None
+
+    def is_active_at(self, timestamp: datetime) -> bool:
+        """Checks whether this chart is active at the given timestamp."""
+        return (
+            self.display_from is None or self.display_from > timestamp
+        ) and (
+            self.display_until is None or self.display_until < timestamp
+        )
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the base chart."""
