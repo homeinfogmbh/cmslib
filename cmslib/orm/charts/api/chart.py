@@ -28,9 +28,8 @@ class Chart(DSCMS4Model):
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates a chart from a JSON-ish dict."""
-        base_dict = json.pop('base')
+        transaction = BaseChart.from_json(json.pop('base'))
         chart = super().from_json(json, **kwargs)
-        transaction = BaseChart.from_json(base_dict)
         chart.base = transaction.primary
         transaction.add(chart, primary=True)
         return transaction
