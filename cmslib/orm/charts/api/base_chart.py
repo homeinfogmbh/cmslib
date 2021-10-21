@@ -107,10 +107,12 @@ class BaseChart(CustomerModel):
     @property
     def active(self) -> bool:
         """Determines whether the chart is considered active."""
-        now = datetime.now()
-        cond_from = self.display_from is None or self.display_from > now
-        cond_until = self.display_until is None or self.display_until < now
-        return cond_from and cond_until
+        return all((
+            any((self.display_from is None,
+                 self.display_from > (now := datetime.now())
+            )),
+            any((self.display_until is None, self.display_until < now))
+        ))
 
     @property
     def charts(self) -> Iterator[DSCMS4Model]:
