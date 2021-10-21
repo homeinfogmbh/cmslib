@@ -101,7 +101,7 @@ class BaseChart(CustomerModel):
             return super().select(*args, **kwargs)
 
         return super().select(
-            *{cls, Schedule, *args}, cascade=cascade, **kwargs).join_from(
+            cls, Schedule, *args, cascade=cascade, **kwargs).join_from(
             BaseChart, Schedule, join_type=JOIN.LEFT_OUTER)
 
     @property
