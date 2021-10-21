@@ -70,7 +70,7 @@ class BaseChart(CustomerModel):
         return transaction
 
     @classmethod
-    def check(cls, verbose: bool = False) -> CheckResult:
+    def check(cls, *, verbose: bool = False) -> CheckResult:
         """Checks base charts."""
         orphans = set()
         ambiguous = set()
