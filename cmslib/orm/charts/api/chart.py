@@ -41,8 +41,8 @@ class Chart(DSCMS4Model):
             return super().select(*args, **kwargs)
 
         return super().select(
-            *{cls, BaseChart, Customer, Company, Schedule, *args},
-            **kwargs).join(BaseChart).join(Customer).join(Company).join_from(
+            cls, BaseChart, Customer, Company, Schedule, *args, **kwargs).join(
+            BaseChart).join(Customer).join(Company).join_from(
             BaseChart, Schedule, join_type=JOIN.LEFT_OUTER)
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
