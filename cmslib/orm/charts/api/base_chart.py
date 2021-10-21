@@ -1,4 +1,7 @@
-"""Base chart."""
+"""Base chart and PINs.
+
+The BaseChart contains information common to all chart types.
+"""
 
 from datetime import datetime
 from typing import Iterator
