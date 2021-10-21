@@ -136,16 +136,18 @@ class BaseChart(CustomerModel):
 
     def _patch_pins(self, pins: dict, transaction: Transaction):
         """Patches the PINs."""
-        if pins is not UNCHANGED:
-            for chart_pin in self.pins:
-                transaction.delete(chart_pin)
+        if pins is UNCHANGED:
+            return
 
-            if not pins:
-                return
+        for chart_pin in self.pins:
+            transaction.delete(chart_pin)
 
-            for pin in pins:
-                chart_pin = ChartPIN(base_chart=self, pin=pin)
-                transaction.add(chart_pin)
+        if not pins:
+            return
+
+        for pin in pins:
+            chart_pin = ChartPIN(base_chart=self, pin=pin)
+            transaction.add(chart_pin)
 
     def _patch_schedule(self, schedule: dict, transaction: Transaction):
         """Patches the schedule."""
