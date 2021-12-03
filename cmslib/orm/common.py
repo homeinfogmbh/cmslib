@@ -1,6 +1,7 @@
 """Common ORM models."""
 
 from __future__ import annotations
+from logging import getLogger
 from typing import Optional, Union
 
 from flask import has_request_context
@@ -8,9 +9,7 @@ from peewee import JOIN, ForeignKeyField, ModelSelect
 
 from his import CUSTOMER
 from mdb import Address, Company, Customer
-from peeweeplus import MySQLDatabase, JSONModel
-
-from cmslib.config import CONFIG, LOGGER
+from peeweeplus import MySQLDatabaseProxy, JSONModel
 
 
 __all__ = [
@@ -22,8 +21,9 @@ __all__ = [
 ]
 
 
+DATABASE = MySQLDatabaseProxy('cmslib')
+LOGGER = getLogger(__file__)
 UNCHANGED = object()    # Sentinel object for unchanged JSON fields.
-DATABASE = MySQLDatabase.from_config(CONFIG['db'])
 
 
 class DSCMS4Model(JSONModel):

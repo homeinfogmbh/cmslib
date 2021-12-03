@@ -1,15 +1,13 @@
 """Common chart data."""
 
 from enum import Enum
-from logging import getLogger
 from typing import NamedTuple
 
 
-__all__ = ['CHARTS', 'LOGGER']
+__all__ = ['CHARTS']
 
 
 CHARTS = {}
-LOGGER = getLogger(__file__)
 
 
 class CheckResult(NamedTuple):

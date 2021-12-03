@@ -4,6 +4,7 @@ The BaseChart contains information common to all chart types.
 """
 
 from datetime import datetime
+from logging import getLogger
 from typing import Iterator
 from uuid import uuid4
 
@@ -20,7 +21,6 @@ from peeweeplus import EnumField, HTMLCharField, HTMLTextField, Transaction
 from cmslib import dom  # pylint: disable=E0611
 from cmslib.exceptions import OrphanedBaseChart, AmbiguousBaseChart
 from cmslib.orm.charts.api.common import CHARTS
-from cmslib.orm.charts.api.common import LOGGER
 from cmslib.orm.charts.api.common import Transitions
 from cmslib.orm.charts.api.common import CheckResult
 from cmslib.orm.common import UNCHANGED, DSCMS4Model, CustomerModel
@@ -28,6 +28,9 @@ from cmslib.orm.schedule import Schedule
 
 
 __all__ = ['BaseChart', 'ChartPIN']
+
+
+LOGGER = getLogger(__file__)
 
 
 class BaseChart(CustomerModel):

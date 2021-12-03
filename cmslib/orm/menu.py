@@ -24,7 +24,7 @@ from cmslib.orm.charts import BaseChart, Chart
 __all__ = ['MODELS', 'Menu', 'MenuItem', 'MenuItemChart', 'MenuItemGroup']
 
 
-LOGGER = getLogger('Menu')
+LOGGER = getLogger(__file__)
 SUFFIX = ' (Kopie)'
 
 
