@@ -21,7 +21,7 @@ __all__ = [
 ]
 
 
-DATABASE = MySQLDatabaseProxy('cmslib')
+DATABASE = MySQLDatabaseProxy('dscms4', 'cmslib.conf')
 LOGGER = getLogger(__file__)
 UNCHANGED = object()    # Sentinel object for unchanged JSON fields.
 
