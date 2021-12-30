@@ -43,9 +43,7 @@ TIME_FORMAT = '%H:%M'
 def percentage(value: float) -> int:
     """Restricts a number to 0-100 %."""
 
-    value = round(value)
-
-    if 0 <= value <= 100:
+    if 0 <= (value := round(value)) <= 100:
         return value
 
     raise ValueError(f'Invalid percentage: {value}.')
