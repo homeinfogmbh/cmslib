@@ -85,9 +85,13 @@ class TreeNode(CustomerModel):
     """Base class for customer-oriented tree structures."""
 
     @classmethod
-    def from_json(cls, json: dict, customer: Union[Customer, int],
-                  parent: Optional[Union[TreeNode, int]],
-                  **kwargs) -> TreeNode:
+    def from_json(
+            cls,
+            json: dict,
+            customer: Union[Customer, int],
+            parent: Optional[Union[TreeNode, int]] = None,
+            **kwargs
+    ) -> TreeNode:
         """Creates a group from a JSON-ish dictionary."""
         record = super().from_json(json, **kwargs)
         record.customer = customer
