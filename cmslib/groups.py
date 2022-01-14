@@ -12,50 +12,56 @@ from cmslib.orm.group import Group
 __all__ = ['Groups']
 
 
-def key(group: Group) -> int:
-    """Returns a sorting key for a given group."""
+def sort_by_index(groups: Iterable[Group]) -> list[Group]:
+    """Sorts the given groups by index."""
 
-    return group.index
+    return sorted(groups, key=lambda group: group.index)
 
 
 class Groups:
-    """Wraps customer groups."""
+    """Wraps groups."""
 
     def __init__(self, groups: Iterable[Group]):
-        """Initializes the customer groups wrapper."""
         self.groups = groups
 
     @classmethod
     def for_customer(cls, customer: Union[Customer, int]) -> Groups:
-        """Selects the customer groups."""
-        groups = Group.select(cascade=True).where(Group.customer == customer)
-        return cls(groups)
+        """Creates a Groups object from groups of the given customer."""
+        return cls(
+            Group.select(cascade=True).where(Group.customer == customer)
+        )
 
-    def tree(self, root: Optional[Group] = None) -> dict:
+    @property
+    def toplevel(self) -> Iterator[Group]:
+        """Yields groups that do not have parents."""
+        return filter(lambda group: group.parent is None, self.groups)
+
+    def children_of(self, parent: Group) -> Iterator[Group]:
+        """Yields the children of the given group."""
+        return filter(lambda group: group.parent == parent, self.groups)
+
+    def tree(self, root: Optional[Group] = None) -> Union[list, dict]:
         """Returns a top-down group tree."""
         if root is None:
-            toplevel = filter(lambda group: group.parent is None, self.groups)
-            return sorted((self.tree(group) for group in toplevel), key=key)
+            return sort_by_index(map(self.tree, self.toplevel))
 
-        children = filter(lambda group: group.parent == root, self.groups)
         return {
-            root: sorted((self.tree(child) for child in children), key=key)
+            root: sort_by_index(map(self.tree, self.children_of(root)))
         }
 
     def parents(self, group: Group) -> Iterator[Group]:
         """Yields parents of the given group."""
         groups = {group.id: group for group in self.groups}
 
-        while group.parent_id is not None:
-            group = groups[group.parent_id]
+        while group := groups.get(group.parent_id):
             yield group
 
-    def rtree(self, leaf: Group) -> Iterator[Group]:
+    def lineage(self, group: Group) -> Iterator[Group]:
         """Yields the group and its parents."""
-        yield leaf
-        yield from self.parents(leaf)
+        yield group
+        yield from self.parents(group)
 
-    def levels(self, leafs: Iterable[Group]) -> Iterator[list[Group]]:
+    def levels(self, groups: Iterable[Group]) -> Iterator[list[Group]]:
         """Yields levels of groups up from this group."""
-        for level in zip_longest(*(self.rtree(leaf) for leaf in leafs)):
-            yield sorted(filter(None, level), key=key)
+        for level in zip_longest(*(self.lineage(group) for group in groups)):
+            yield sort_by_index(filter(None, level))

@@ -40,7 +40,6 @@ from cmslib.functions import get_group
 from cmslib.functions import get_groups
 from cmslib.functions import get_group_member_deployment
 from cmslib.functions import get_group_member_deployments
-from cmslib.functions import get_lineage
 from cmslib.functions import get_menu
 from cmslib.functions import get_menus
 from cmslib.functions import get_menu_item
@@ -168,7 +167,6 @@ __all__ = [
     'get_groups',
     'get_group_member_deployment',
     'get_group_member_deployments',
-    'get_lineage',
     'get_menu',
     'get_menus',
     'get_menu_item',

@@ -13,8 +13,7 @@ __all__ = [
     'get_group',
     'get_groups',
     'get_group_member_deployment',
-    'get_group_member_deployments',
-    'get_lineage'
+    'get_group_member_deployments'
 ]
 
 
@@ -48,28 +47,3 @@ def get_group_member_deployments(
         condition &= GroupMemberDeployment.group == group
 
     return GroupMemberDeployment.select(cascade=True).where(condition)
-
-
-def get_lineage(
-        group: Union[Group, int], *,
-        groups: Optional[dict[int, Group]] = None,
-        include_group: bool = True
-) -> Iterator[Group]:
-    """Returns the given group and all of
-    its parents throughout its lineage.
-    """
-
-    if not isinstance(group, Group):
-        group = Group[group]
-
-    if groups is None:
-        groups = {
-            group.id: group for group in
-            Group.select().where(Group.customer == group.customer)
-        }
-
-    if include_group:
-        yield group
-
-    while group := groups.get(group.parent_id):
-        yield group
