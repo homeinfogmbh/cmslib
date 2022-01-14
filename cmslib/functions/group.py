@@ -8,6 +8,7 @@ from his import CUSTOMER
 from hwdb import Deployment
 
 from cmslib.orm.group import Group, GroupMemberDeployment
+from cmslib.groups import Groups
 
 
 __all__ = [
@@ -15,7 +16,8 @@ __all__ = [
     'get_groups',
     'get_group_member_deployment',
     'get_group_member_deployments',
-    'get_groups_of'
+    'get_group_ids',
+    'get_groups_lineage'
 ]
 
 
@@ -51,10 +53,24 @@ def get_group_member_deployments(
     return GroupMemberDeployment.select(cascade=True).where(condition)
 
 
-def get_groups_of(deployment: Union[Deployment, int]) -> Select:
-    """Select groups of the given deployment."""
+def get_group_ids(deployment: Union[Deployment, int]) -> Iterator[int]:
+    """Yield group IDs of the given deployment."""
 
-    return Group.select(cascade=True).join_from(
-        Group, GroupMemberDeployment,
-        on=GroupMemberDeployment.group == Group.id
-    ).where(GroupMemberDeployment.deployment == deployment)
+    for group_member_deployment in GroupMemberDeployment.select().where(
+            GroupMemberDeployment.deployment == deployment
+    ):
+        yield group_member_deployment.group
+
+
+def get_groups_lineage(
+        deployment: Union[Deployment, int], *,
+        groups: Optional[Groups] = None
+) -> Iterator[Group]:
+    """Select the groups-lineage of the given user."""
+
+    if groups is None:
+        groups = Groups.for_customer(deployment.customer)
+
+    for member_group in groups.groups(get_group_ids(deployment)):
+        for group in groups.lineage(member_group):
+            yield group
