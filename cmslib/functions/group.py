@@ -1,6 +1,6 @@
 """Group related functions."""
 
-from typing import Callable, Iterable, Optional, Union
+from typing import Callable, Iterable, Iterator, Optional, Union
 
 from peewee import Select
 
@@ -29,8 +29,9 @@ def get_parent(group: Group, groups: dict[int, Group]) -> Optional[Group]:
 
 def get_lineage(
         group: Union[Group, int], *,
-        groups: Optional[dict[int, Group]] = None
-) -> set[Group]:
+        groups: Optional[dict[int, Group]] = None,
+        include_group: bool = True
+) -> Iterator[Group]:
     """Returns the given group and all of
     its parents throughout its lineage.
     """
@@ -44,19 +45,20 @@ def get_lineage(
             Group.select().where(Group.customer == group.customer)
         }
 
-    lineage = {group}
+    if include_group:
+        yield group
 
     while group := get_parent(group.parent_id, groups):
-        lineage.add(group)
-
-    return lineage
+        yield group
 
 
 def get_children(groups: Iterable[Group], parent: Group) -> list[Group]:
     """Returns the children of the group."""
 
-    children = filter(lambda group: group.parent == parent, groups)
-    return sorted(children, key=lambda group: group.index)
+    return sorted(
+        filter(lambda group: group.parent == parent, groups),
+        key=lambda group: group.index
+    )
 
 
 def get_group(ident: int) -> Group:
