@@ -18,6 +18,18 @@ def sort_by_index(groups: Iterable[Group]) -> list[Group]:
     return sorted(groups, key=lambda group: group.index)
 
 
+def get_ids(ids_or_groups: Iterable[Union[int, Group]]) -> Iterator[int]:
+    """Yields IDs from IDs or groups."""
+
+    for item in ids_or_groups:
+        if isinstance(item, int):
+            yield item
+        elif isinstance(item, Group):
+            yield item.id
+        else:
+            raise TypeError(f'Not a group or ID: {item}')
+
+
 class Groups:
     """Wraps groups."""
 
@@ -35,6 +47,14 @@ class Groups:
     def toplevel(self) -> Iterator[Group]:
         """Yields groups that do not have parents."""
         return filter(lambda group: group.parent is None, self.groups)
+
+    def _groups(self, ids: set[int]) -> Iterator[Group]:
+        """Yields groups with the given IDs."""
+        return filter(lambda group: group.id in ids, self.groups)
+
+    def groups(self, *ids_or_groups: Union[Group, int]) -> Iterator[Group]:
+        """Yields groups with the given IDs."""
+        return self._groups(set(get_ids(ids_or_groups)))
 
     def children_of(self, parent: Group) -> Iterator[Group]:
         """Yields the children of the given group."""
