@@ -102,10 +102,10 @@ class TreeNode(CustomerModel):
             self.parent = None
             return
 
-        if not isinstance(parent, TreeNode):
-            cls = type(self)
-            condition = (cls.id == parent) & (cls.customer == self.customer)
-            parent = cls.select().where(condition).get()
+        if not isinstance(parent, cls := type(self)):
+            parent = cls.select().where(
+                (cls.id == parent) & (cls.customer == self.customer)
+            ).get()
 
         self.parent = parent
 
