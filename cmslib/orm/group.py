@@ -29,7 +29,7 @@ class Group(TreeNode):
         setting all child's parent reference to this groups parent.
         """
         for child in self.children:
-            child.set_parent(self.parent)
+            child.parent = self.parent
             child.save()
 
         return super().delete_instance(*args, **kwargs)
