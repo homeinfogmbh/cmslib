@@ -30,7 +30,7 @@ from cmslib.functions.group import get_group
 from cmslib.functions.group import get_groups
 from cmslib.functions.group import get_group_member_deployment
 from cmslib.functions.group import get_group_member_deployments
-from cmslib.functions.group import get_tree
+from cmslib.functions.group import get_lineage
 from cmslib.functions.menu import get_menu
 from cmslib.functions.menu import get_menus
 from cmslib.functions.menu import get_menu_item
@@ -66,6 +66,7 @@ __all__ = [
     'get_group_base_chart',
     'get_group_configurations',
     'get_group_configuration',
+    'get_lineage',
     'get_group_menus',
     'get_group_menu',
     'get_deployments',
@@ -75,7 +76,6 @@ __all__ = [
     'get_groups',
     'get_group_member_deployment',
     'get_group_member_deployments',
-    'get_tree',
     'get_menu',
     'get_menus',
     'get_menu_item',
