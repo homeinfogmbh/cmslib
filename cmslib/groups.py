@@ -34,7 +34,7 @@ class Groups:
     """Wraps groups."""
 
     def __init__(self, groups: Iterable[Group]):
-        self.groups = groups
+        self.groups = {group.id: group for group in groups}
 
     @classmethod
     def for_customer(cls, customer: Union[Customer, int]) -> Groups:
@@ -46,19 +46,28 @@ class Groups:
     @property
     def toplevel(self) -> Iterator[Group]:
         """Yields groups that do not have parents."""
-        return filter(lambda group: group.parent is None, self.groups)
+        return filter(lambda group: group.parent is None, self.groups.values())
 
-    def _groups(self, ids: set[int]) -> Iterator[Group]:
+    def _groups(self, ids: set[int]) -> set[Group]:
         """Yields groups with the given IDs."""
-        return filter(lambda group: group.id in ids, self.groups)
+        return {group for ident, group in self.groups.items() if ident in ids}
 
-    def groups(self, ids_or_groups: Union[Group, int]) -> Iterator[Group]:
+    def groups(self, ids_or_groups: Iterable[Union[Group, int]]) -> set[Group]:
         """Yields groups with the given IDs."""
         return self._groups(set(get_ids(ids_or_groups)))
 
+    def group(self, ident: int) -> Group:
+        """Yields groups with the given IDs."""
+        try:
+            return self.groups[ident]
+        except KeyError as key_error:
+            raise Group.DoesNotExist() from key_error
+
     def children_of(self, parent: Group) -> Iterator[Group]:
         """Yields the children of the given group."""
-        return filter(lambda group: group.parent == parent, self.groups)
+        return filter(
+            lambda group: group.parent == parent, self.groups.values()
+        )
 
     def tree(self, root: Optional[Group] = None) -> Union[list, dict]:
         """Returns a top-down group tree."""
@@ -71,9 +80,7 @@ class Groups:
 
     def parents(self, group: Group) -> Iterator[Group]:
         """Yields parents of the given group."""
-        groups = {group.id: group for group in self.groups}
-
-        while group := groups.get(group.parent_id):
+        while group := self.groups.get(group.parent_id):
             yield group
 
     def lineage(self, group: Group) -> Iterator[Group]:
