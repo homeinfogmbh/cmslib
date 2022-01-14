@@ -52,7 +52,7 @@ class Groups:
         """Yields groups with the given IDs."""
         return filter(lambda group: group.id in ids, self.groups)
 
-    def groups(self, *ids_or_groups: Union[Group, int]) -> Iterator[Group]:
+    def groups(self, ids_or_groups: Union[Group, int]) -> Iterator[Group]:
         """Yields groups with the given IDs."""
         return self._groups(set(get_ids(ids_or_groups)))
 

@@ -5,6 +5,7 @@ from typing import Callable, Iterable, Iterator, Optional, Union
 from peewee import Select
 
 from his import CUSTOMER
+from hwdb import Deployment
 
 from cmslib.orm.group import Group, GroupMemberDeployment
 
@@ -13,7 +14,8 @@ __all__ = [
     'get_group',
     'get_groups',
     'get_group_member_deployment',
-    'get_group_member_deployments'
+    'get_group_member_deployments',
+    'get_groups_of'
 ]
 
 
@@ -47,3 +49,12 @@ def get_group_member_deployments(
         condition &= GroupMemberDeployment.group == group
 
     return GroupMemberDeployment.select(cascade=True).where(condition)
+
+
+def get_groups_of(deployment: Union[Deployment, int]) -> Select:
+    """Select groups of the given deployment."""
+
+    return Group.select(cascade=True).join_from(
+        Group, GroupMemberDeployment,
+        on=GroupMemberDeployment.group == Group.id
+    ).where(GroupMemberDeployment.deployment == deployment)
