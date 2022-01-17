@@ -84,17 +84,29 @@ class CustomerModel(DSCMS4Model):
 class TreeNode(CustomerModel):
     """Base class for customer-oriented tree structures."""
 
-    parent = NotImplemented
-
     @classmethod
-    def from_json(cls, json: dict, customer: Union[Customer, int],
-                  parent: Optional[Union[TreeNode, int]],
-                  **kwargs) -> TreeNode:
+    def from_json(
+            cls,
+            json: dict,
+            customer: Union[Customer, int],
+            parent: Optional[Union[TreeNode, int]] = None,
+            **kwargs
+    ) -> TreeNode:
         """Creates a group from a JSON-ish dictionary."""
         record = super().from_json(json, **kwargs)
         record.customer = customer
         record.set_parent(parent)
         return record
+
+    def delete_instance(self, *args, **kwargs) -> int:
+        """Deletes the respective instance from the group hierarchy
+        setting all child's parent reference to this groups parent.
+        """
+        for child in self.children:
+            child.parent = self.parent
+            child.save()
+
+        return super().delete_instance(*args, **kwargs)
 
     def set_parent(self, parent: Optional[Union[TreeNode, int]]) -> None:
         """Changes the parent reference of the group."""
@@ -102,10 +114,10 @@ class TreeNode(CustomerModel):
             self.parent = None
             return
 
-        if not isinstance(parent, TreeNode):
-            cls = type(self)
-            condition = (cls.id == parent) & (cls.customer == self.customer)
-            parent = cls.select().where(condition).get()
+        if not isinstance(parent, cls := type(self)):
+            parent = cls.select().where(
+                (cls.id == parent) & (cls.customer == self.customer)
+            ).get()
 
         self.parent = parent
 

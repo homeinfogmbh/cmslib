@@ -1,12 +1,14 @@
 """Group related functions."""
 
-from typing import Iterable, Optional, Union
+from typing import Callable, Iterable, Iterator, Optional, Union
 
-from peewee import ModelSelect
+from peewee import Select
 
 from his import CUSTOMER
+from hwdb import Deployment
 
 from cmslib.orm.group import Group, GroupMemberDeployment
+from cmslib.groups import Groups
 
 
 __all__ = [
@@ -14,15 +16,9 @@ __all__ = [
     'get_groups',
     'get_group_member_deployment',
     'get_group_member_deployments',
-    'get_tree'
+    'get_group_ids',
+    'get_groups_lineage'
 ]
-
-
-def get_children(groups: Iterable[Group], parent: Group) -> dict:
-    """Returns the children of the group."""
-
-    children = filter(lambda group: group.parent == parent, groups)
-    return sorted(children, key=lambda group: group.index)
 
 
 def get_group(ident: int) -> Group:
@@ -31,7 +27,7 @@ def get_group(ident: int) -> Group:
     return get_groups().where(Group.id == ident).get()
 
 
-def get_groups() -> ModelSelect:
+def get_groups() -> Select:
     """Selects the groups of the current customer."""
 
     return Group.select(cascade=True).where(Group.customer == CUSTOMER.id)
@@ -45,7 +41,8 @@ def get_group_member_deployment(ident: int) -> GroupMemberDeployment:
 
 
 def get_group_member_deployments(
-        group: Optional[Union[Group, int]] = None) -> ModelSelect:
+        group: Optional[Union[Group, int]] = None
+) -> Select:
     """Selects group members deployments."""
 
     condition = Group.customer == CUSTOMER.id
@@ -56,15 +53,24 @@ def get_group_member_deployments(
     return GroupMemberDeployment.select(cascade=True).where(condition)
 
 
-def get_tree(groups: Iterable[Group], ident: Optional[int] = None) -> dict:
-    """Returns a dict of groups representing the groups tree."""
+def get_group_ids(deployment: Union[Deployment, int]) -> Iterator[int]:
+    """Yield group IDs of the given deployment."""
 
-    if ident is None:
-        condition = lambda group: group.parent is None
-    else:
-        condition = lambda group: group.id == ident
+    for group_member_deployment in GroupMemberDeployment.select().where(
+            GroupMemberDeployment.deployment == deployment
+    ):
+        yield group_member_deployment.group
 
-    return {
-        root: get_children(groups, root)
-        for root in filter(condition, groups)
-    }
+
+def get_groups_lineage(
+        deployment: Union[Deployment, int], *,
+        groups: Optional[Groups] = None
+) -> Iterator[Group]:
+    """Select the groups-lineage of the given user."""
+
+    if groups is None:
+        groups = Groups.for_customer(deployment.customer)
+
+    for member_group in groups.groups(get_group_ids(deployment)):
+        for group in groups.lineage(member_group):
+            yield group

@@ -24,16 +24,6 @@ class Group(TreeNode):
         lazy_load=True)
     index = IntegerField(default=0)
 
-    def delete_instance(self, *args, **kwargs) -> int:
-        """Deletes the respective instance from the group hierarchy
-        setting all child's parent reference to this groups parent.
-        """
-        for child in self.children:
-            child.set_parent(self.parent)
-            child.save()
-
-        return super().delete_instance(*args, **kwargs)
-
 
 class GroupMemberDeployment(DSCMS4Model):
     """Deployments as members in groups."""
