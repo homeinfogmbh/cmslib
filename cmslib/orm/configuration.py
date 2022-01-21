@@ -386,7 +386,7 @@ class Ticker(DSCMS4Model):
 
 
 class Backlight(DSCMS4Model):
-    """Backlight beightness settings of the respective configuration."""
+    """Backlight brightness settings of the respective configuration."""
 
     configuration = ForeignKeyField(
         Configuration, column_name='configuration', backref='backlights',
