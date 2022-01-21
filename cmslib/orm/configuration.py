@@ -201,13 +201,15 @@ class Configuration(CustomerModel):
 
     def update_colors(self, transaction: Transaction, colors: Colors) -> None:
         """Updates the respective colors."""
-        if colors:
-            try:
-                self.colors.patch_json(colors)
-            except Colors.DoesNotExist:
-                self.colors = Colors.from_json(colors)
+        if not colors:
+            return
 
-            transaction.add(self.colors, left=True)
+        if self.colors is None:
+            self.colors = Colors.from_json(colors)
+        else:
+            self.colors.patch_json(colors)
+
+        transaction.add(self.colors, left=True)
 
     def update_backgrounds(self, transaction: Transaction,
                            backgrounds: Iterable[int], *,
@@ -217,11 +219,13 @@ class Configuration(CustomerModel):
             for background in self.backgrounds:
                 transaction.delete(background)
 
-        if backgrounds:
-            for background in backgrounds:
-                file = get_file(background)
-                background = Background(configuration=self, file=file)
-                transaction.add(background)
+        if not backgrounds:
+            return
+
+        for background in backgrounds:
+            file = get_file(background)
+            background = Background(configuration=self, file=file)
+            transaction.add(background)
 
     def update_tickers(self, transaction: Transaction,
                        tickers: Iterable[dict], *, delete: bool) -> None:
@@ -230,10 +234,12 @@ class Configuration(CustomerModel):
             for ticker in self.tickers:
                 transaction.delete(ticker)
 
-        if tickers:
-            for json in tickers:
-                ticker = Ticker.from_json(json, self)
-                transaction.add(ticker)
+        if not tickers:
+            return
+
+        for json in tickers:
+            ticker = Ticker.from_json(json, self)
+            transaction.add(ticker)
 
     def update_backlights(self, transaction: Transaction, backlights: dict, *,
                           delete: bool) -> None:
