@@ -1,6 +1,6 @@
 """Schedule related functions."""
 
-from peewee import ModelSelect
+from peewee import Select
 
 from his import CUSTOMER
 
@@ -16,7 +16,7 @@ def get_schedule(ident: int) -> Schedule:
     return get_schedules().where(Schedule.id == ident).get()
 
 
-def get_schedules() -> ModelSelect:
+def get_schedules() -> Select:
     """Selects the schedules of the current customer."""
 
     return Schedule.select(cascade=True).where(

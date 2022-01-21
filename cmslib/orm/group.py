@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from peewee import ForeignKeyField, IntegerField, ModelSelect
+from peewee import ForeignKeyField, IntegerField, Select
 
 from hwdb import Deployment
 from mdb import Address, Company, Customer
@@ -39,8 +39,9 @@ class GroupMemberDeployment(DSCMS4Model):
     index = IntegerField(default=0)
 
     @classmethod
-    def from_json(cls, json: dict, group: Group, deployment: Deployment) \
-            -> GroupMemberDeployment:
+    def from_json(
+            cls, json: dict, group: Group, deployment: Deployment
+    ) -> GroupMemberDeployment:
         """Creates a member for the given group
         from the respective JSON-ish dictionary.
         """
@@ -50,7 +51,7 @@ class GroupMemberDeployment(DSCMS4Model):
         return record
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
         """Selects records."""
         if not cascade:
             return super().select(*args, **kwargs)

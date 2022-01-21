@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from peewee import JOIN, ForeignKeyField, IntegerField, ModelSelect
+from peewee import JOIN, ForeignKeyField, IntegerField, Select
 
 from hwdb import Deployment
 from mdb import Address, Company, Customer
@@ -28,7 +28,7 @@ class DeploymentContent(DSCMS4Model):
         Deployment, column_name='deployment', on_delete='CASCADE')
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
         """Selects records."""
         if not cascade:
             return super().select(*args, **kwargs)
@@ -70,7 +70,7 @@ class DeploymentBaseChart(DeploymentContent):
         return record
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
         """Selects records."""
         if not cascade:
             return super().select(*args, **kwargs)
@@ -104,7 +104,7 @@ class DeploymentConfiguration(DeploymentContent):
         Configuration, column_name='configuration', on_delete='CASCADE')
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
         """Selects records."""
         if not cascade:
             return super().select(*args, **kwargs)
@@ -131,7 +131,7 @@ class DeploymentMenu(DeploymentContent):
     menu = ForeignKeyField(Menu, column_name='menu', on_delete='CASCADE')
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
         """Selects records."""
         if not cascade:
             return super().select(*args, **kwargs)

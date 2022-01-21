@@ -1,6 +1,6 @@
 """Basic abstract chart type."""
 
-from peewee import JOIN, ForeignKeyField, ModelSelect
+from peewee import JOIN, ForeignKeyField, Select
 
 from mdb import Company, Customer
 from peeweeplus import Transaction
@@ -35,7 +35,7 @@ class Chart(DSCMS4Model):
         return transaction
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
         """Selects records."""
         if not cascade:
             return super().select(*args, **kwargs)

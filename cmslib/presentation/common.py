@@ -7,7 +7,7 @@ from itertools import chain
 from logging import getLogger
 from typing import Iterable, Iterator, NamedTuple
 
-from peewee import Model, ModelSelect
+from peewee import Model, Select
 
 from filedb import File as FileDBFile
 from functoolsplus import coerce    # pylint: disable=E0401
@@ -46,8 +46,9 @@ class IndexedChart(NamedTuple):
     chart: Chart
 
 
-def get_indexed_charts(indexed_base_charts: Iterable[IndexedBaseChart]) \
-        -> Iterator[IndexedChart]:
+def get_indexed_charts(
+        indexed_base_charts: Iterable[IndexedBaseChart]
+) -> Iterator[IndexedChart]:
     """Yields indexed charts."""
 
     indexed_base_charts = list(indexed_base_charts)
@@ -63,7 +64,7 @@ def get_indexed_charts(indexed_base_charts: Iterable[IndexedBaseChart]) \
         yield IndexedChart(ibc.index, charts_by_base_chart[ibc.base_chart])
 
 
-def select_files(ids: Iterator[int]) -> ModelSelect:
+def select_files(ids: Iterator[int]) -> Select:
     """Yields files from their IDs."""
 
     return File.select(File, FileDBFile).join(FileDBFile).where(
@@ -76,8 +77,9 @@ def key(model: Model) -> int:
     return model.index
 
 
-def get_group_levels(groups: Groups, memberships: Iterable[Group]) \
-        -> Iterator[list[Group]]:
+def get_group_levels(
+        groups: Groups, memberships: Iterable[Group]
+) -> Iterator[list[Group]]:
     """Yields group levels."""
 
     return groups.levels(memberships)
@@ -91,8 +93,10 @@ def get_group_set(group_levels: Iterable[list[Group]]) -> set[Group]:
     return set(chain(*group_levels))
 
 
-def get_group_configurations(group_levels: Iterable[list[Group]],
-                             groups: set[Group]) -> Iterator[Configuration]:
+def get_group_configurations(
+        group_levels: Iterable[list[Group]],
+        groups: set[Group]
+) -> Iterator[Configuration]:
     """Yields group configurations."""
 
     configurations = defaultdict(set)
@@ -159,8 +163,9 @@ def get_menutree(menus: Iterable[Menu]) -> Iterable[MenuTreeItem]:
     return MenuTreeItem.from_menus(menus)
 
 
-def get_playlist(*indexed_base_charts: Iterable[IndexedBaseChart]) \
-        -> list[Chart]:
+def get_playlist(
+        *indexed_base_charts: Iterable[IndexedBaseChart]
+) -> list[Chart]:
     """Yields the playlist."""
 
     playlist = sorted(get_indexed_charts(chain(*indexed_base_charts)), key=key)

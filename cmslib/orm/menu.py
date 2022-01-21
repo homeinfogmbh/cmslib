@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 from logging import getLogger
-from typing import Iterable, Iterator, Union
+from typing import Iterable, Iterator, Optional, Union
 
-from peewee import ForeignKeyField, IntegerField, ModelSelect
+from peewee import ForeignKeyField, IntegerField, Select
 
 from hisfs import get_file, File
 from mdb import Company, Customer
@@ -110,7 +110,7 @@ class MenuItem(DSCMS4Model):
         return menu_item.move(menu=menu, parent=parent)
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
         """Selects records."""
         if not cascade:
             return super().select(*args, **kwargs)
@@ -125,7 +125,7 @@ class MenuItem(DSCMS4Model):
         return self.menu is not None
 
     @property
-    def children(self) -> ModelSelect:
+    def children(self) -> Select:
         """Returns the children."""
         if self.id is None:     # Prevent cascading over all menu items.
             return type(self).select().where(False)
@@ -181,8 +181,11 @@ class MenuItem(DSCMS4Model):
         return cls.select().join(Menu).where(
             (Menu.customer == customer) & (cls.id == parent)).get()
 
-    def move(self, *, menu: Menu = UNCHANGED, parent: MenuItem = UNCHANGED) \
-            -> Union[MenuItem, MenuItemGroup]:
+    def move(
+            self, *,
+            menu: Menu = UNCHANGED,
+            parent: MenuItem = UNCHANGED
+    ) -> Union[MenuItem, MenuItemGroup]:
         """Moves the menu item to another menu and / or parent."""
         if parent is not UNCHANGED:
             if parent is not None and parent in self.tree:
@@ -204,8 +207,11 @@ class MenuItem(DSCMS4Model):
 
         return menu_items
 
-    def copy(self, menu: Menu = None, parent: MenuItem = None) \
-            -> Iterator[Union[MenuItem, MenuItemChart]]:
+    def copy(
+            self,
+            menu: Optional[Menu] = None,
+            parent: Optional[MenuItem] = None
+    ) -> Iterator[Union[MenuItem, MenuItemChart]]:
         """Copies this menu item."""
         copy = type(self)[self.id]
         copy.id = None
@@ -292,7 +298,7 @@ class MenuItemChart(DSCMS4Model):
         return menu_item_chart
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
         """Selects records."""
         if not cascade:
             return super().select(*args, **kwargs)

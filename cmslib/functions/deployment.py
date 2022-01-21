@@ -2,7 +2,7 @@
 
 from typing import Callable
 
-from peewee import JOIN, ModelSelect
+from peewee import JOIN, Select
 
 from his import CUSTOMER
 from hwdb import Deployment
@@ -23,7 +23,7 @@ def get_deployment(ident: int) -> Deployment:
     return get_deployments().where(Deployment.id == ident).get()
 
 
-def get_deployments(content: bool = False) -> ModelSelect:
+def get_deployments(content: bool = False) -> Select:
     """Selects the deployments of the current customer."""
 
     condition = Deployment.customer == CUSTOMER.id

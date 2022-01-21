@@ -5,7 +5,7 @@ from logging import getLogger
 from typing import Optional, Union
 
 from flask import has_request_context
-from peewee import JOIN, ForeignKeyField, ModelSelect
+from peewee import JOIN, ForeignKeyField, Select
 
 from his import CUSTOMER
 from mdb import Address, Company, Customer
@@ -71,7 +71,7 @@ class CustomerModel(DSCMS4Model):
         return record
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
         """Selects records."""
         if not cascade:
             return super().select(*args, **kwargs)

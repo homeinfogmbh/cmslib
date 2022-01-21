@@ -12,7 +12,7 @@ from peewee import JOIN
 from peewee import BooleanField
 from peewee import DateTimeField
 from peewee import ForeignKeyField
-from peewee import ModelSelect
+from peewee import Select
 from peewee import SmallIntegerField
 from peewee import UUIDField
 
@@ -101,7 +101,7 @@ class BaseChart(CustomerModel):
         return CheckResult(frozenset(orphans), frozenset(ambiguous))
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
         """Selects records."""
         if not cascade:
             return super().select(*args, **kwargs)

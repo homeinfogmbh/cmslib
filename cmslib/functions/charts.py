@@ -3,7 +3,7 @@
 from typing import Iterator
 
 from flask import request
-from peewee import Expression, ModelBase, ModelSelect
+from peewee import Expression, ModelBase, Select
 from werkzeug.local import LocalProxy
 
 from his import ACCOUNT, CUSTOMER
@@ -28,7 +28,7 @@ __all__ = [
 ]
 
 
-def _get_charts(cls: ModelBase) -> ModelSelect:
+def _get_charts(cls: ModelBase) -> Select:
     """Selects charts of the given type for the current customer."""
 
     return cls.select(cascade=True).where(
@@ -87,7 +87,7 @@ def get_base_chart(ident: int) -> BaseChart:
     return get_base_charts().where(BaseChart.id == ident).get()
 
 
-def get_base_charts() -> ModelSelect:
+def get_base_charts() -> Select:
     """Returns the base charts of the current customer."""
 
     return BaseChart.select(cascade=True).where(
@@ -107,7 +107,7 @@ def get_charts() -> Iterator[Chart]:
         yield from _get_charts(cls)
 
 
-def get_chart_acls() -> ModelSelect:
+def get_chart_acls() -> Select:
     """Returns chart ACLs of the current customer."""
 
     return ChartACL.select(cascade=True).where(

@@ -10,7 +10,7 @@ from typing import Iterable
 from peewee import BooleanField
 from peewee import ForeignKeyField
 from peewee import IntegerField
-from peewee import ModelSelect
+from peewee import Select
 from peewee import SmallIntegerField
 from peewee import TimeField
 
@@ -163,7 +163,7 @@ class Configuration(CustomerModel):
         return transaction
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
         """Selects records."""
         if not cascade:
             return super().select(*args, **kwargs)

@@ -2,7 +2,7 @@
 
 from typing import Optional, Union
 
-from peewee import ModelSelect
+from peewee import Select
 
 from his import CUSTOMER
 from hwdb import Deployment
@@ -44,7 +44,8 @@ def get_deployment_base_chart(ident: int) -> DeploymentBaseChart:
 
 
 def get_deployment_base_charts(
-        deployment: Optional[Union[Deployment, int]] = None) -> ModelSelect:
+        deployment: Optional[Union[Deployment, int]] = None
+) -> Select:
     """Selects deployment base charts."""
 
     condition = BaseChart.customer == CUSTOMER.id
@@ -64,7 +65,7 @@ def get_deployment_configuration(ident: int) -> DeploymentConfiguration:
 
 
 def get_deployment_configurations(
-        deployment: Optional[Union[Deployment, int]] = None) -> ModelSelect:
+        deployment: Optional[Union[Deployment, int]] = None) -> Select:
     """Selects deployment configurations."""
 
     condition = Configuration.customer == CUSTOMER.id
@@ -81,8 +82,9 @@ def get_deployment_menu(ident: int) -> DeploymentMenu:
     return get_deployment_menus().where(DeploymentMenu.id == ident).get()
 
 
-def get_deployment_menus(deployment: Optional[Union[Deployment, int]] = None) \
-        -> ModelSelect:
+def get_deployment_menus(
+        deployment: Optional[Union[Deployment, int]] = None
+) -> Select:
     """Selects deployment menus."""
 
     condition = Menu.customer == CUSTOMER.id
@@ -99,8 +101,9 @@ def get_group_base_chart(ident: int) -> GroupBaseChart:
     return get_group_base_charts().where(GroupBaseChart.id == ident).get()
 
 
-def get_group_base_charts(group: Optional[Union[Group, int]] = None) \
-        -> ModelSelect:
+def get_group_base_charts(
+        group: Optional[Union[Group, int]] = None
+)  -> Select:
     """Selects deployment base charts."""
 
     condition = BaseChart.customer == CUSTOMER.id
@@ -119,8 +122,9 @@ def get_group_configuration(ident: int) -> GroupConfiguration:
         GroupConfiguration.id == ident).get()
 
 
-def get_group_configurations(group: Optional[Union[Group, int]] = None) \
-        -> ModelSelect:
+def get_group_configurations(
+        group: Optional[Union[Group, int]] = None
+) -> Select:
     """Selects deployment configurations."""
 
     condition = Configuration.customer == CUSTOMER.id
@@ -137,7 +141,7 @@ def get_group_menu(ident: int) -> GroupMenu:
     return get_group_menus().where(GroupMenu.id == ident).get()
 
 
-def get_group_menus(group: Optional[Union[Group, int]] = None) -> ModelSelect:
+def get_group_menus(group: Optional[Union[Group, int]] = None) -> Select:
     """Selects deployment menus."""
 
     condition = Menu.customer == CUSTOMER.id

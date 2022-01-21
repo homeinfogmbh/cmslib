@@ -2,7 +2,7 @@
 
 from typing import Optional, Union
 
-from peewee import ModelSelect
+from peewee import Select
 
 from his import CUSTOMER
 
@@ -25,7 +25,7 @@ def get_menu(ident: int) -> Menu:
     return get_menus().where(Menu.id == ident).get()
 
 
-def get_menus() -> ModelSelect:
+def get_menus() -> Select:
     """Lists the menus of the current customer."""
 
     return Menu.select(cascade=True).where(Menu.customer == CUSTOMER.id)
@@ -37,7 +37,7 @@ def get_menu_item(ident: int) -> MenuItem:
     return get_menu_items().where(MenuItem.id == ident).get()
 
 
-def get_menu_items(menu: Optional[Union[Menu, int]] = None) -> ModelSelect:
+def get_menu_items(menu: Optional[Union[Menu, int]] = None) -> Select:
     """Lists the menu items of the current customer."""
 
     condition = Menu.customer == CUSTOMER.id
@@ -55,7 +55,8 @@ def get_menu_item_chart(ident: int) -> MenuItemChart:
 
 
 def get_menu_item_charts(
-        menu: Optional[Union[Menu, int]] = None) -> ModelSelect:
+        menu: Optional[Union[Menu, int]] = None
+) -> Select:
     """Selects the menu item charts of the current customer."""
 
     condition = Menu.customer == CUSTOMER.id

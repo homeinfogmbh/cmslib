@@ -4,7 +4,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Union
 
-from peewee import ForeignKeyField, IntegerField, ModelSelect
+from peewee import ForeignKeyField, IntegerField, Select
 
 from peeweeplus import EnumField, HTMLCharField, HTMLTextField, Transaction
 
@@ -48,7 +48,7 @@ class Poll(Chart):
         return transaction
 
     @property
-    def sorted_options(self) -> ModelSelect:
+    def sorted_options(self) -> Select:
         """Returns sorted options."""
         return self.options.order_by(Option.index)
 

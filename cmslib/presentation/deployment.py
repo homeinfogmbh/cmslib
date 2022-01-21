@@ -2,7 +2,7 @@
 
 from typing import Iterator, Union
 
-from peewee import ModelSelect
+from peewee import Select
 
 from hwdb import Deployment
 from mdb import Address
@@ -79,19 +79,19 @@ class Presentation(Presentation):   # pylint: disable=E0102
             yield IndexedBaseChart(deployment_base_chart.index,
                                    deployment_base_chart.base_chart)
 
-    def get_configurations(self) -> ModelSelect:
+    def get_configurations(self) -> Select:
         """Selects directly attached configurations."""
         return Configuration.select(cascade=True).join_from(
             Configuration, DeploymentConfiguration).where(
             DeploymentConfiguration.deployment == self.deployment)
 
-    def get_memberships(self) -> ModelSelect:
+    def get_memberships(self) -> Select:
         """Selects groups this deployment is a member of."""
         return Group.select(cascade=True).join_from(
             Group, GroupMemberDeployment).where(
             GroupMemberDeployment.deployment == self.deployment)
 
-    def get_menus(self) -> ModelSelect:
+    def get_menus(self) -> Select:
         """Selects menus of this deployment."""
         return Menu.select(cascade=True).join_from(Menu, DeploymentMenu).where(
             DeploymentMenu.deployment == self.deployment)

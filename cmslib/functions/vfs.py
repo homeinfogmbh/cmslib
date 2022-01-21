@@ -1,6 +1,6 @@
 """VFS related functions."""
 
-from peewee import JOIN, ModelSelect
+from peewee import JOIN, Select
 
 from his import CUSTOMER
 
@@ -16,14 +16,14 @@ __all__ = [
 ]
 
 
-def get_directories() -> ModelSelect:
+def get_directories() -> Select:
     """Lists directories of the current customer."""
 
     return Directory.select(cascade=True).where(
         Directory.customer == CUSTOMER.id)
 
 
-def get_root() -> ModelSelect:
+def get_root() -> Select:
     """Lists root directories of the current customer."""
 
     return get_directories().where(Directory.parent >> None)
@@ -35,7 +35,7 @@ def get_directory(ident: int) -> Directory:
     return get_directories().where(Directory.id == ident).get()
 
 
-def get_unassigned_base_charts() -> ModelSelect:
+def get_unassigned_base_charts() -> Select:
     """Lists unassigned base charts of the current customer."""
 
     return BaseChart.select(cascade=True).join_from(

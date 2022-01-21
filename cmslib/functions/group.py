@@ -1,6 +1,6 @@
 """Group related functions."""
 
-from typing import Callable, Iterable, Iterator, Optional, Union
+from typing import Iterator, Optional, Union
 
 from peewee import Select
 

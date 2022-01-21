@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from peewee import JOIN, ForeignKeyField, IntegerField, ModelSelect
+from peewee import JOIN, ForeignKeyField, IntegerField, Select
 
 from mdb import Address, Company, Customer
 
@@ -27,7 +27,7 @@ class _GroupContent(DSCMS4Model):
     group = ForeignKeyField(Group, column_name='group', on_delete='CASCADE')
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
         """Selects records."""
         if not cascade:
             return super().select(*args, **kwargs)
@@ -58,7 +58,7 @@ class GroupBaseChart(_GroupContent):
         return record
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
         """Selects records."""
         if not cascade:
             return super().select(*args, **kwargs)
@@ -92,7 +92,7 @@ class GroupConfiguration(_GroupContent):
         Configuration, column_name='configuration', on_delete='CASCADE')
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
         """Selects records."""
         if not cascade:
             return super().select(*args, **kwargs)
@@ -120,7 +120,7 @@ class GroupMenu(_GroupContent):
     menu = ForeignKeyField(Menu, column_name='menu', on_delete='CASCADE')
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
         """Selects records."""
         if not cascade:
             return super().select(*args, **kwargs)
