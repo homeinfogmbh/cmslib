@@ -45,7 +45,7 @@ def get_deployments(content: bool = False) -> ModelSelect:
 
 def with_deployment(function: Callable) -> Callable:
     """Decorator to pass a deployment ORM model
-    derived from it's id to the wrapped function.
+    derived from its id to the wrapped function.
     """
 
     def wrapper(ident: int, *args, **kwargs):
