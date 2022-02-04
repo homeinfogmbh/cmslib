@@ -56,7 +56,7 @@ class Groups:
         }
 
     def group(self, ident: int) -> Group:
-        """Yields groups with the given IDs."""
+        """Returns the group with the given ID."""
         try:
             return self._groups[ident]
         except KeyError as key_error:
