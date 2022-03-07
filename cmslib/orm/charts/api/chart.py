@@ -5,7 +5,7 @@ from peewee import JOIN, ForeignKeyField, Select
 from mdb import Company, Customer
 from peeweeplus import Transaction
 
-from cmslib import dom  # pylint: disable=E0611
+from cmslib import dom
 from cmslib.orm.charts.api.base_chart import BaseChart
 from cmslib.orm.charts.api.common import CHARTS, ChartMode
 from cmslib.orm.common import DSCMS4Model
