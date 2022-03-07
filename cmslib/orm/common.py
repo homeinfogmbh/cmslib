@@ -43,7 +43,8 @@ class CustomerModel(DSCMS4Model):
     """Entity that relates to a customer."""
 
     customer = ForeignKeyField(
-        Customer, column_name='customer', on_delete='CASCADE', lazy_load=False)
+        Customer, column_name='customer', on_delete='CASCADE', lazy_load=False
+    )
 
     def __str__(self):
         """Returns the models' ID and class."""
