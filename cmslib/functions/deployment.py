@@ -17,6 +17,10 @@ from cmslib.orm.content.deployment import DeploymentMenu
 __all__ = ['get_deployment', 'get_deployments', 'with_deployment']
 
 
+class AssocDeployment:
+    """Deployment with associated data."""
+
+
 def get_deployment(ident: int) -> Deployment:
     """Returns the respective deployment."""
 

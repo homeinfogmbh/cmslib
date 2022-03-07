@@ -24,7 +24,7 @@ __all__ = [
 class DeploymentContent(DSCMS4Model):
     """Common abstract content mapping."""
 
-    deplyoment = ForeignKeyField(
+    deployment = ForeignKeyField(
         Deployment, column_name='deployment', on_delete='CASCADE')
 
     @classmethod
