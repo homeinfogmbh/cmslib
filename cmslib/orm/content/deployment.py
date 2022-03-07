@@ -25,21 +25,21 @@ class DeploymentContent(DSCMS4Model):
     """Common abstract content mapping."""
 
     deployment = ForeignKeyField(
-        Deployment, column_name='deployment', on_delete='CASCADE')
+        Deployment, column_name='deployment', on_delete='CASCADE'
+    )
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
+    def select(cls, *args, cascade: bool = False) -> Select:
         """Selects records."""
         if not cascade:
-            return super().select(*args, **kwargs)
+            return super().select(*args)
 
         deployment_address = Address.alias()
         lpt_address = Address.alias()
-        args = {
-            cls, Deployment, Customer, Company, Address,
-            deployment_address, lpt_address, *args
-        }
-        return super().select(*args, **kwargs).join_from(
+        return super().select(*{
+            cls, Deployment, Customer, Company, Address, deployment_address,
+            lpt_address, *args
+        }).join_from(
             cls, Deployment).join(Customer).join(Company).join(
             Address, join_type=JOIN.LEFT_OUTER).join_from(
             Deployment, deployment_address,
@@ -53,11 +53,12 @@ class DeploymentContent(DSCMS4Model):
 class DeploymentBaseChart(DeploymentContent):
     """Association of a base chart with a Deployment."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'deployment_base_chart'
 
     base_chart = ForeignKeyField(
-        BaseChart, column_name='base_chart', on_delete='CASCADE')
+        BaseChart, column_name='base_chart', on_delete='CASCADE'
+    )
     index = IntegerField(default=0)
 
     @classmethod
@@ -70,23 +71,21 @@ class DeploymentBaseChart(DeploymentContent):
         return record
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
+    def select(cls, *args, cascade: bool = False) -> Select:
         """Selects records."""
         if not cascade:
-            return super().select(*args, **kwargs)
+            return super().select(*args)
 
         base_chart_customer = Customer.alias()
         base_chart_company = Company.alias()
         base_chart_address = Address.alias()
-        args = {
+        return super().select(*{
             cls, BaseChart, base_chart_customer, base_chart_company,
             base_chart_address, *args
-        }
-        return super().select(*args, cascade=True, **kwargs).join_from(
-            cls, BaseChart).join(
-            base_chart_customer).join(
-            base_chart_company).join(
-            base_chart_address, join_type=JOIN.LEFT_OUTER)
+        }, cascade=True).join_from(cls, BaseChart).join(
+            base_chart_customer).join(base_chart_company).join(
+            base_chart_address, join_type=JOIN.LEFT_OUTER
+        )
 
     @property
     def chart(self) -> Chart:
@@ -97,52 +96,53 @@ class DeploymentBaseChart(DeploymentContent):
 class DeploymentConfiguration(DeploymentContent):
     """Association of a configuration with a Deployment."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'deployment_configuration'
 
     configuration = ForeignKeyField(
-        Configuration, column_name='configuration', on_delete='CASCADE')
+        Configuration, column_name='configuration', on_delete='CASCADE'
+    )
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
+    def select(cls, *args, cascade: bool = False) -> Select:
         """Selects records."""
         if not cascade:
-            return super().select(*args, **kwargs)
+            return super().select(*args)
 
         configuration_customer = Customer.alias()
         configuration_company = Company.alias()
         configuration_address = Address.alias()
-        args = {
+        return super().select(*{
             cls, Configuration, configuration_customer, configuration_company,
             configuration_address, *args
-        }
-        return super().select(*args, cascade=True, **kwargs).join_from(
+        }, cascade=True).join_from(
             cls, Configuration).join(configuration_customer).join(
             configuration_company).join(
-            configuration_address, join_type=JOIN.LEFT_OUTER)
+            configuration_address, join_type=JOIN.LEFT_OUTER
+        )
 
 
 class DeploymentMenu(DeploymentContent):
     """Association of a menu with a Deployment."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'deployment_menu'
 
     menu = ForeignKeyField(Menu, column_name='menu', on_delete='CASCADE')
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
+    def select(cls, *args, cascade: bool = False) -> Select:
         """Selects records."""
         if not cascade:
-            return super().select(*args, **kwargs)
+            return super().select(*args)
 
         menu_customer = Customer.alias()
         menu_company = Company.alias()
         menu_address = Address.alias()
-        args = {cls, Menu, menu_customer, menu_company, menu_address, *args}
-        return super().select(*args, cascade=True, **kwargs).join_from(
-            cls, Menu).join(menu_customer).join(menu_company).join(
-            menu_address, join_type=JOIN.LEFT_OUTER)
+        return super().select(*{
+            cls, Menu, menu_customer, menu_company, menu_address, *args
+        }, cascade=True).join_from(cls, Menu).join(menu_customer).join(
+            menu_company).join(menu_address, join_type=JOIN.LEFT_OUTER)
 
 
 MODELS = (DeploymentBaseChart, DeploymentConfiguration, DeploymentMenu)
