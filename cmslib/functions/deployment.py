@@ -150,7 +150,7 @@ class AssocDeployments:
         result = defaultdict(list)
 
         for system in self.systems:
-            if deployment := system.deplyoment:
+            if deployment := system.deployment:
                 result[deployment].append(system.id)
 
         return result
