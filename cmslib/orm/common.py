@@ -60,7 +60,7 @@ class CustomerModel(DSCMS4Model):
         context exists, the current HIS customer will be used.
         """
         if customer is not None:
-            LOGGER.warning('Explicitely set customer to: %s.', customer)
+            LOGGER.warning('Explicitly set customer to: %s.', customer)
         elif has_request_context():
             customer = CUSTOMER.id
         else:
