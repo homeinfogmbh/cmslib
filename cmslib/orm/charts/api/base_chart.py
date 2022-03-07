@@ -13,7 +13,6 @@ from peewee import BooleanField
 from peewee import CharField
 from peewee import DateTimeField
 from peewee import ForeignKeyField
-from peewee import Model
 from peewee import Select
 from peewee import SmallIntegerField
 from peewee import UUIDField
