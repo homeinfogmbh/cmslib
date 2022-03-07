@@ -122,7 +122,6 @@ class AssocDeployments:
         for dbc in self.deployment_base_charts:
             result[dbc.deployment_id].append(dbc.base_chart)
 
-        print('Base charts map:', result, flush=True)
         return result
 
     @property
@@ -133,7 +132,6 @@ class AssocDeployments:
         for dep_conf in self.deployment_configurations:
             result[dep_conf.deployment_id].append(dep_conf.configuration)
 
-        print('Configurations map:', result, flush=True)
         return result
 
     @property
@@ -144,7 +142,6 @@ class AssocDeployments:
         for deployment_menu in self.deployment_menus:
             result[deployment_menu.deployment_id].append(deployment_menu.menu)
 
-        print('Menus map:', result, flush=True)
         return result
 
     @property
