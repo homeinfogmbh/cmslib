@@ -24,29 +24,29 @@ class AssocDeployment(NamedTuple):
     """An associated deployment."""
 
     deployment: Deployment
-    base_charts_map: dict[Deployment, list[BaseChart]]
-    configurations_map: dict[Deployment, list[Configuration]]
-    menus_map: dict[Deployment, list[Menu]]
-    systems_map: dict[Deployment, list[int]]
+    base_charts_map: dict[int, list[BaseChart]]
+    configurations_map: dict[int, list[Configuration]]
+    menus_map: dict[int, list[Menu]]
+    systems_map: dict[int, list[int]]
 
     def to_json(self, **kwargs) -> dict[str, Any]:
         """Returns a JSON-ish dict."""
         deployment = self.deployment.to_json(**kwargs)
-        deployment['systems'] = self.systems_map.get(self.deployment, [])
+        deployment['systems'] = self.systems_map.get(self.deployment.id, [])
         return {
             'deployment': deployment,
             'content': {
                 'charts': [
                     base_chart.chart.to_json() for base_chart in
-                    self.base_charts_map.get(self.deployment, [])
+                    self.base_charts_map.get(self.deployment.id, [])
                 ],
                 'configurations': [
                     configuration.to_json() for configuration in
-                    self.configurations_map.get(self.deployment, [])
+                    self.configurations_map.get(self.deployment.id, [])
                 ],
                 'menus': [
                     menu.to_json() for menu in
-                    self.menus_map.get(self.deployment, [])
+                    self.menus_map.get(self.deployment.id, [])
                 ]
             }
         }
@@ -115,42 +115,42 @@ class AssocDeployments:
         return System.select().where(System.deployment << self.ids)
 
     @property
-    def base_charts_map(self) -> dict[Deployment, list[BaseChart]]:
+    def base_charts_map(self) -> dict[int, list[BaseChart]]:
         """Returns a map of deployments and base charts."""
         result = defaultdict(list)
 
         for dbc in self.deployment_base_charts:
-            result[dbc.deployment].append(dbc.base_chart)
+            result[dbc.deployment_id].append(dbc.base_chart)
 
         return result
 
     @property
-    def configurations_map(self) -> dict[Deployment, list[Configuration]]:
+    def configurations_map(self) -> dict[int, list[Configuration]]:
         """Returns a map of deployments and configurations."""
         result = defaultdict(list)
 
         for dep_conf in self.deployment_configurations:
-            result[dep_conf.deployment].append(dep_conf.configuration)
+            result[dep_conf.deployment_id].append(dep_conf.configuration)
 
         return result
 
     @property
-    def menus_map(self) -> dict[Deployment, list[Menu]]:
+    def menus_map(self) -> dict[int, list[Menu]]:
         """Returns a map of deployments and menus."""
         result = defaultdict(list)
 
         for deployment_menu in self.deployment_menus:
-            result[deployment_menu.deployment].append(deployment_menu.menu)
+            result[deployment_menu.deployment_id].append(deployment_menu.menu)
 
         return result
 
     @property
-    def systems_map(self) -> dict[Deployment, list[int]]:
+    def systems_map(self) -> dict[int, list[int]]:
         """Returns a map of deployments and system IDs."""
         result = defaultdict(list)
 
         for system in self.systems:
-            if deployment := system.deployment:
+            if deployment := system.deployment_id:
                 result[deployment].append(system.id)
 
         return result
