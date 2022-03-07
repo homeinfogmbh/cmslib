@@ -76,7 +76,7 @@ class AssocDeployments:
         """Selects deployment base charts for the respective deployments."""
         return DeploymentBaseChart.select(
             DeploymentBaseChart, BaseChart
-        ).join(DeploymentBaseChart).where(
+        ).join(BaseChart).where(
             (DeploymentBaseChart.deployment << self.deployments) & self.trashed
         )
 
