@@ -29,10 +29,8 @@ class AssocDeployment(NamedTuple):
     menus_map: dict[int, list[Menu]]
     systems_map: dict[int, list[int]]
 
-    @property
-    def id(self) -> int:
-        """Returns the deployment ID."""
-        return self.deployment.id
+    def __getattr__(self, item):
+        return getattr(self.deployment, item)
 
     def to_json(self, **kwargs) -> dict[str, Any]:
         """Returns a JSON-ish dict."""
