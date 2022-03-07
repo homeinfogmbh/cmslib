@@ -1,7 +1,7 @@
 """Deployment-related functions."""
 
 from collections import defaultdict
-from typing import Any, Callable, Iterable, Union
+from typing import Any, Callable, Iterable, Iterator, NamedTuple, Union
 
 from peewee import Expression, Select
 
@@ -20,7 +20,36 @@ from cmslib.orm.menu import Menu
 __all__ = ['get_deployment', 'get_deployments', 'with_deployment']
 
 
-class AssocDeployment:
+class AssocDeployment(NamedTuple):
+    """An associated deployment."""
+
+    deployment: Deployment
+    base_charts_map: dict[Deployment, list[BaseChart]]
+    configurations_map: dict[Deployment, list[Configuration]]
+    menus_map: dict[Deployment, list[Menu]]
+
+    def to_json(self, **kwargs) -> dict[str, Any]:
+        """Returns a JSON-ish dict."""
+        return {
+            'deployment': self.deployment.to_json(**kwargs),
+            'content': {
+                'charts': [
+                    base_chart.chart.to_json() for base_chart in
+                    self.base_charts_map.get(self.deployment, [])
+                ],
+                'configurations': [
+                    configuration.to_json() for configuration in
+                    self.configurations_map.get(self.deployment, [])
+                ],
+                'menus': [
+                    menu.to_json() for menu in
+                    self.menus_map.get(self.deployment, [])
+                ]
+            }
+        }
+
+
+class AssocDeployments:
     """Deployment with associated data."""
 
     def __init__(
@@ -31,6 +60,16 @@ class AssocDeployment:
         """Sets the deployments and trashed expression for charts."""
         self.deployments = deployments
         self.trashed = trashed
+
+    def __iter__(self) -> Iterator[AssocDeployment]:
+        base_charts_map = self.base_charts_map
+        configurations_map = self.configurations_map
+        menus_map = self.menus_map
+
+        for deployment in self.deployments:
+            yield AssocDeployment(
+                deployment, base_charts_map, configurations_map, menus_map
+            )
 
     @property
     def deployment_base_charts(self) -> Select:
@@ -68,7 +107,7 @@ class AssocDeployment:
         return result
 
     @property
-    def configuration_map(self) -> dict[Deployment, list[Configuration]]:
+    def configurations_map(self) -> dict[Deployment, list[Configuration]]:
         """Returns a map of deployments and configurations."""
         result = defaultdict(list)
 
@@ -78,7 +117,7 @@ class AssocDeployment:
         return result
 
     @property
-    def menu_map(self) -> dict[Deployment, list[Menu]]:
+    def menus_map(self) -> dict[Deployment, list[Menu]]:
         """Returns a map of deployments and menus."""
         result = defaultdict(list)
 
@@ -86,30 +125,6 @@ class AssocDeployment:
             result[deployment_menu.deployment].append(deployment_menu.menu)
 
         return result
-
-    def to_json(self, **kwargs) -> list[dict[str, Any]]:
-        """Returns a JSON-ish dict."""
-        base_charts = self.base_charts_map
-        configurations = self.configuration_map
-        menus = self.menu_map
-        return [
-            {
-                'deployment': deployment.to_json(**kwargs),
-                'content': {
-                    'charts': [
-                        base_chart.chart.to_json() for base_chart in
-                        base_charts.get(deployment, [])
-                    ],
-                    'configurations': [
-                        configuration.to_json() for configuration in
-                        configurations.get(deployment, [])
-                    ],
-                    'menus': [
-                        menu.to_json() for menu in menus.get(deployment, [])
-                    ]
-                }
-            } for deployment in self.deployments
-        ]
 
 
 def get_deployment(ident: int, customer: Union[Customer, int]) -> Deployment:
@@ -123,7 +138,7 @@ def get_deployments(
         testing: bool = True,
         content: bool = False,
         trashed: Union[Expression, bool] = False
-) -> Union[Select, AssocDeployment]:
+) -> Union[Select, AssocDeployments]:
     """Selects the deployments of the current customer."""
 
     condition = Deployment.customer == customer
@@ -136,7 +151,7 @@ def get_deployments(
     if not content:
         return deployments
 
-    return AssocDeployment(deployments, trashed=trashed)
+    return AssocDeployments(deployments, trashed=trashed)
 
 
 def with_deployment(function: Callable) -> Callable:
