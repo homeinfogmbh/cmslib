@@ -21,7 +21,7 @@ __all__ = ['get_deployment', 'get_deployments', 'with_deployment']
 
 
 class AssocDeployment(NamedTuple):
-    """An associated deployment."""
+    """Deployment with associated data."""
 
     deployment: Deployment
     base_charts_map: dict[int, list[BaseChart]]
@@ -56,7 +56,7 @@ class AssocDeployment(NamedTuple):
 
 
 class AssocDeployments:
-    """Deployment with associated data."""
+    """Deployments with associated data."""
 
     def __init__(
             self,
