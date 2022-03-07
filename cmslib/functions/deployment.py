@@ -6,7 +6,7 @@ from typing import Any, Callable, Iterable, Iterator, NamedTuple, Union
 from peewee import Expression, Select
 
 from his import CUSTOMER
-from hwdb import Deployment
+from hwdb import Deployment, System
 from mdb import Customer
 
 from cmslib.orm.charts import BaseChart
@@ -27,11 +27,14 @@ class AssocDeployment(NamedTuple):
     base_charts_map: dict[Deployment, list[BaseChart]]
     configurations_map: dict[Deployment, list[Configuration]]
     menus_map: dict[Deployment, list[Menu]]
+    systems_map: dict[Deployment, list[int]]
 
     def to_json(self, **kwargs) -> dict[str, Any]:
         """Returns a JSON-ish dict."""
+        deployment = self.deployment.to_json(**kwargs)
+        deployment['systems'] = self.systems_map.get(self.deployment, [])
         return {
-            'deployment': self.deployment.to_json(**kwargs),
+            'deployment': deployment,
             'content': {
                 'charts': [
                     base_chart.chart.to_json() for base_chart in
@@ -65,10 +68,15 @@ class AssocDeployments:
         base_charts_map = self.base_charts_map
         configurations_map = self.configurations_map
         menus_map = self.menus_map
+        systems_map = self.systems_map
 
         for deployment in self.deployments:
             yield AssocDeployment(
-                deployment, base_charts_map, configurations_map, menus_map
+                deployment,
+                base_charts_map,
+                configurations_map,
+                menus_map,
+                systems_map
             )
 
     @property
@@ -102,6 +110,11 @@ class AssocDeployments:
         )
 
     @property
+    def systems(self) -> Select:
+        """Selects systems of the respective deployments."""
+        return System.select().where(System.deployment << self.ids)
+
+    @property
     def base_charts_map(self) -> dict[Deployment, list[BaseChart]]:
         """Returns a map of deployments and base charts."""
         result = defaultdict(list)
@@ -128,6 +141,17 @@ class AssocDeployments:
 
         for deployment_menu in self.deployment_menus:
             result[deployment_menu.deployment].append(deployment_menu.menu)
+
+        return result
+
+    @property
+    def systems_map(self) -> dict[Deployment, list[int]]:
+        """Returns a map of deployments and system IDs."""
+        result = defaultdict(list)
+
+        for system in self.systems:
+            if deployment := system.deplyoment:
+                result[deployment].append(system.id)
 
         return result
 
