@@ -35,13 +35,13 @@ class Chart(DSCMS4Model):
         return transaction
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
+    def select(cls, *args, cascade: bool = False) -> Select:
         """Selects records."""
         if not cascade:
-            return super().select(*args, **kwargs)
+            return super().select(*args)
 
         return super().select(
-            cls, BaseChart, Customer, Company, Schedule, *args, **kwargs).join(
+            cls, BaseChart, Customer, Company, Schedule, *args).join(
             BaseChart).join(Customer).join(Company).join_from(
             BaseChart, Schedule, join_type=JOIN.LEFT_OUTER)
 
