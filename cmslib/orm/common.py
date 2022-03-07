@@ -34,7 +34,7 @@ class DSCMS4Model(JSONModel):
         schema = database.database
 
     def __str__(self):
-        """Returns the models's ID and class."""
+        """Returns the models' ID and class."""
         cls = type(self)
         return f'{self.id}@{cls.__name__}'
 
