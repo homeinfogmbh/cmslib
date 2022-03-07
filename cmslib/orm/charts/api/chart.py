@@ -19,7 +19,8 @@ class Chart(DSCMS4Model):
     """Abstract basic chart."""
 
     base = ForeignKeyField(
-        BaseChart, column_name='base', on_delete='CASCADE', lazy_load=False)
+        BaseChart, column_name='base', on_delete='CASCADE', lazy_load=False
+    )
 
     def __init_subclass__(cls):
         """Registers the subclass as new chart."""
@@ -43,7 +44,8 @@ class Chart(DSCMS4Model):
         return super().select(
             cls, BaseChart, Customer, Company, Schedule, *args).join(
             BaseChart).join(Customer).join(Company).join_from(
-            BaseChart, Schedule, join_type=JOIN.LEFT_OUTER)
+            BaseChart, Schedule, join_type=JOIN.LEFT_OUTER
+        )
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the chart from a JSON-ish dict."""
@@ -52,8 +54,12 @@ class Chart(DSCMS4Model):
         transaction.add(self, primary=True)
         return transaction
 
-    def to_json(self, mode: ChartMode = ChartMode.FULL, fk_fields: bool = True,
-                **kwargs) -> dict:
+    def to_json(
+            self,
+            mode: ChartMode = ChartMode.FULL,
+            fk_fields: bool = True,
+            **kwargs
+    ) -> dict:
         """Returns a JSON-ish dictionary."""
         if mode == ChartMode.FULL:
             json = super().to_json(**kwargs)
