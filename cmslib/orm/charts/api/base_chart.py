@@ -54,7 +54,8 @@ class BaseChart(CustomerModel):
     log = BooleanField(default=False)
     schedule = ForeignKeyField(
         Schedule, column_name='schedule', null=True, on_delete='SET NULL',
-        on_update='CASCADE', lazy_load=False)
+        on_update='CASCADE', lazy_load=False
+    )
 
     @classmethod
     def from_json(
@@ -116,7 +117,8 @@ class BaseChart(CustomerModel):
 
         return super().select(
             cls, Schedule, *args, cascade=cascade, **kwargs).join_from(
-            BaseChart, Schedule, join_type=JOIN.LEFT_OUTER)
+            BaseChart, Schedule, join_type=JOIN.LEFT_OUTER
+        )
 
     @property
     def active(self) -> bool:
@@ -230,5 +232,6 @@ class ChartPIN(DSCMS4Model):
 
     base_chart = ForeignKeyField(
         BaseChart, column_name='base_chart', backref='pins',
-        on_delete='CASCADE', on_update='CASCADE')
+        on_delete='CASCADE', on_update='CASCADE'
+    )
     pin = HTMLCharField(8)
