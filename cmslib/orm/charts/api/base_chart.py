@@ -20,7 +20,7 @@ from peewee import UUIDField
 
 from peeweeplus import EnumField, HTMLCharField, HTMLTextField, Transaction
 
-from cmslib import dom  # pylint: disable=E0611
+from cmslib import dom
 from cmslib.exceptions import OrphanedBaseChart, AmbiguousBaseChart
 from cmslib.orm.charts.api.common import CHARTS
 from cmslib.orm.charts.api.common import Transitions
@@ -38,7 +38,7 @@ LOGGER = getLogger(__file__)
 class BaseChart(CustomerModel):
     """Common basic chart data model."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'base_chart'
 
     type = CharField()
@@ -201,7 +201,7 @@ class BaseChart(CustomerModel):
         """Returns an XML DOM of the base chart."""
         xml = dom.BaseChart()
         xml.id = self.id
-        xml.uuid = self.uuid.hex    # pylint: disable=E1101
+        xml.uuid = self.uuid.hex
         xml.title = self.title
         xml.description = self.description
         xml.duration = self.duration
@@ -223,10 +223,10 @@ class BaseChart(CustomerModel):
         return xml
 
 
-class ChartPIN(DSCMS4Model):    # pylint: disable=R0903
+class ChartPIN(DSCMS4Model):
     """PINs to lock a chart."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_pin'
 
     base_chart = ForeignKeyField(
