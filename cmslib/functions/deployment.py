@@ -175,7 +175,7 @@ def get_deployments(
     if not testing:
         condition &= Deployment.testing == 0
 
-    deployments = Deployment.select(cascade=True).where(condition).distinct()
+    deployments = Deployment.select(cascade=True).where(condition)
 
     if not content:
         return deployments
