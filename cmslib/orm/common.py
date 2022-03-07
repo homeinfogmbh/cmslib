@@ -29,7 +29,7 @@ UNCHANGED = object()    # Sentinel object for unchanged JSON fields.
 class DSCMS4Model(JSONModel):
     """Base Model for the DSCMS4 database."""
 
-    class Meta:     # pylint: disable=C0115,R0903
+    class Meta:
         database = DATABASE
         schema = database.database
 
