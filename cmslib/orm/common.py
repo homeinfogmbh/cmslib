@@ -46,7 +46,7 @@ class CustomerModel(DSCMS4Model):
         Customer, column_name='customer', on_delete='CASCADE', lazy_load=False)
 
     def __str__(self):
-        """Returns the models's ID and class."""
+        """Returns the models' ID and class."""
         cls = type(self)
         return f'{self.id}:{self.customer_id}@{cls.__name__}'
 
