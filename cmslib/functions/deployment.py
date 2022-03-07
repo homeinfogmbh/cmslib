@@ -34,7 +34,7 @@ class AssocDeployment(NamedTuple):
 
     def to_json(self, **kwargs) -> dict[str, Any]:
         """Returns a JSON-ish dict."""
-        deployment = self.deployment.to_json(**kwargs)
+        deployment = self.deployment.to_json(address=True, **kwargs)
         deployment['systems'] = self.systems_map.get(self.deployment.id, [])
         return {
             'deployment': deployment,
