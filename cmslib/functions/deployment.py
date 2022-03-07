@@ -154,6 +154,11 @@ class AssocDeployments:
                 result[deployment].append(system.id)
 
         print('SYSTEMS MAP:', result, flush=True)
+
+        for key in result:
+            print('Type:', type(key), flush=True)
+            break
+
         return result
 
 
