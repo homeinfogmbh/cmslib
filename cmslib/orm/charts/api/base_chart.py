@@ -110,13 +110,13 @@ class BaseChart(CustomerModel):
         return CheckResult(frozenset(orphans), frozenset(ambiguous))
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
+    def select(cls, *args, cascade: bool = False) -> Select:
         """Selects records."""
         if not cascade:
-            return super().select(*args, **kwargs)
+            return super().select(*args)
 
         return super().select(
-            cls, Schedule, *args, cascade=cascade, **kwargs).join_from(
+            cls, Schedule, *args, cascade=cascade).join_from(
             BaseChart, Schedule, join_type=JOIN.LEFT_OUTER
         )
 
