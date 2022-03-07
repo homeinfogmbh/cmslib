@@ -7,6 +7,7 @@ from peewee import Expression, Select
 
 from his import CUSTOMER
 from hwdb import Deployment
+from mdb import Customer
 
 from cmslib.orm.charts import BaseChart
 from cmslib.orm.configuration import Configuration
@@ -111,21 +112,26 @@ class AssocDeployment:
         ]
 
 
-def get_deployment(ident: int) -> Deployment:
+def get_deployment(ident: int, customer: Union[Customer, int]) -> Deployment:
     """Returns the respective deployment."""
 
-    return get_deployments().where(Deployment.id == ident).get()
+    return get_deployments(customer).where(Deployment.id == ident).get()
 
 
 def get_deployments(
+        customer: Union[Customer, int],
+        testing: bool = True,
         content: bool = False,
         trashed: Union[Expression, bool] = False
 ) -> Union[Select, AssocDeployment]:
     """Selects the deployments of the current customer."""
 
-    deployments = Deployment.select(cascade=True).where(
-        Deployment.customer == CUSTOMER.id
-    ).distinct()
+    condition = Deployment.customer == customer
+
+    if not testing:
+        condition &= Deployment.testing == 0
+
+    deployments = Deployment.select(cascade=True).where(condition).distinct()
 
     if not content:
         return deployments
@@ -140,6 +146,6 @@ def with_deployment(function: Callable) -> Callable:
 
     def wrapper(ident: int, *args, **kwargs):
         """Wraps the function."""
-        return function(get_deployment(ident), *args, **kwargs)
+        return function(get_deployment(ident, CUSTOMER.id), *args, **kwargs)
 
     return wrapper
