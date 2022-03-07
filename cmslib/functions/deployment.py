@@ -72,12 +72,17 @@ class AssocDeployments:
             )
 
     @property
+    def ids(self) -> set[int]:
+        """Returns the deployment IDs."""
+        return {deployment.id for deployment in self.deployments}
+
+    @property
     def deployment_base_charts(self) -> Select:
         """Selects deployment base charts for the respective deployments."""
         return DeploymentBaseChart.select(
             DeploymentBaseChart, BaseChart
         ).join(BaseChart).where(
-            (DeploymentBaseChart.deployment << self.deployments) & self.trashed
+            (DeploymentBaseChart.deployment << self.ids) & self.trashed
         )
 
     @property
@@ -86,14 +91,14 @@ class AssocDeployments:
         return DeploymentConfiguration.select(
             DeploymentConfiguration, Configuration
         ).join(Configuration).where(
-            DeploymentConfiguration.deployment << self.deployments
+            DeploymentConfiguration.deployment << self.ids
         )
 
     @property
     def deployment_menus(self) -> Select:
         """Selects deployment menus of the respective deployments."""
         return DeploymentMenu.select(DeploymentMenu, Menu).join(Menu).where(
-            DeploymentMenu.deployment << self.deployments
+            DeploymentMenu.deployment << self.ids
         )
 
     @property
