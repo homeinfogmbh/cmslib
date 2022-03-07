@@ -74,25 +74,21 @@ class AssocDeployments:
     @property
     def deployment_base_charts(self) -> Select:
         """Selects deployment base charts for the respective deployments."""
-        return DeploymentBaseChart.select(
-            DeploymentBaseChart, BaseChart
-        ).join(BaseChart).where(
+        return DeploymentBaseChart.select().join(BaseChart).where(
             (DeploymentBaseChart.deployment << self.deployments) & self.trashed
         )
 
     @property
     def deployment_configurations(self) -> Select:
         """Selects deployment configurations of the respective deployments."""
-        return DeploymentConfiguration.select(
-            DeploymentConfiguration, Configuration
-        ).join(Configuration).where(
+        return DeploymentConfiguration.select().join(Configuration).where(
             DeploymentConfiguration.deployment << self.deployments
         )
 
     @property
     def deployment_menus(self) -> Select:
         """Selects deployment menus of the respective deployments."""
-        return DeploymentMenu.select(DeploymentMenu, Menu).join(Menu).where(
+        return DeploymentMenu.select().join(Menu).where(
             DeploymentMenu.deployment << self.deployments
         )
 
