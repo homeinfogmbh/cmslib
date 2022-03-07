@@ -5,13 +5,15 @@ The BaseChart contains information common to all chart types.
 
 from datetime import datetime
 from logging import getLogger
-from typing import Iterator
+from typing import Type
 from uuid import uuid4
 
 from peewee import JOIN
 from peewee import BooleanField
+from peewee import CharField
 from peewee import DateTimeField
 from peewee import ForeignKeyField
+from peewee import Model
 from peewee import Select
 from peewee import SmallIntegerField
 from peewee import UUIDField
@@ -39,6 +41,7 @@ class BaseChart(CustomerModel):
     class Meta:     # pylint: disable=C0111,R0903
         table_name = 'base_chart'
 
+    type = CharField()
     uuid = UUIDField(default=uuid4)
     title = HTMLCharField(255)
     description = HTMLTextField(null=True)
@@ -55,13 +58,19 @@ class BaseChart(CustomerModel):
         on_update='CASCADE', lazy_load=False)
 
     @classmethod
-    def from_json(cls, json: dict, skip: set = None,    # pylint: disable=W0221
-                  **kwargs) -> Transaction:
+    def from_json(
+            cls,
+            json: dict,
+            typ: str,
+            skip: set = None,
+            **kwargs
+    ) -> Transaction:
         """Creates a base chart from a JSON-ish dict."""
-        skip = {'uuid', *(skip or ())}
+        skip = {'type', 'uuid', *(skip or ())}
         pins = json.pop('pins', ())
         schedule = json.pop('schedule', None)
         record = super().from_json(json, skip=skip, **kwargs)
+        record.type = typ
         transaction = Transaction()
         transaction.add(record, primary=True)
 
@@ -116,24 +125,16 @@ class BaseChart(CustomerModel):
         return self.is_active_at(datetime.now())
 
     @property
-    def charts(self) -> Iterator[DSCMS4Model]:
+    def chart_class(self) -> Type[DSCMS4Model]:
         """Yields all charts that associate this base chart."""
-        for model in CHARTS.values():
-            for record in model.select(cascade=True).where(model.base == self):
-                yield record
+        return CHARTS[self.type]
 
     @property
     def chart(self) -> DSCMS4Model:
         """Returns the mapped implementation of this base chart."""
-        try:
-            match, *superfluous = self.charts
-        except ValueError:
-            raise OrphanedBaseChart(self) from None
-
-        if superfluous:
-            raise AmbiguousBaseChart(self, match, *superfluous)
-
-        return match
+        return (Chart := self.chart_class).select(cascade=True).where(
+            Chart.base == self
+        ).get()
 
     def _patch_pins(self, pins: dict, transaction: Transaction):
         """Patches the PINs."""
