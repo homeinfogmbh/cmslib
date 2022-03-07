@@ -71,14 +71,16 @@ class CustomerModel(DSCMS4Model):
         return record
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
+    def select(cls, *args, cascade: bool = False) -> Select:
         """Selects records."""
         if not cascade:
-            return super().select(*args, **kwargs)
+            return super().select(*args)
 
-        args = {cls, Customer, Company, Address, *args}
-        return super().select(*args, **kwargs).join(Customer).join(
-            Company).join(Address, join_type=JOIN.LEFT_OUTER)
+        return super().select(*{
+            cls, Customer, Company, Address, *args
+        }).join(Customer).join(Company).join(
+            Address, join_type=JOIN.LEFT_OUTER
+        )
 
 
 class TreeNode(CustomerModel):
