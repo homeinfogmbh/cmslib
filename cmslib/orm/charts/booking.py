@@ -21,7 +21,7 @@ DomModel = Union[dom.BriefChart, dom.Booking]
 class Booking(Chart):
     """Chart for booking."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_booking'
 
     rentee = BooleanField(null=True)
@@ -36,8 +36,11 @@ class Booking(Chart):
         transaction.primary.update_bookable_mappings(bookables, transaction)
         return transaction
 
-    def update_bookable_mappings(self, bookables: Iterable[int],
-                                 transaction: Transaction) -> None:
+    def update_bookable_mappings(
+            self,
+            bookables: Iterable[int],
+            transaction: Transaction
+    ) -> None:
         """Updates the bookable objects."""
         if bookables == UNCHANGED:
             return
@@ -82,14 +85,16 @@ class Booking(Chart):
         return xml
 
 
-class BookableMapping(DSCMS4Model):     # pylint: disable=R0903
+class BookableMapping(DSCMS4Model):
     """Many-to-many mapping of bookables and charts."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_booking_bookable_mapping'
 
     chart = ForeignKeyField(
         Booking, column_name='chart', backref='bookable_mappings',
-        on_delete='CASCADE', lazy_load=False)
+        on_delete='CASCADE', lazy_load=False
+    )
     bookable = ForeignKeyField(
-        Bookable, column_name='bookable', on_delete='CASCADE', lazy_load=False)
+        Bookable, column_name='bookable', on_delete='CASCADE', lazy_load=False
+    )
