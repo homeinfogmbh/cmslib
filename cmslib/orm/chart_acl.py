@@ -26,11 +26,11 @@ class ChartACL(CustomerModel):
         """Determines whether the respective
         user may use the given chart class.
         """
-        condition = cls.customer == customer
-        condition &= cls.chart_type == chart_class.__name__
-
         try:
-            cls.get(condition)
+            cls.get(
+                (cls.customer == customer)
+                & (cls.chart_type == chart_class.__name__)
+            )
         except cls.DoesNotExist:
             return False
 
