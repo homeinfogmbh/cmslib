@@ -6,6 +6,7 @@ from peewee import Select
 
 from his import CUSTOMER
 from hwdb import Deployment
+from mdb import Customer
 
 from cmslib.orm.group import Group, GroupMemberDeployment
 from cmslib.groups import Groups
@@ -21,16 +22,16 @@ __all__ = [
 ]
 
 
-def get_group(ident: int) -> Group:
-    """Returns the respective group of the current customer."""
+def get_group(ident: int, customer: Union[Customer, int]) -> Group:
+    """Returns the respective group of the given customer."""
 
-    return get_groups().where(Group.id == ident).get()
+    return get_groups(customer).where(Group.id == ident).get()
 
 
-def get_groups() -> Select:
-    """Selects the groups of the current customer."""
+def get_groups(customer: Union[Customer, int]) -> Select:
+    """Selects the groups of the given customer."""
 
-    return Group.select(cascade=True).where(Group.customer == CUSTOMER.id)
+    return Group.select(cascade=True).where(Group.customer == customer)
 
 
 def get_group_member_deployment(ident: int) -> GroupMemberDeployment:
