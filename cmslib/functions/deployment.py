@@ -156,7 +156,7 @@ class AssocDeployments:
 
 
 def get_deployment(ident: int, customer: Union[Customer, int]) -> Deployment:
-    """Returns the respective deployment."""
+    """Returns the respective deployment of the given customer."""
 
     return get_deployments(customer).where(Deployment.id == ident).get()
 
@@ -167,7 +167,7 @@ def get_deployments(
         content: bool = False,
         trashed: Union[Expression, bool] = False
 ) -> Union[Select, AssocDeployments]:
-    """Selects the deployments of the current customer."""
+    """Selects the deployments of the given customer."""
 
     condition = Deployment.customer == customer
 
@@ -183,8 +183,8 @@ def get_deployments(
 
 
 def with_deployment(function: Callable) -> Callable:
-    """Decorator to pass a deployment ORM model
-    derived from its id to the wrapped function.
+    """Decorator to pass a deployment ORM model derived from
+    its id and the current customer to the wrapped function.
     """
 
     def wrapper(ident: int, *args, **kwargs):
