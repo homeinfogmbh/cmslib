@@ -61,7 +61,7 @@ class AssocDeployments:
     def __init__(
             self,
             deployments: Iterable[Deployment],
-            trashed: Union[Expression, bool] = False
+            trashed: Union[Expression, bool] = True
     ):
         """Sets the deployments and trashed expression for charts."""
         self.deployments = deployments
