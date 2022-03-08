@@ -1,139 +1,74 @@
 """Charts related functions."""
 
-from typing import Iterator
+from typing import Iterable, Iterator, Type, Union
 
-from flask import request
-from peewee import Expression, ModelBase, Select
-from werkzeug.local import LocalProxy
+from peewee import Expression, Select
 
-from his import ACCOUNT, CUSTOMER
-from wsgilib import get_bool
+from mdb import Customer
 
-from cmslib.exceptions import InvalidChartType
 from cmslib.orm.chart_acl import ChartACL
-from cmslib.orm.charts import CHARTS, BaseChart, Chart, ChartMode
-from cmslib.orm.settings import Settings
+from cmslib.orm.charts import BaseChart, Chart
 
 
 __all__ = [
-    'CHART_TYPE',
-    'CHART_TYPES',
     'get_base_chart',
     'get_base_charts',
     'get_chart',
     'get_charts',
-    'get_chart_acls',
-    'get_mode',
-    'get_trashed'
+    'get_chart_acls'
 ]
 
 
-def _get_charts(cls: ModelBase) -> Select:
+def _get_charts(
+        typ: Type[Chart],
+        customer: Union[Customer, int],
+        trashed: Union[Expression, bool] = True
+) -> Select:
     """Selects charts of the given type for the current customer."""
 
-    return cls.select(cascade=True).where(
-        (BaseChart.customer == CUSTOMER.id) & get_trashed())
+    return typ.select(cascade=True).where(
+        (BaseChart.customer == customer) & trashed
+    )
 
 
-def _get_chart_types() -> Iterator[Chart]:
-    """Yields selected chart types."""
-
-    try:
-        type_names = request.args['types']
-    except KeyError:
-        yield from CHARTS.values()
-        return
-
-    for type_name in type_names.split(','):
-        try:
-            yield CHARTS[type_name]
-        except KeyError:
-            raise InvalidChartType(type_name) from None
-
-
-def _filtered_chart_types() -> Iterator[Chart]:
-    """Yields filtered chart types."""
-
-    for chart_type in _get_chart_types():
-        if ACCOUNT.root or ChartACL.can_use(CUSTOMER.id, chart_type):
-            yield chart_type
-
-
-CHART_TYPES = LocalProxy(_filtered_chart_types)
-
-
-def _get_chart_type() -> Chart:
-    """Returns the selected chart type."""
-
-    chart_type = request.args['type']
-
-    try:
-        chart_type = CHARTS[chart_type]
-    except KeyError:
-        raise InvalidChartType(chart_type) from None
-
-    if ACCOUNT.root or ChartACL.can_use(CUSTOMER.id, chart_type):
-        return chart_type
-
-    raise InvalidChartType(chart_type)
-
-
-CHART_TYPE = LocalProxy(_get_chart_type)
-
-
-def get_base_chart(ident: int) -> BaseChart:
+def get_base_chart(ident: int, customer: Union[Customer, int]) -> BaseChart:
     """Returns the respective base chart."""
 
-    return get_base_charts().where(BaseChart.id == ident).get()
+    return get_base_charts(customer).where(BaseChart.id == ident).get()
 
 
-def get_base_charts() -> Select:
+def get_base_charts(customer: Union[Customer, int]) -> Select:
     """Returns the base charts of the current customer."""
 
     return BaseChart.select(cascade=True).where(
-        BaseChart.customer == CUSTOMER.id)
+        BaseChart.customer == customer
+    )
 
 
-def get_chart(ident: int, cls: ModelBase = CHART_TYPE) -> Chart:
+def get_chart(
+        ident: int,
+        customer: Union[Customer, int],
+        typ: Type[Chart]
+) -> Chart:
     """Returns the selected chart."""
 
-    return _get_charts(cls).where(cls.id == ident).get()
+    return _get_charts(typ, customer).where(typ.id == ident).get()
 
 
-def get_charts() -> Iterator[Chart]:
+def get_charts(
+        customer: Union[Customer, int],
+        types: Iterable[Type[Chart]],
+        trashed: Union[Expression, bool] = True
+) -> Iterator[Chart]:
     """Lists the available charts."""
 
-    for cls in CHART_TYPES:
-        yield from _get_charts(cls)
+    for typ in types:
+        yield from _get_charts(typ, customer, trashed)
 
 
-def get_chart_acls() -> Select:
+def get_chart_acls(customer: Union[Customer, int]) -> Select:
     """Returns chart ACLs of the current customer."""
 
     return ChartACL.select(cascade=True).where(
-        ChartACL.customer == CUSTOMER.id)
-
-
-def get_mode() -> ChartMode:
-    """Determines the extend of the dataset."""
-
-    try:
-        mode = request.args['mode']
-    except KeyError:
-        return ChartMode.FULL
-
-    return ChartMode(mode)
-
-
-def get_trashed() -> Expression:
-    """Returns an expression to select base
-    charts with a certain trashed flag.
-    """
-
-    if (trashed := get_bool('trashed', default=None)) is None:
-        trashed = Settings.for_customer(CUSTOMER.id).trashed
-
-    if trashed is None:
-        return True
-
-    return BaseChart.trashed == trashed
+        ChartACL.customer == customer
+    )
