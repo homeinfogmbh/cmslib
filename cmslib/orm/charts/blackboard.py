@@ -37,12 +37,12 @@ class Format(Enum):
 class Blackboard(Chart):
     """A chart that may contain images."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_blackboard'
 
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
-        """Creates a new chart ffrom a JSON-ish dict."""
+        """Creates a new chart from a JSON-ish dict."""
         # Pop images first to exclude them from the
         # dictionary before invoking super().from_json().
         images = json.pop('images', ())
@@ -100,7 +100,7 @@ class Blackboard(Chart):
 class Image(DSCMS4Model):
     """Image for an ImageText chart."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_blackboard_image'
 
     chart = ForeignKeyField(
@@ -127,4 +127,5 @@ class Image(DSCMS4Model):
     def to_dom(self) -> dom.Attachment:
         """Returns an XML DOM of this record."""
         return attachment_dom(
-            self.file, format=self.format.value, index=self.index)
+            self.file, format=self.format.value, index=self.index
+        )
