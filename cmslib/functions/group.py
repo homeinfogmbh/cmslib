@@ -4,7 +4,6 @@ from typing import Iterator, Optional, Union
 
 from peewee import Select
 
-from his import CUSTOMER
 from hwdb import Deployment
 from mdb import Customer
 
@@ -34,19 +33,24 @@ def get_groups(customer: Union[Customer, int]) -> Select:
     return Group.select(cascade=True).where(Group.customer == customer)
 
 
-def get_group_member_deployment(ident: int) -> GroupMemberDeployment:
-    """Selects group members deployments."""
+def get_group_member_deployment(
+        ident: int,
+        customer: Union[Customer, int]
+) -> GroupMemberDeployment:
+    """Selects a group members deployment for the given customer."""
 
-    return get_group_member_deployments().where(
-        GroupMemberDeployment.id == ident).get()
+    return get_group_member_deployments(customer).where(
+        GroupMemberDeployment.id == ident
+    ).get()
 
 
 def get_group_member_deployments(
+        customer: Union[Customer, int],
         group: Optional[Union[Group, int]] = None
 ) -> Select:
-    """Selects group members deployments."""
+    """Selects group member deployments for the given customer."""
 
-    condition = Group.customer == CUSTOMER.id
+    condition = Group.customer == customer
 
     if group is not None:
         condition &= GroupMemberDeployment.group == group
