@@ -39,7 +39,7 @@ def get_deployment_base_chart(
         ident: int,
         customer: Union[Customer, int]
 ) -> DeploymentBaseChart:
-    """Returns the respective deployment base chart."""
+    """Returns the respective deployment base chart of the given customer."""
 
     return get_deployment_base_charts(customer).where(
         DeploymentBaseChart.id == ident
@@ -51,7 +51,10 @@ def get_deployment_base_charts(
         deployment: Optional[Union[Deployment, int]] = None,
         trashed: Union[Expression, bool] = True
 ) -> Select:
-    """Selects deployment base charts."""
+    """Selects deployment base charts of the given customer.
+
+    Optionally filter deployment base charts for the given deployment.
+    """
 
     condition = (BaseChart.customer == customer) & trashed
 
@@ -65,7 +68,9 @@ def get_deployment_configuration(
         ident: int,
         customer: Union[Customer, int]
 ) -> DeploymentConfiguration:
-    """Returns the respective deployment configuration."""
+    """Returns the respective deployment
+    configuration for the given customer.
+    """
 
     return get_deployment_configurations(customer).where(
         DeploymentConfiguration.id == ident
@@ -76,7 +81,7 @@ def get_deployment_configurations(
         customer: Union[Customer, int],
         deployment: Optional[Union[Deployment, int]] = None
 ) -> Select:
-    """Selects deployment configurations."""
+    """Selects deployment configurations of the given customer."""
 
     condition = Configuration.customer == customer
 
@@ -90,7 +95,7 @@ def get_deployment_menu(
         ident: int,
         customer: Union[Customer, int]
 ) -> DeploymentMenu:
-    """Returns the respective deployment menu."""
+    """Returns the respective deployment menu of the given customer."""
 
     return get_deployment_menus(customer).where(
         DeploymentMenu.id == ident
@@ -101,7 +106,7 @@ def get_deployment_menus(
         customer: Union[Customer, int],
         deployment: Optional[Union[Deployment, int]] = None
 ) -> Select:
-    """Selects deployment menus."""
+    """Selects deployment menus of the given customer."""
 
     condition = Menu.customer == customer
 
@@ -115,7 +120,7 @@ def get_group_base_chart(
         ident: int,
         customer: Union[Customer, int]
 ) -> GroupBaseChart:
-    """Returns the respective group base chart."""
+    """Returns the respective group base chart of the given customer."""
 
     return get_group_base_charts(customer).where(
         GroupBaseChart.id == ident
@@ -127,7 +132,10 @@ def get_group_base_charts(
         group: Optional[Union[Group, int]] = None,
         trashed: Union[Expression, bool] = True
 ) -> Select:
-    """Selects deployment base charts."""
+    """Selects deployment base charts of the given customer.
+
+    Optionally filter group base charts of the given groups.
+    """
 
     condition = (BaseChart.customer == customer) & trashed
 
@@ -141,7 +149,7 @@ def get_group_configuration(
         ident: int,
         customer: Union[Customer, int]
 ) -> GroupConfiguration:
-    """Returns the respective group configuration."""
+    """Returns the respective group configuration of the given customer."""
 
     return get_group_configurations(customer).where(
         GroupConfiguration.id == ident
@@ -152,7 +160,7 @@ def get_group_configurations(
         customer: Union[Customer, int],
         group: Optional[Union[Group, int]] = None
 ) -> Select:
-    """Selects deployment configurations."""
+    """Selects deployment configurations of the given customer."""
 
     condition = Configuration.customer == customer
 
@@ -163,7 +171,7 @@ def get_group_configurations(
 
 
 def get_group_menu(ident: int, customer: Union[Customer, int]) -> GroupMenu:
-    """Returns the respective group menu."""
+    """Returns the respective group menu of the given customer."""
 
     return get_group_menus(customer).where(GroupMenu.id == ident).get()
 
@@ -172,7 +180,7 @@ def get_group_menus(
         customer: Union[Customer, int],
         group: Optional[Union[Group, int]] = None
 ) -> Select:
-    """Selects deployment menus."""
+    """Selects deployment menus of the given customer."""
 
     condition = Menu.customer == customer
 
