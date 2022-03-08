@@ -168,9 +168,9 @@ class Configuration(CustomerModel):
         if not cascade:
             return super().select(*args)
 
-        return super().select(*{
-            cls, Colors, *args
-        }, cascade=cascade).join_from(cls, Colors)
+        return super().select(cls, Colors, *args, cascade=cascade).join_from(
+            cls, Colors
+        )
 
     @property
     def files(self) -> set[File]:

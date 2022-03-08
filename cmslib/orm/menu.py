@@ -126,9 +126,8 @@ class MenuItem(DSCMS4Model):
         if not cascade:
             return super().select(*args)
 
-        return super().select(*{
-            cls, Menu, Customer, Company, *args
-        }).join_from(cls, Menu).join(Customer).join(Company)
+        return super().select(cls, Menu, Customer, Company, *args).join_from(
+            cls, Menu).join(Customer).join(Company)
 
     @property
     def root(self) -> bool:

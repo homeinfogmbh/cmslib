@@ -36,10 +36,10 @@ class DeploymentContent(DSCMS4Model):
 
         deployment_address = Address.alias()
         lpt_address = Address.alias()
-        return super().select(*{
+        return super().select(
             cls, Deployment, Customer, Company, Address, deployment_address,
             lpt_address, *args
-        }).join_from(
+        ).join_from(
             cls, Deployment).join(Customer).join(Company).join(
             Address, join_type=JOIN.LEFT_OUTER).join_from(
             Deployment, deployment_address,
@@ -79,10 +79,10 @@ class DeploymentBaseChart(DeploymentContent):
         base_chart_customer = Customer.alias()
         base_chart_company = Company.alias()
         base_chart_address = Address.alias()
-        return super().select(*{
+        return super().select(
             cls, BaseChart, base_chart_customer, base_chart_company,
-            base_chart_address, *args
-        }, cascade=True).join_from(cls, BaseChart).join(
+            base_chart_address, *args, cascade=True
+        ).join_from(cls, BaseChart).join(
             base_chart_customer).join(base_chart_company).join(
             base_chart_address, join_type=JOIN.LEFT_OUTER
         )
@@ -112,10 +112,10 @@ class DeploymentConfiguration(DeploymentContent):
         configuration_customer = Customer.alias()
         configuration_company = Company.alias()
         configuration_address = Address.alias()
-        return super().select(*{
+        return super().select(
             cls, Configuration, configuration_customer, configuration_company,
-            configuration_address, *args
-        }, cascade=True).join_from(
+            configuration_address, *args, cascade=True
+        ).join_from(
             cls, Configuration).join(configuration_customer).join(
             configuration_company).join(
             configuration_address, join_type=JOIN.LEFT_OUTER
@@ -139,9 +139,10 @@ class DeploymentMenu(DeploymentContent):
         menu_customer = Customer.alias()
         menu_company = Company.alias()
         menu_address = Address.alias()
-        return super().select(*{
-            cls, Menu, menu_customer, menu_company, menu_address, *args
-        }, cascade=True).join_from(cls, Menu).join(menu_customer).join(
+        return super().select(
+            cls, Menu, menu_customer, menu_company, menu_address, *args,
+            cascade=True
+        ).join_from(cls, Menu).join(menu_customer).join(
             menu_company).join(menu_address, join_type=JOIN.LEFT_OUTER)
 
 

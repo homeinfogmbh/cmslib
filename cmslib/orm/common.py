@@ -77,11 +77,8 @@ class CustomerModel(DSCMS4Model):
         if not cascade:
             return super().select(*args)
 
-        return super().select(*{
-            cls, Customer, Company, Address, *args
-        }).join(Customer).join(Company).join(
-            Address, join_type=JOIN.LEFT_OUTER
-        )
+        return super().select(cls, Customer, Company, Address, *args).join(
+            Customer).join(Company).join(Address, join_type=JOIN.LEFT_OUTER)
 
 
 class TreeNode(CustomerModel):

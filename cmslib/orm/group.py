@@ -61,10 +61,10 @@ class GroupMemberDeployment(DSCMS4Model):
 
         deployment_customer = Customer.alias()
         deployment_company = Company.alias()
-        return super().select(*{
+        return super().select(
             cls, Group, Customer, Company, Deployment, deployment_customer,
             deployment_company, *args
-        }).join_from(
+        ).join_from(
             cls, Group).join(Customer).join(Company).join_from(
             cls, Deployment).join_from(Deployment, deployment_customer).join(
             deployment_company).join_from(
