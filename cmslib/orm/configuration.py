@@ -163,14 +163,14 @@ class Configuration(CustomerModel):
         return transaction
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
+    def select(cls, *args, cascade: bool = False) -> Select:
         """Selects records."""
         if not cascade:
-            return super().select(*args, **kwargs)
+            return super().select(*args)
 
-        args = {cls, Colors, *args}
-        return super().select(*args, cascade=cascade, **kwargs).join_from(
-            cls, Colors)
+        return super().select(*{
+            cls, Colors, *args
+        }, cascade=cascade).join_from(cls, Colors)
 
     @property
     def files(self) -> set[File]:
@@ -211,9 +211,13 @@ class Configuration(CustomerModel):
 
         transaction.add(self.colors, left=True)
 
-    def update_backgrounds(self, transaction: Transaction,
-                           backgrounds: Iterable[int], *,
-                           delete: bool) -> None:
+    def update_backgrounds(
+            self,
+            transaction: Transaction,
+            backgrounds: Iterable[int],
+            *,
+            delete: bool
+    ) -> None:
         """Updates the related backgrounds."""
         if delete:
             for background in self.backgrounds:
@@ -227,8 +231,13 @@ class Configuration(CustomerModel):
             background = Background(configuration=self, file=file)
             transaction.add(background)
 
-    def update_tickers(self, transaction: Transaction,
-                       tickers: Iterable[dict], *, delete: bool) -> None:
+    def update_tickers(
+            self,
+            transaction: Transaction,
+            tickers: Iterable[dict],
+            *,
+            delete: bool
+    ) -> None:
         """Updates the respective ticker records."""
         if delete:
             for ticker in self.tickers:
@@ -241,8 +250,13 @@ class Configuration(CustomerModel):
             ticker = Ticker.from_json(json, self)
             transaction.add(ticker)
 
-    def update_backlights(self, transaction: Transaction, backlights: dict, *,
-                          delete: bool) -> None:
+    def update_backlights(
+            self,
+            transaction: Transaction,
+            backlights: dict,
+            *,
+            delete: bool
+    ) -> None:
         """Updates the respective backlight records."""
         if delete:
             for backlight in self.backlights:
@@ -300,7 +314,8 @@ class Configuration(CustomerModel):
         json = super().to_json(**kwargs)
         json['backgrounds'] = [
             attachment_json(background.file) for background
-            in self.backgrounds]
+            in self.backgrounds
+        ]
         json['logo'] = attachment_json(self.logo)
         json['dummyPicture'] = attachment_json(self.dummy_picture)
 
@@ -337,7 +352,8 @@ class Configuration(CustomerModel):
         xml.text_bg_transparent = self.text_bg_transparent
         xml.background = [
             attachment_dom(background.file)
-            for background in self.backgrounds]
+            for background in self.backgrounds
+        ]
         xml.ticker = [ticker.to_dom() for ticker in self.tickers]
         xml.backlight = [backlight.to_dom() for backlight in self.backlights]
         return xml
@@ -355,7 +371,8 @@ class Background(DSCMS4Model):
 
     configuration = ForeignKeyField(
         Configuration, column_name='configuration', backref='backgrounds',
-        on_delete='CASCADE', lazy_load=False)
+        on_delete='CASCADE', lazy_load=False
+    )
     file = ForeignKeyField(File, column_name='file', lazy_load=False)
 
     def to_json(self, *args, **kwargs) -> dict:
@@ -369,7 +386,8 @@ class Ticker(DSCMS4Model):
 
     configuration = ForeignKeyField(
         Configuration, column_name='configuration', backref='tickers',
-        on_delete='CASCADE', lazy_load=False)
+        on_delete='CASCADE', lazy_load=False
+    )
     type_ = EnumField(TickerType, column_name='type')
     content = HTMLTextField()
 
@@ -394,13 +412,18 @@ class Backlight(DSCMS4Model):
 
     configuration = ForeignKeyField(
         Configuration, column_name='configuration', backref='backlights',
-        on_delete='CASCADE', lazy_load=False)
+        on_delete='CASCADE', lazy_load=False
+    )
     time = TimeField()
     brightness = SmallIntegerField()   # Brightness in percent.
 
     @classmethod
-    def from_json(cls, json: dict, configuration: Configuration,
-                  **kwargs) -> Backlight:
+    def from_json(
+            cls,
+            json: dict,
+            configuration: Configuration,
+            **kwargs
+    ) -> Backlight:
         """Yields new records from the provided JSON-ish dictionary."""
         backlight = super().from_json(json, **kwargs)
         backlight.configuration = configuration
