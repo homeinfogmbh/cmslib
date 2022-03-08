@@ -6,7 +6,7 @@ from peewee import DateTimeField, IntegerField
 
 from peeweeplus import EnumField, HTMLTextField
 
-from cmslib import dom  # pylint: disable=E0611
+from cmslib import dom
 from cmslib.orm.common import CustomerModel
 
 

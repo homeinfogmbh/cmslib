@@ -21,21 +21,24 @@ class Group(TreeNode):
     description = HTMLTextField(null=True)
     parent = ForeignKeyField(
         'self', column_name='parent', null=True, backref='children',
-        lazy_load=True)
+        lazy_load=True
+    )
     index = IntegerField(default=0)
 
 
 class GroupMemberDeployment(DSCMS4Model):
     """Deployments as members in groups."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'group_member_deployment'
 
     group = ForeignKeyField(
-        Group, column_name='group', on_delete='CASCADE', lazy_load=False)
+        Group, column_name='group', on_delete='CASCADE', lazy_load=False
+    )
     deployment = ForeignKeyField(
         Deployment, column_name='deployment', on_delete='CASCADE',
-        lazy_load=False)
+        lazy_load=False
+    )
     index = IntegerField(default=0)
 
     @classmethod
@@ -51,21 +54,22 @@ class GroupMemberDeployment(DSCMS4Model):
         return record
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
+    def select(cls, *args, cascade: bool = False) -> Select:
         """Selects records."""
         if not cascade:
-            return super().select(*args, **kwargs)
+            return super().select(*args)
 
         deployment_customer = Customer.alias()
         deployment_company = Company.alias()
-        args = {
+        return super().select(*{
             cls, Group, Customer, Company, Deployment, deployment_customer,
-            deployment_company, *args}
-        return super().select(*args, **kwargs).join_from(
+            deployment_company, *args
+        }).join_from(
             cls, Group).join(Customer).join(Company).join_from(
             cls, Deployment).join_from(Deployment, deployment_customer).join(
             deployment_company).join_from(
-            Deployment, Address, on=Deployment.address == Address.id)
+            Deployment, Address, on=Deployment.address == Address.id
+        )
 
     def to_json(self) -> dict:
         """Returns a JSON-ish dict."""

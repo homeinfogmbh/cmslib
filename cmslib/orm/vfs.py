@@ -23,7 +23,8 @@ class Directory(TreeNode):
     name = HTMLCharField(255)
     parent = ForeignKeyField(
         'self', column_name='parent', null=True, backref='children',
-        lazy_load=True)
+        lazy_load=True
+    )
 
     @property
     def empty(self) -> bool:
@@ -63,13 +64,18 @@ class Directory(TreeNode):
 
         raise DirectoryNotEmpty()
 
-    def to_json(self, *args, brief: bool = False, children: bool = False,
-                base_charts: bool = False, **kwargs) -> dict:
+    def to_json(
+            self,
+            brief: bool = False,
+            children: bool = False,
+            base_charts: bool = False,
+            **kwargs
+    ) -> dict:
         """Returns JSON-ish dict."""
         if brief:
             return {'id': self.id, 'name': self.name}
 
-        json = super().to_json(*args, **kwargs)
+        json = super().to_json(**kwargs)
 
         if children:
             json['directories'] = [
@@ -84,15 +90,17 @@ class Directory(TreeNode):
 class ContentChart(DSCMS4Model):
     """Deployments as members in groups."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'content_chart'
 
     directory = ForeignKeyField(
         Directory, column_name='directory', backref='base_charts',
-        on_delete='CASCADE', lazy_load=False)
+        on_delete='CASCADE', lazy_load=False
+    )
     base_chart = ForeignKeyField(
         BaseChart, column_name='base_chart', on_delete='CASCADE',
-        lazy_load=False)
+        lazy_load=False
+    )
 
 
 MODELS = (Directory, ContentChart)
