@@ -27,25 +27,28 @@ class _GroupContent(DSCMS4Model):
     group = ForeignKeyField(Group, column_name='group', on_delete='CASCADE')
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
+    def select(cls, *args, cascade: bool = False) -> Select:
         """Selects records."""
         if not cascade:
-            return super().select(*args, **kwargs)
+            return super().select(*args)
 
-        args = {cls, Group, Customer, Company, Address, *args}
-        return super().select(*args, **kwargs).join_from(
+        return super().select(*{
+            cls, Group, Customer, Company, Address, *args
+        }).join_from(
             cls, Group).join(Customer).join(Company).join(
-            Address, join_type=JOIN.LEFT_OUTER)
+            Address, join_type=JOIN.LEFT_OUTER
+        )
 
 
 class GroupBaseChart(_GroupContent):
     """Association of a base chart with a group."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'group_base_chart'
 
     base_chart = ForeignKeyField(
-        BaseChart, column_name='base_chart', on_delete='CASCADE')
+        BaseChart, column_name='base_chart', on_delete='CASCADE'
+    )
     index = IntegerField(default=0)
 
     @classmethod
@@ -58,23 +61,23 @@ class GroupBaseChart(_GroupContent):
         return record
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
+    def select(cls, *args, cascade: bool = False) -> Select:
         """Selects records."""
         if not cascade:
-            return super().select(*args, **kwargs)
+            return super().select(*args)
 
         base_chart_customer = Customer.alias()
         base_chart_company = Company.alias()
         base_chart_address = Address.alias()
-        args = {
+        return super().select(*{
             cls, BaseChart, base_chart_customer, base_chart_company,
             base_chart_address, *args
-        }
-        return super().select(*args, **kwargs).join_from(
+        }).join_from(
             cls, BaseChart).join(
             base_chart_customer).join(
             base_chart_company).join(
-            base_chart_address, join_type=JOIN.LEFT_OUTER)
+            base_chart_address, join_type=JOIN.LEFT_OUTER
+        )
 
     @property
     def chart(self) -> Chart:
@@ -85,55 +88,58 @@ class GroupBaseChart(_GroupContent):
 class GroupConfiguration(_GroupContent):
     """Association of a configuration with a group."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'group_configuration'
 
     configuration = ForeignKeyField(
-        Configuration, column_name='configuration', on_delete='CASCADE')
+        Configuration, column_name='configuration', on_delete='CASCADE'
+    )
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
+    def select(cls, *args, cascade: bool = False) -> Select:
         """Selects records."""
         if not cascade:
-            return super().select(*args, **kwargs)
+            return super().select(*args)
 
         configuration_customer = Customer.alias()
         configuration_company = Company.alias()
         configuration_address = Address.alias()
-        args = {
+        return super().select(*{
             cls, Configuration, configuration_customer, configuration_company,
             configuration_address, *args
-        }
-        return super().select(*args, **kwargs).join_from(
+        }).join_from(
             cls, Configuration).join(
             configuration_customer).join(
             configuration_company).join(
-            configuration_address, join_type=JOIN.LEFT_OUTER)
+            configuration_address, join_type=JOIN.LEFT_OUTER
+        )
 
 
 class GroupMenu(_GroupContent):
     """Association of a menu with a group."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'group_menu'
 
     menu = ForeignKeyField(Menu, column_name='menu', on_delete='CASCADE')
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
+    def select(cls, *args, cascade: bool = False) -> Select:
         """Selects records."""
         if not cascade:
-            return super().select(*args, **kwargs)
+            return super().select(*args)
 
         menu_customer = Customer.alias()
         menu_company = Company.alias()
         menu_address = Address.alias()
-        args = {cls, Menu, menu_customer, menu_company, menu_address, *args}
-        return super().select(*args, **kwargs).join_from(
+        return super().select(*{
+            cls, Menu, menu_customer, menu_company, menu_address, *args
+        }).join_from(
             cls, Menu).join(
             menu_customer).join(
             menu_company).join(
-            menu_address, join_type=JOIN.LEFT_OUTER)
+            menu_address, join_type=JOIN.LEFT_OUTER
+        )
 
 
 MODELS = (GroupBaseChart, GroupConfiguration, GroupMenu)
