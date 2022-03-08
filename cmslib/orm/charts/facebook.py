@@ -25,7 +25,7 @@ DomModel = Union[dom.BriefChart, dom.Facebook]
 class Facebook(Chart):
     """Facebook data chart."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_facebook'
 
     font_size_title = SmallIntegerField(default=26)
@@ -98,12 +98,13 @@ class Facebook(Chart):
 class Account(DSCMS4Model):
     """Facebook account settings."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'facebook_account'
 
     chart = ForeignKeyField(
         Facebook, column_name='chart', backref='accounts', on_delete='CASCADE',
-        lazy_load=False)
+        lazy_load=False
+    )
     facebook_id = HTMLCharField(255)
     recent_days = SmallIntegerField(default=14)
     max_posts = SmallIntegerField(default=10)
@@ -112,7 +113,7 @@ class Account(DSCMS4Model):
     @classmethod
     def from_json(cls, json: dict, chart: Facebook, **kwargs) -> Account:
         """Creates a new facebook account for the provided
-        facebook chart from the respective distionary.
+        facebook chart from the respective dictionary.
         """
         account = super().from_json(json, **kwargs)
         account.chart = chart

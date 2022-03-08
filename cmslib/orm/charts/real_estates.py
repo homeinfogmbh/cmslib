@@ -4,13 +4,12 @@ from __future__ import annotations
 from collections import defaultdict
 from enum import Enum
 from itertools import chain
-from typing import Iterable, Iterator, Union
+from typing import Iterable, Iterator, Type, Union
 
 from peewee import BooleanField
 from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import Model
-from peewee import ModelBase
 from peewee import SmallIntegerField
 
 from hisfs import get_file, File
@@ -30,8 +29,11 @@ DomModel = Union[dom.BriefChart, dom.RealEstates]
 
 
 def _update_json_transaction(
-        model: ModelBase, json_list: list[dict], transaction: Transaction,
-        delete: list[Model] = None) -> None:
+        model: Type[Model],
+        json_list: list[dict],
+        transaction: Transaction,
+        delete: list[Model] = None
+) -> None:
     """Adds models for the given JSON data to a transaction."""
 
     if delete:
@@ -65,11 +67,12 @@ class IdTypes(Enum):
 class RealEstates(Chart):
     """Chart for real estate displaying."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_real_estates'
 
     display_format = EnumField(
-        DisplayFormat, default=DisplayFormat.BIG_PICTURE)
+        DisplayFormat, default=DisplayFormat.BIG_PICTURE
+    )
     ken_burns = BooleanField(default=False)
     scaling = BooleanField(default=False)
     slideshow = BooleanField(default=True)
@@ -173,7 +176,8 @@ class RealEstates(Chart):
         transaction = super().from_json(json, **kwargs)
         _update_json_transaction(IdFilter, filters.get('id'), transaction)
         _update_json_transaction(
-            ZipCodeFilter, filters.get('zipCode'), transaction)
+            ZipCodeFilter, filters.get('zipCode'), transaction
+        )
         _update_json_transaction(Contact, contacts, transaction)
         return transaction
 
@@ -387,7 +391,9 @@ class RealEstates(Chart):
         xml.sale = self.sale
         xml.filter = [
             filter.to_dom() for filter in chain(
-                self.id_filters, self.zip_code_filters)]
+                self.id_filters, self.zip_code_filters
+            )
+        ]
         xml.contact = [contact.to_dom() for contact in self.contacts]
         return xml
 
@@ -395,12 +401,13 @@ class RealEstates(Chart):
 class IdFilter(DSCMS4Model):
     """Filter for the object IDs."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'filter_id'
 
     chart = ForeignKeyField(
         RealEstates, column_name='chart', backref='id_filters',
-        on_delete='CASCADE', lazy_load=False)
+        on_delete='CASCADE', lazy_load=False
+    )
     value = HTMLCharField(255)
     type = EnumField(IdTypes)
 
@@ -437,12 +444,13 @@ class IdFilter(DSCMS4Model):
 class ZipCodeFilter(DSCMS4Model):
     """Filter for real estate ZIP codes."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'filter_zip_code'
 
     chart = ForeignKeyField(
         RealEstates, column_name='chart', backref='zip_code_filters',
-        on_delete='CASCADE', lazy_load=False)
+        on_delete='CASCADE', lazy_load=False
+    )
     zip_code = HTMLCharField(255)
     # True: blacklist, False: whitelist.
     blacklist = BooleanField(default=False)
@@ -482,12 +490,13 @@ class ZipCodeFilter(DSCMS4Model):
 class Contact(DSCMS4Model):
     """Represents a real estate contact."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'real_estate_contact'
 
     chart = ForeignKeyField(
         RealEstates, column_name='chart', backref='contacts',
-        on_delete='CASCADE', lazy_load=False)
+        on_delete='CASCADE', lazy_load=False
+    )
     name = HTMLCharField(255)
     file = ForeignKeyField(File, column_name='file', lazy_load=False)
 

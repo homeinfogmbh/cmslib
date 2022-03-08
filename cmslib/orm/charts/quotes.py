@@ -4,7 +4,7 @@ from typing import Union
 
 from peewee import IntegerField, SmallIntegerField
 
-from cmslib import dom  # pylint: disable=E0611
+from cmslib import dom
 from cmslib.orm.charts.api import Chart
 
 
@@ -17,7 +17,7 @@ DomModel = Union[dom.BriefChart, dom.Quotes]
 class Quotes(Chart):
     """Chart for quotations."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_quotes'
 
     font_color = IntegerField(0x000000)

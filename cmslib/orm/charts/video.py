@@ -22,7 +22,7 @@ DomModel = Union[dom.BriefChart, dom.Video]
 class Video(Chart):
     """A chart that may contain images and texts."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_video'
 
     file = ForeignKeyField(

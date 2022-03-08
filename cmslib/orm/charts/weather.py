@@ -22,7 +22,7 @@ DomModel = Union[dom.BriefChart, dom.Weather]
 class Weather(Chart):
     """Weather data."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_weather'
 
     location = HTMLCharField(255)
@@ -103,12 +103,13 @@ class Weather(Chart):
 class Image(DSCMS4Model):
     """Image for an ImageTextChart."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_weather_image'
 
     chart = ForeignKeyField(
         Weather, column_name='chart', backref='images', on_delete='CASCADE',
-        lazy_load=False)
+        lazy_load=False
+    )
     file = ForeignKeyField(File, column_name='file', lazy_load=False)
 
     def to_json(self, *args, **kwargs) -> dict:

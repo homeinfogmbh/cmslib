@@ -1,4 +1,4 @@
-"""Oicture guessing chart."""
+"""Picture guessing chart."""
 
 from typing import Union
 
@@ -15,7 +15,7 @@ DomModel = Union[dom.BriefChart, dom.GuessPicture]
 class GuessPicture(Chart):
     """Chart for guessing pictures."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_guess_picture'
 
     def to_dom(self, brief: bool = False) -> DomModel:

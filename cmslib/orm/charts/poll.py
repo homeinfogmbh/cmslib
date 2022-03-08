@@ -29,7 +29,7 @@ class Mode(Enum):
 class Poll(Chart):
     """Chart to display a poll."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_poll'
 
     text = HTMLTextField()
@@ -42,8 +42,7 @@ class Poll(Chart):
         transaction = super().from_json(json, **kwargs)
 
         for option in options:
-            option = Option.from_json(option, transaction.primary)
-            transaction.add(option)
+            transaction.add(Option.from_json(option, transaction.primary))
 
         return transaction
 
@@ -111,12 +110,13 @@ class Poll(Chart):
 class Option(DSCMS4Model):
     """An option for a poll."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'poll_option'
 
     poll = ForeignKeyField(
         Poll, column_name='poll', backref='options', on_delete='CASCADE',
-        lazy_load=False)
+        lazy_load=False
+    )
     text = HTMLCharField(255)
     votes = IntegerField(default=0)
     index = IntegerField(default=0)

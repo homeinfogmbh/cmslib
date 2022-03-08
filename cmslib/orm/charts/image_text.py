@@ -26,7 +26,7 @@ DomModel = Union[dom.BriefChart, dom.ImageText]
 class ImageText(Chart):
     """A chart that may contain images and text."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_image_text'
 
     title = HTMLCharField(255)
@@ -36,7 +36,7 @@ class ImageText(Chart):
     random_image = BooleanField(default=False)
 
     @classmethod
-    def from_json(cls, json: dict, **kwargs) -> ImageText:
+    def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates a new chart from a JSON-ish dict."""
         # Pop images and texts first to exclude them from the
         # dictionary before invoking super().from_json().
@@ -108,7 +108,8 @@ class ImageText(Chart):
         xml.ken_burns = self.ken_burns
         xml.random_image = self.random_image
         xml.image = filter(None, (
-            image.to_dom() for image in self.images.order_by(Image.index)))
+            image.to_dom() for image in self.images.order_by(Image.index)
+        ))
         xml.text = [text.text for text in self.texts]
         return xml
 
@@ -116,12 +117,13 @@ class ImageText(Chart):
 class Image(DSCMS4Model):
     """Image for an ImageText chart."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_image_text_image'
 
     chart = ForeignKeyField(
         ImageText, column_name='chart', backref='images', on_delete='CASCADE',
-        lazy_load=False)
+        lazy_load=False
+    )
     file = ForeignKeyField(File, column_name='file', lazy_load=False)
     index = IntegerField(default=0)
 
@@ -147,12 +149,13 @@ class Image(DSCMS4Model):
 class Text(DSCMS4Model):
     """Text for an ImageText chart."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_image_text_text'
 
     chart = ForeignKeyField(
         ImageText, column_name='chart', backref='texts', on_delete='CASCADE',
-        lazy_load=False)
+        lazy_load=False
+    )
     text = HTMLTextField()
 
     @classmethod

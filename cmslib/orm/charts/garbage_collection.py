@@ -15,7 +15,7 @@ DomModel = Union[dom.BriefChart, dom.GarbageCollection]
 class GarbageCollection(Chart):
     """Chart for garbage collection."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_garbage_collection'
 
     def to_dom(self, brief: bool = False) -> DomModel:

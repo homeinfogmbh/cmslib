@@ -30,14 +30,14 @@ class Mode(Enum):
 class Form(Chart):
     """A form chart."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_form'
 
     mode = EnumField(Mode, column_name='mode')
     text = HTMLTextField(null=True)
 
     @classmethod
-    def from_json(cls, json: dict, **kwargs) -> Form:
+    def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates the chart from a JSON-ish dict."""
         choices = json.pop('choices', None) or ()
         transaction = super().from_json(json, **kwargs)
@@ -87,12 +87,13 @@ class Form(Chart):
 class Choice(DSCMS4Model):
     """Choice options for forms."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_form_choice'
 
     form = ForeignKeyField(
         Form, column_name='form', backref='choices', on_delete='CASCADE',
-        lazy_load=False)
+        lazy_load=False
+    )
     text = HTMLTextField()
     index = IntegerField(default=0)
 
