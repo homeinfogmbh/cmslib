@@ -72,7 +72,7 @@ CHART_TYPE = LocalProxy(_get_chart_type)
 
 
 def get_chart_mode() -> ChartMode:
-    """Determines the extend of the dataset."""
+    """Determines the extent of the dataset."""
 
     try:
         mode = request.args['mode']
