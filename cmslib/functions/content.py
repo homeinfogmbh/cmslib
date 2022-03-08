@@ -2,12 +2,11 @@
 
 from typing import Optional, Union
 
-from peewee import Select
+from peewee import Expression, Select
 
-from his import CUSTOMER
+from mdb import Customer
 from hwdb import Deployment
 
-from cmslib.functions.charts import get_trashed
 from cmslib.orm.charts import BaseChart
 from cmslib.orm.configuration import Configuration
 from cmslib.orm.content.deployment import DeploymentBaseChart
@@ -36,20 +35,25 @@ __all__ = [
 ]
 
 
-def get_deployment_base_chart(ident: int) -> DeploymentBaseChart:
+def get_deployment_base_chart(
+        ident: int,
+        customer: Union[Customer, int]
+) -> DeploymentBaseChart:
     """Returns the respective deployment base chart."""
 
-    return get_deployment_base_charts().where(
-        DeploymentBaseChart.id == ident).get()
+    return get_deployment_base_charts(customer).where(
+        DeploymentBaseChart.id == ident
+    ).get()
 
 
 def get_deployment_base_charts(
-        deployment: Optional[Union[Deployment, int]] = None
+        customer: Union[Customer, int],
+        deployment: Optional[Union[Deployment, int]] = None,
+        trashed: Union[Expression, bool] = True
 ) -> Select:
     """Selects deployment base charts."""
 
-    condition = BaseChart.customer == CUSTOMER.id
-    condition &= get_trashed()
+    condition = (BaseChart.customer == customer) & trashed
 
     if deployment is not None:
         condition &= DeploymentBaseChart.deployment == deployment
@@ -57,18 +61,24 @@ def get_deployment_base_charts(
     return DeploymentBaseChart.select(cascade=True).where(condition)
 
 
-def get_deployment_configuration(ident: int) -> DeploymentConfiguration:
+def get_deployment_configuration(
+        ident: int,
+        customer: Union[Customer, int]
+) -> DeploymentConfiguration:
     """Returns the respective deployment configuration."""
 
-    return get_deployment_configurations().where(
-        DeploymentConfiguration.id == ident).get()
+    return get_deployment_configurations(customer).where(
+        DeploymentConfiguration.id == ident
+    ).get()
 
 
 def get_deployment_configurations(
-        deployment: Optional[Union[Deployment, int]] = None) -> Select:
+        customer: Union[Customer, int],
+        deployment: Optional[Union[Deployment, int]] = None
+) -> Select:
     """Selects deployment configurations."""
 
-    condition = Configuration.customer == CUSTOMER.id
+    condition = Configuration.customer == customer
 
     if deployment is not None:
         condition &= DeploymentConfiguration.deployment == deployment
@@ -76,18 +86,24 @@ def get_deployment_configurations(
     return DeploymentConfiguration.select(cascade=True).where(condition)
 
 
-def get_deployment_menu(ident: int) -> DeploymentMenu:
+def get_deployment_menu(
+        ident: int,
+        customer: Union[Customer, int]
+) -> DeploymentMenu:
     """Returns the respective deployment menu."""
 
-    return get_deployment_menus().where(DeploymentMenu.id == ident).get()
+    return get_deployment_menus(customer).where(
+        DeploymentMenu.id == ident
+    ).get()
 
 
 def get_deployment_menus(
+        customer: Union[Customer, int],
         deployment: Optional[Union[Deployment, int]] = None
 ) -> Select:
     """Selects deployment menus."""
 
-    condition = Menu.customer == CUSTOMER.id
+    condition = Menu.customer == customer
 
     if deployment is not None:
         condition &= DeploymentMenu.deployment == deployment
@@ -95,19 +111,25 @@ def get_deployment_menus(
     return DeploymentMenu.select(cascade=True).where(condition)
 
 
-def get_group_base_chart(ident: int) -> GroupBaseChart:
+def get_group_base_chart(
+        ident: int,
+        customer: Union[Customer, int]
+) -> GroupBaseChart:
     """Returns the respective group base chart."""
 
-    return get_group_base_charts().where(GroupBaseChart.id == ident).get()
+    return get_group_base_charts(customer).where(
+        GroupBaseChart.id == ident
+    ).get()
 
 
 def get_group_base_charts(
-        group: Optional[Union[Group, int]] = None
-)  -> Select:
+        customer: Union[Customer, int],
+        group: Optional[Union[Group, int]] = None,
+        trashed: Union[Expression, bool] = True
+) -> Select:
     """Selects deployment base charts."""
 
-    condition = BaseChart.customer == CUSTOMER.id
-    condition &= get_trashed()
+    condition = (BaseChart.customer == customer) & trashed
 
     if group is not None:
         condition &= GroupBaseChart.group == group
@@ -115,19 +137,24 @@ def get_group_base_charts(
     return GroupBaseChart.select(cascade=True).where(condition)
 
 
-def get_group_configuration(ident: int) -> GroupConfiguration:
+def get_group_configuration(
+        ident: int,
+        customer: Union[Customer, int]
+) -> GroupConfiguration:
     """Returns the respective group configuration."""
 
-    return get_group_configurations().where(
-        GroupConfiguration.id == ident).get()
+    return get_group_configurations(customer).where(
+        GroupConfiguration.id == ident
+    ).get()
 
 
 def get_group_configurations(
+        customer: Union[Customer, int],
         group: Optional[Union[Group, int]] = None
 ) -> Select:
     """Selects deployment configurations."""
 
-    condition = Configuration.customer == CUSTOMER.id
+    condition = Configuration.customer == customer
 
     if group is not None:
         condition &= GroupConfiguration.group == group
@@ -135,16 +162,19 @@ def get_group_configurations(
     return GroupConfiguration.select(cascade=True).where(condition)
 
 
-def get_group_menu(ident: int) -> GroupMenu:
+def get_group_menu(ident: int, customer: Union[Customer, int]) -> GroupMenu:
     """Returns the respective group menu."""
 
-    return get_group_menus().where(GroupMenu.id == ident).get()
+    return get_group_menus(customer).where(GroupMenu.id == ident).get()
 
 
-def get_group_menus(group: Optional[Union[Group, int]] = None) -> Select:
+def get_group_menus(
+        customer: Union[Customer, int],
+        group: Optional[Union[Group, int]] = None
+) -> Select:
     """Selects deployment menus."""
 
-    condition = Menu.customer == CUSTOMER.id
+    condition = Menu.customer == customer
 
     if group is not None:
         condition &= GroupMenu.group == group
