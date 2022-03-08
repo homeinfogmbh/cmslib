@@ -1,11 +1,11 @@
 """DOM utilities."""
 
-from typing import Union
+from typing import Optional, Union
 
 from filedb import File as FileDBFile
 from hisfs import File
 
-from cmslib.dom import Attachment   # pylint: disable=E0401,E0611
+from cmslib.dom import Attachment
 
 
 __all__ = ['attachment_dom', 'attachment_json']
@@ -21,9 +21,11 @@ def ensure_file(file: Union[File, int]) -> File:
         File.id == file).get()
 
 
-# pylint: disable=W0622
-def attachment_dom(file: Union[File, int, None], format: str = None,
-                   index: int = None) -> Attachment:
+def attachment_dom(
+        file: Optional[Union[File, int]],
+        format: Optional[str] = None,
+        index: Optional[int] = None
+) -> Attachment:
     """Returns an attachment for the respective file ID."""
 
     if file is None:
@@ -41,7 +43,7 @@ def attachment_dom(file: Union[File, int, None], format: str = None,
     return xml
 
 
-def attachment_json(file: File, json: dict = None) -> dict:
+def attachment_json(file: File, json: Optional[dict] = None) -> dict:
     """Returns a JSON-ish representation of the attachment."""
 
     if file is None:
