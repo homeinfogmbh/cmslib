@@ -24,9 +24,9 @@ class AssocDeployment(NamedTuple):
     """Deployment with associated data."""
 
     deployment: Deployment
-    base_charts_map: dict[int, list[BaseChart]]
-    configurations_map: dict[int, list[Configuration]]
-    menus_map: dict[int, list[Menu]]
+    deployment_base_charts: dict[int, list[DeploymentBaseChart]]
+    deployment_configurations: dict[int, list[DeploymentConfiguration]]
+    deployment_menus: dict[int, list[DeploymentMenu]]
     systems_map: dict[int, list[int]]
 
     def __getattr__(self, item):
@@ -40,16 +40,16 @@ class AssocDeployment(NamedTuple):
             'deployment': deployment,
             'content': {
                 'charts': [
-                    base_chart.chart.to_json() for base_chart in
-                    self.base_charts_map.get(self.deployment.id, [])
+                    dbc.chart.to_json() for dbc in
+                    self.deployment_base_charts.get(self.deployment.id, [])
                 ],
                 'configurations': [
-                    configuration.to_json() for configuration in
-                    self.configurations_map.get(self.deployment.id, [])
+                    dep_conf.to_json() for dep_conf in
+                    self.deployment_configurations.get(self.deployment.id, [])
                 ],
                 'menus': [
-                    menu.to_json() for menu in
-                    self.menus_map.get(self.deployment.id, [])
+                    deployment_menu.to_json() for deployment_menu in
+                    self.deployment_menus.get(self.deployment.id, [])
                 ]
             }
         }
@@ -68,17 +68,17 @@ class AssocDeployments:
         self.trashed = trashed
 
     def __iter__(self) -> Iterator[AssocDeployment]:
-        base_charts_map = self.base_charts_map
-        configurations_map = self.configurations_map
-        menus_map = self.menus_map
+        deployment_base_charts_map = self.deployment_base_charts_map
+        deployment_configurations_map = self.deployment_configurations_map
+        deployment_menus_map = self.deployment_menus_map
         systems_map = self.systems_map
 
         for deployment in self.deployments:
             yield AssocDeployment(
                 deployment,
-                base_charts_map,
-                configurations_map,
-                menus_map,
+                deployment_base_charts_map,
+                deployment_configurations_map,
+                deployment_menus_map,
                 systems_map
             )
 
@@ -90,25 +90,21 @@ class AssocDeployments:
     @property
     def deployment_base_charts(self) -> Select:
         """Selects deployment base charts for the respective deployments."""
-        return DeploymentBaseChart.select(
-            DeploymentBaseChart, BaseChart
-        ).join(BaseChart).where(
+        return DeploymentBaseChart.select().join(BaseChart).where(
             (DeploymentBaseChart.deployment << self.ids) & self.trashed
         )
 
     @property
     def deployment_configurations(self) -> Select:
         """Selects deployment configurations of the respective deployments."""
-        return DeploymentConfiguration.select(
-            DeploymentConfiguration, Configuration
-        ).join(Configuration).where(
+        return DeploymentConfiguration.select().where(
             DeploymentConfiguration.deployment << self.ids
         )
 
     @property
     def deployment_menus(self) -> Select:
         """Selects deployment menus of the respective deployments."""
-        return DeploymentMenu.select(DeploymentMenu, Menu).join(Menu).where(
+        return DeploymentMenu.select().where(
             DeploymentMenu.deployment << self.ids
         )
 
@@ -118,32 +114,32 @@ class AssocDeployments:
         return System.select().where(System.deployment << self.ids)
 
     @property
-    def base_charts_map(self) -> dict[int, list[BaseChart]]:
+    def deployment_base_charts_map(self) -> dict[int, list[BaseChart]]:
         """Returns a map of deployments and base charts."""
         result = defaultdict(list)
 
         for dbc in self.deployment_base_charts:
-            result[dbc.deployment_id].append(dbc.base_chart)
+            result[dbc.deployment_id].append(dbc)
 
         return result
 
     @property
-    def configurations_map(self) -> dict[int, list[Configuration]]:
+    def deployment_configurations_map(self) -> dict[int, list[Configuration]]:
         """Returns a map of deployments and configurations."""
         result = defaultdict(list)
 
         for dep_conf in self.deployment_configurations:
-            result[dep_conf.deployment_id].append(dep_conf.configuration)
+            result[dep_conf.deployment_id].append(dep_conf)
 
         return result
 
     @property
-    def menus_map(self) -> dict[int, list[Menu]]:
+    def deployment_menus_map(self) -> dict[int, list[Menu]]:
         """Returns a map of deployments and menus."""
         result = defaultdict(list)
 
         for deployment_menu in self.deployment_menus:
-            result[deployment_menu.deployment_id].append(deployment_menu.menu)
+            result[deployment_menu.deployment_id].append(deployment_menu)
 
         return result
 
