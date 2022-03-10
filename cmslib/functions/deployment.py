@@ -165,7 +165,7 @@ def get_deployments(
         customer: Union[Customer, int],
         testing: bool = True,
         content: bool = False,
-        trashed: Union[Expression, bool] = False
+        trashed: Union[Expression, bool] = True
 ) -> Union[Select, AssocDeployments]:
     """Selects the deployments of the given customer."""
 
