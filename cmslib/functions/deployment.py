@@ -40,7 +40,7 @@ class AssocDeployment(NamedTuple):
             'deployment': deployment,
             'content': {
                 'charts': [
-                    dbc.chart.to_json() for dbc in
+                    dbc.to_json() for dbc in
                     self.deployment_base_charts.get(self.deployment.id, [])
                 ],
                 'configurations': [
