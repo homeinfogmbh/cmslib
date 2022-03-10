@@ -24,7 +24,9 @@ __all__ = [
 class _GroupContent(DSCMS4Model):
     """Common abstract content mapping."""
 
-    group = ForeignKeyField(Group, column_name='group', on_delete='CASCADE')
+    group = ForeignKeyField(
+        Group, column_name='group', on_delete='CASCADE', lazy_load=False
+    )
 
     @classmethod
     def select(cls, *args, cascade: bool = False) -> Select:
@@ -47,7 +49,8 @@ class GroupBaseChart(_GroupContent):
         table_name = 'group_base_chart'
 
     base_chart = ForeignKeyField(
-        BaseChart, column_name='base_chart', on_delete='CASCADE'
+        BaseChart, column_name='base_chart', on_delete='CASCADE',
+        lazy_load=False
     )
     index = IntegerField(default=0)
 
@@ -92,7 +95,8 @@ class GroupConfiguration(_GroupContent):
         table_name = 'group_configuration'
 
     configuration = ForeignKeyField(
-        Configuration, column_name='configuration', on_delete='CASCADE'
+        Configuration, column_name='configuration', on_delete='CASCADE',
+        lazy_load=False
     )
 
     @classmethod
@@ -121,7 +125,9 @@ class GroupMenu(_GroupContent):
     class Meta:
         table_name = 'group_menu'
 
-    menu = ForeignKeyField(Menu, column_name='menu', on_delete='CASCADE')
+    menu = ForeignKeyField(
+        Menu, column_name='menu', on_delete='CASCADE', lazy_load=False
+    )
 
     @classmethod
     def select(cls, *args, cascade: bool = False) -> Select:

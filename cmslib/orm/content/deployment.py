@@ -25,7 +25,8 @@ class DeploymentContent(DSCMS4Model):
     """Common abstract content mapping."""
 
     deployment = ForeignKeyField(
-        Deployment, column_name='deployment', on_delete='CASCADE'
+        Deployment, column_name='deployment', on_delete='CASCADE',
+        lazy_load=False
     )
 
     @classmethod
@@ -57,7 +58,8 @@ class DeploymentBaseChart(DeploymentContent):
         table_name = 'deployment_base_chart'
 
     base_chart = ForeignKeyField(
-        BaseChart, column_name='base_chart', on_delete='CASCADE'
+        BaseChart, column_name='base_chart', on_delete='CASCADE',
+        lazy_load=False
     )
     index = IntegerField(default=0)
 
@@ -100,7 +102,8 @@ class DeploymentConfiguration(DeploymentContent):
         table_name = 'deployment_configuration'
 
     configuration = ForeignKeyField(
-        Configuration, column_name='configuration', on_delete='CASCADE'
+        Configuration, column_name='configuration', on_delete='CASCADE',
+        lazy_load=False
     )
 
     @classmethod
@@ -128,7 +131,9 @@ class DeploymentMenu(DeploymentContent):
     class Meta:
         table_name = 'deployment_menu'
 
-    menu = ForeignKeyField(Menu, column_name='menu', on_delete='CASCADE')
+    menu = ForeignKeyField(
+        Menu, column_name='menu', on_delete='CASCADE', lazy_load=False
+    )
 
     @classmethod
     def select(cls, *args, cascade: bool = False) -> Select:
