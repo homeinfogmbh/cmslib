@@ -46,7 +46,12 @@ class Chart(DSCMS4Model):
         if ident is None:
             return prefetch(charts, *cls.subqueries())
 
-        return prefetch(charts.where(cls.id == ident), *cls.subqueries())[0]
+        charts = prefetch(charts.where(cls.id == ident), *cls.subqueries())
+
+        try:
+            return charts[0]
+        except IndexError:
+            raise cls.DoesNotExist(customer, ident) from None
 
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
