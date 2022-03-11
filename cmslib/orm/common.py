@@ -5,8 +5,10 @@ from logging import getLogger
 from typing import Optional, Union
 
 from flask import has_request_context
-from peewee import JOIN, ForeignKeyField, Select
+from peewee import JOIN, ForeignKeyField, IntegerField, Select
 
+import filedb
+import hisfs
 from his import CUSTOMER
 from mdb import Address, Company, Customer
 from peeweeplus import MySQLDatabaseProxy, JSONModel
@@ -17,7 +19,8 @@ __all__ = [
     'DATABASE',
     'DSCMS4Model',
     'CustomerModel',
-    'TreeNode'
+    'TreeNode',
+    'Attachment'
 ]
 
 
@@ -145,3 +148,30 @@ class TreeNode(CustomerModel):
             json.pop('parent', None)
 
         return json
+
+
+class Attachment(DSCMS4Model):
+    """Image for an ImageText chart."""
+
+    file = ForeignKeyField(hisfs.File, column_name='file', lazy_load=False)
+    index = IntegerField(default=0)
+
+    @classmethod
+    def select(
+            cls,
+            *args,
+            cascade: bool = False,
+            shallow: bool = False
+    ) -> Select:
+        """Selects images."""
+        if not cascade:
+            return super().select(*args)
+
+        if shallow:
+            return super().select(
+                cls, hisfs.File, *filedb.META_FIELDS, *args
+            ).join(hisfs.File).join(filedb.File)
+
+        return super().select(
+            cls, hisfs.File, filedb.File, *args
+        ).join(hisfs.File).join(filedb.File)
