@@ -47,8 +47,8 @@ class Blackboard(Chart):
         if not cascade:
             return super().select(*args)
 
-        images = Image.select(cascade=cascade, shallow=True)
-        return prefetch(super().select(*args, cascade=cascade), images)
+        images = Image.select(cascade=True, shallow=True).order_by(Image.index)
+        return prefetch(super().select(*args, cascade=True), images)
 
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
@@ -91,7 +91,7 @@ class Blackboard(Chart):
         if mode == ChartMode.FULL:
             json['images'] = [
                 image.to_json(fk_fields=False, autofields=False)
-                for image in self.images.order_by(Image.index)
+                for image in self.images
             ]
 
         return json
@@ -102,8 +102,7 @@ class Blackboard(Chart):
             return super().to_dom(dom.BriefChart)
 
         xml = super().to_dom(dom.Blackboard)
-        images = (img.to_dom() for img in self.images.order_by(Image.index))
-        xml.image = filter(None, images)
+        xml.image = filter(None, (img.to_dom() for img in self.images))
         return xml
 
 
