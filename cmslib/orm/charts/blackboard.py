@@ -4,8 +4,9 @@ from __future__ import annotations
 from enum import Enum
 from typing import Union
 
-from peewee import ForeignKeyField, IntegerField
+from peewee import ForeignKeyField, IntegerField, Select, prefetch
 
+from filedb import META_FIELDS, File as FileDBFile
 from hisfs import get_file, File
 from peeweeplus import EnumField, Transaction
 
@@ -39,6 +40,15 @@ class Blackboard(Chart):
 
     class Meta:
         table_name = 'chart_blackboard'
+
+    @classmethod
+    def select(cls, *args, cascade: bool = False) -> Select:
+        """Selects blackboard charts."""
+        if not cascade:
+            return super().select(*args)
+
+        images = Image.select(cascade=cascade, shallow=True)
+        return prefetch(super().select(*args, cascade=cascade), images)
 
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
@@ -105,10 +115,30 @@ class Image(DSCMS4Model):
 
     chart = ForeignKeyField(
         Blackboard, column_name='chart', backref='images', on_delete='CASCADE',
-        lazy_load=False)
+        lazy_load=False
+    )
     file = ForeignKeyField(File, column_name='file', lazy_load=False)
     format = EnumField(Format, default=Format.A4)
     index = IntegerField(default=0)
+
+    @classmethod
+    def select(
+            cls,
+            *args,
+            cascade: bool = False,
+            shallow: bool = False
+    ) -> Select:
+        """Selects images."""
+        if not cascade:
+            return super().select(*args)
+
+        if shallow:
+            return super().select(cls, File, META_FIELDS, *args).join(
+                File).join(FileDBFile)
+
+        return super().select(cls, File, FileDBFile, *args).join(File).join(
+            FileDBFile
+        )
 
     @classmethod
     def from_json(cls, json: dict, chart: Blackboard, **kwargs) -> Image:
