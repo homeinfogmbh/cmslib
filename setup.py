@@ -36,7 +36,6 @@ setup(
     packages=[
         'cmslib',
         'cmslib.functions',
-        'cmslib.functions.charts',
         'cmslib.orm',
         'cmslib.orm.charts',
         'cmslib.orm.charts.api',
