@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 from enum import Enum
-from typing import Union
+from typing import Iterator, Union
 
-from peewee import ForeignKeyField, IntegerField, Select, prefetch
+from peewee import ForeignKeyField, IntegerField, Model, Select
 
 from filedb import META_FIELDS, File as FileDBFile
 from hisfs import get_file, File
@@ -42,13 +42,10 @@ class Blackboard(Chart):
         table_name = 'chart_blackboard'
 
     @classmethod
-    def select(cls, *args, cascade: bool = False) -> Select:
-        """Selects blackboard charts."""
-        if not cascade:
-            return super().select(*args)
-
-        images = Image.select(cascade=True, shallow=True).order_by(Image.index)
-        return prefetch(super().select(*args, cascade=True), images)
+    def subqueries(cls) -> Iterator[Union[Model, Select]]:
+        """Yields sub-queries"""
+        yield from super().subqueries()
+        yield Image.select(cascade=True, shallow=True)
 
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
