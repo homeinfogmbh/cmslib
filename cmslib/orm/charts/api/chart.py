@@ -3,7 +3,7 @@
 from __future__ import annotations
 from typing import Iterator, Optional, Union
 
-from peewee import JOIN, ForeignKeyField, Model, Select, prefetch
+from peewee import JOIN, Expression, ForeignKeyField, Model, Select, prefetch
 
 from mdb import Company, Customer
 from peeweeplus import Transaction
@@ -34,10 +34,14 @@ class Chart(DSCMS4Model):
     def fetch(
             cls,
             customer: Union[Customer, int],
-            ident: Optional[int] = None
+            ident: Optional[int] = None,
+            trashed: Union[Expression, bool] = True
     ) -> Union[list[Chart], Chart]:
         """Selects blackboard charts."""
-        charts = cls.select(cascade=True).where(BaseChart.customer == customer)
+        charts = cls.select(cascade=True).where(
+            (BaseChart.customer == customer)
+            & trashed
+        )
 
         if ident is None:
             return prefetch(charts, *cls.subqueries())
