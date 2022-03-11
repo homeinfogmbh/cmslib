@@ -232,6 +232,6 @@ class ChartPIN(DSCMS4Model):
 
     base_chart = ForeignKeyField(
         BaseChart, column_name='base_chart', backref='pins',
-        on_delete='CASCADE', on_update='CASCADE'
+        on_delete='CASCADE', on_update='CASCADE', lazy_load=False
     )
     pin = HTMLCharField(8)
