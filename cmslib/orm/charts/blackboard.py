@@ -133,7 +133,7 @@ class Image(DSCMS4Model):
             return super().select(*args)
 
         if shallow:
-            return super().select(cls, File, META_FIELDS, *args).join(
+            return super().select(cls, File, *META_FIELDS, *args).join(
                 File).join(FileDBFile)
 
         return super().select(cls, File, FileDBFile, *args).join(File).join(
