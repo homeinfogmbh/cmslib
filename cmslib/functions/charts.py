@@ -19,18 +19,6 @@ __all__ = [
 ]
 
 
-def _get_charts(
-        typ: Type[Chart],
-        customer: Union[Customer, int],
-        trashed: Union[Expression, bool] = True
-) -> Select:
-    """Selects charts of the given type for the given customer."""
-
-    return typ.select(cascade=True).where(
-        (BaseChart.customer == customer) & trashed
-    )
-
-
 def get_base_chart(ident: int, customer: Union[Customer, int]) -> BaseChart:
     """Returns the respective base chart of the given customer."""
 
@@ -52,7 +40,7 @@ def get_chart(
 ) -> Chart:
     """Returns the selected chart of the given customer."""
 
-    return _get_charts(typ, customer).where(typ.id == ident).get()
+    return typ.fetch(customer, ident=ident)
 
 
 def get_charts(
@@ -63,7 +51,7 @@ def get_charts(
     """Lists the chart types available to the given customer."""
 
     for typ in types:
-        yield from _get_charts(typ, customer, trashed)
+        yield from typ.fetch(customer, trashed=trashed)
 
 
 def get_chart_acls(customer: Union[Customer, int]) -> Select:
