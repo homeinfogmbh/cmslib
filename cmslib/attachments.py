@@ -1,5 +1,6 @@
 """DOM utilities."""
 
+from logging import getLogger
 from typing import Optional, Union
 
 from filedb import File as FileDBFile
@@ -17,6 +18,7 @@ def ensure_file(file: Union[File, int]) -> File:
     if isinstance(file, File) and isinstance(file.file, FileDBFile):
         return file
 
+    getLogger('attachments').warning('Selecting attachment from database.')
     return File.select(File, FileDBFile).join(FileDBFile).where(
         File.id == file).get()
 
