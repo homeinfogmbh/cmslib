@@ -2,7 +2,7 @@
 
 from typing import Iterable, Iterator, Union
 
-from peewee import BooleanField, ForeignKeyField, Model, Select
+from peewee import BooleanField, ForeignKeyField, Select
 
 from bookings import get_bookable, Bookable
 from peeweeplus import HTMLTextField, Transaction
@@ -37,7 +37,7 @@ class Booking(Chart):
         return transaction
 
     @classmethod
-    def subqueries(cls) -> Iterator[Union[Model, Select]]:
+    def subqueries(cls) -> Iterator[Select]:
         """Yields sub-queries"""
         yield from super().subqueries()
         yield BookableMapping.select(cascade=True)
