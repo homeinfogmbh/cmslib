@@ -77,7 +77,7 @@ class Chart(DSCMS4Model):
     @classmethod
     def subqueries(cls) -> Iterator[Union[Model, Select]]:
         """Yields sub-queries"""
-        yield ChartPIN, cls.base
+        yield ChartPIN, BaseChart
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the chart from a JSON-ish dict."""
