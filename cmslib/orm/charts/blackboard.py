@@ -44,8 +44,8 @@ class Blackboard(Chart):
     @classmethod
     def subqueries(cls) -> Iterator[Union[Model, Select]]:
         """Yields sub-queries"""
-        yield Image.select(cascade=True, shallow=True)
         yield from super().subqueries()
+        yield Image.select(cascade=True, shallow=True)
 
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
