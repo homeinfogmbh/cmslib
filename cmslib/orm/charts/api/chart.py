@@ -1,12 +1,15 @@
 """Basic abstract chart type."""
 
-from peewee import JOIN, ForeignKeyField, Select
+from __future__ import annotations
+from typing import Iterator, Optional, Union
+
+from peewee import JOIN, ForeignKeyField, Model, Select, prefetch
 
 from mdb import Company, Customer
 from peeweeplus import Transaction
 
 from cmslib import dom
-from cmslib.orm.charts.api.base_chart import BaseChart
+from cmslib.orm.charts.api.base_chart import BaseChart, ChartPIN
 from cmslib.orm.charts.api.common import CHARTS, ChartMode
 from cmslib.orm.common import DSCMS4Model
 from cmslib.orm.schedule import Schedule
@@ -28,6 +31,20 @@ class Chart(DSCMS4Model):
         CHARTS[cls.__name__] = cls
 
     @classmethod
+    def fetch(
+            cls,
+            customer: Union[Customer, int],
+            ident: Optional[int] = None
+    ) -> Union[list[Chart], Chart]:
+        """Selects blackboard charts."""
+        charts = cls.select(cascade=True).where(BaseChart.customer == customer)
+
+        if ident is None:
+            return prefetch(charts, *cls.subqueries())
+
+        return prefetch(charts.where(cls.id == ident), *cls.subqueries())[0]
+
+    @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates a chart from a JSON-ish dict."""
         transaction = BaseChart.from_json(json.pop('base'), typ=cls.__name__)
@@ -47,6 +64,11 @@ class Chart(DSCMS4Model):
             BaseChart).join(Customer).join(Company).join_from(
             BaseChart, Schedule, join_type=JOIN.LEFT_OUTER
         )
+
+    @classmethod
+    def subqueries(cls) -> Iterator[Union[Model, Select]]:
+        """Yields sub-queries"""
+        yield ChartPIN
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the chart from a JSON-ish dict."""
