@@ -16,7 +16,6 @@ from peewee import ForeignKeyField
 from peewee import Select
 from peewee import SmallIntegerField
 from peewee import UUIDField
-from peewee import prefetch
 
 from peeweeplus import EnumField, HTMLCharField, HTMLTextField, Transaction
 
@@ -116,11 +115,8 @@ class BaseChart(CustomerModel):
         if not cascade:
             return super().select(*args)
 
-        return prefetch(
-            super().select(cls, Schedule, *args, cascade=cascade).join_from(
-                BaseChart, Schedule, join_type=JOIN.LEFT_OUTER
-            ),
-            ChartPIN.select()
+        return super().select(cls, Schedule, *args, cascade=cascade).join_from(
+            BaseChart, Schedule, join_type=JOIN.LEFT_OUTER
         )
 
     @property
