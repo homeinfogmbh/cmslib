@@ -42,5 +42,5 @@ setup(
         'cmslib.orm.content',
         'cmslib.presentation'
     ],
-    description='Conent Management Systemd library.'
+    description='Content Management System library.'
 )
