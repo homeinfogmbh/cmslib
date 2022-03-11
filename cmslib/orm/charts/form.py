@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 from enum import Enum
-from typing import Union
+from typing import Iterator, Union
 
-from peewee import ForeignKeyField, IntegerField
+from peewee import ForeignKeyField, IntegerField, Select
 
 from peeweeplus import EnumField, HTMLTextField, Transaction
 
@@ -47,6 +47,12 @@ class Form(Chart):
             transaction.add(choice)
 
         return transaction
+
+    @classmethod
+    def subqueries(cls) -> Iterator[Select]:
+        """Yields sub-queries"""
+        yield from super().subqueries()
+        yield Choice.select()
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the chart from a JSON-ish dict."""

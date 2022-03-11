@@ -6,14 +6,13 @@ from typing import Iterator, Union
 
 from peewee import ForeignKeyField, IntegerField, Select
 
-from filedb import META_FIELDS, File as FileDBFile
 from hisfs import get_file, File
 from peeweeplus import EnumField, Transaction
 
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
 from cmslib.orm.charts.api import ChartMode, Chart
-from cmslib.orm.common import UNCHANGED, DSCMS4Model
+from cmslib.orm.common import UNCHANGED, Attachment
 
 
 __all__ = ['Blackboard', 'Image']
@@ -103,7 +102,7 @@ class Blackboard(Chart):
         return xml
 
 
-class Image(DSCMS4Model):
+class Image(Attachment):
     """Image for an ImageText chart."""
 
     class Meta:
@@ -113,28 +112,8 @@ class Image(DSCMS4Model):
         Blackboard, column_name='chart', backref='images', on_delete='CASCADE',
         lazy_load=False
     )
-    file = ForeignKeyField(File, column_name='file', lazy_load=False)
     format = EnumField(Format, default=Format.A4)
     index = IntegerField(default=0)
-
-    @classmethod
-    def select(
-            cls,
-            *args,
-            cascade: bool = False,
-            shallow: bool = False
-    ) -> Select:
-        """Selects images."""
-        if not cascade:
-            return super().select(*args)
-
-        if shallow:
-            return super().select(cls, File, *META_FIELDS, *args).join(
-                File).join(FileDBFile)
-
-        return super().select(cls, File, FileDBFile, *args).join(File).join(
-            FileDBFile
-        )
 
     @classmethod
     def from_json(cls, json: dict, chart: Blackboard, **kwargs) -> Image:

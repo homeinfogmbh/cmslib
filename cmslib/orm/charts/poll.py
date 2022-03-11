@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from enum import Enum
-from typing import Union
+from typing import Iterator, Union
 
 from peewee import ForeignKeyField, IntegerField, Select
 
@@ -50,6 +50,12 @@ class Poll(Chart):
     def sorted_options(self) -> Select:
         """Returns sorted options."""
         return self.options.order_by(Option.index)
+
+    @classmethod
+    def subqueries(cls) -> Iterator[Select]:
+        """Yields sub-queries"""
+        yield from super().subqueries()
+        yield Option.select()
 
     def _patch_options(self, transaction: Transaction, json: dict) -> None:
         """Patches the respective poll options."""

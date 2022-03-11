@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 from datetime import datetime, timedelta
-from typing import Union
+from typing import Iterator, Union
 
 from peewee import BooleanField
 from peewee import ForeignKeyField
 from peewee import IntegerField
+from peewee import Select
 from peewee import SmallIntegerField
 
 from peeweeplus import HTMLCharField, Transaction
@@ -47,6 +48,12 @@ class Facebook(Chart):
             transaction.add(account)
 
         return transaction
+
+    @classmethod
+    def subqueries(cls) -> Iterator[Select]:
+        """Yields sub-queries"""
+        yield from super().subqueries()
+        yield Account.select()
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Creates a new quotes chart from the

@@ -10,6 +10,7 @@ from peewee import BooleanField
 from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import Model
+from peewee import Select
 from peewee import SmallIntegerField
 
 from hisfs import get_file, File
@@ -19,7 +20,7 @@ from peeweeplus import EnumField, HTMLCharField, Transaction
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
 from cmslib.orm.charts.api import ChartMode, Chart
-from cmslib.orm.common import UNCHANGED, DSCMS4Model
+from cmslib.orm.common import UNCHANGED, Attachment, DSCMS4Model
 
 
 __all__ = ['RealEstates', 'IdFilter', 'ZipCodeFilter']
@@ -215,6 +216,14 @@ class RealEstates(Chart):
     def files(self) -> set[File]:
         """Returns the used files."""
         return {contact.file for contact in self.contacts}
+
+    @classmethod
+    def subqueries(cls) -> Iterator[Select]:
+        """Yields sub-queries"""
+        yield from super().subqueries()
+        yield IdFilter.select()
+        yield ZipCodeFilter.select()
+        yield Contact.select(cascade=True, shallow=True)
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Creates a new chart from the respective dictionary."""
@@ -487,7 +496,7 @@ class ZipCodeFilter(DSCMS4Model):
         return xml
 
 
-class Contact(DSCMS4Model):
+class Contact(Attachment):
     """Represents a real estate contact."""
 
     class Meta:
@@ -498,7 +507,6 @@ class Contact(DSCMS4Model):
         on_delete='CASCADE', lazy_load=False
     )
     name = HTMLCharField(255)
-    file = ForeignKeyField(File, column_name='file', lazy_load=False)
 
     @classmethod
     def from_json(cls, json: dict, chart: RealEstates) -> Contact:

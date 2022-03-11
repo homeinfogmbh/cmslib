@@ -4,6 +4,7 @@ from typing import Union
 
 from peewee import JOIN, ForeignKeyField, Select
 
+from filedb import META_FIELDS, File as FileDBFile
 from hisfs import get_file, File
 from peeweeplus import Transaction
 
@@ -26,7 +27,8 @@ class Video(Chart):
         table_name = 'chart_video'
 
     file = ForeignKeyField(
-        File, column_name='file', null=True, lazy_load=False)
+        File, column_name='file', null=True, lazy_load=False
+    )
 
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
@@ -41,13 +43,18 @@ class Video(Chart):
         return transaction
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> Select:
+    def select(cls, *args, cascade: bool = False) -> Select:
         """Selects records."""
         if not cascade:
-            return super().select(*args, **kwargs)
+            return super().select(*args)
 
-        return super().select(*args, File, cascade=True, **kwargs).join_from(
-            cls, File, on=cls.file == File.id, join_type=JOIN.LEFT_OUTER)
+        return super().select(
+            *args, File, *META_FIELDS, cascade=True
+        ).join_from(
+            cls, File, on=cls.file == File.id, join_type=JOIN.LEFT_OUTER).join(
+            FileDBFile, on=File.file == FileDBFile.id,
+            join_type=JOIN.LEFT_OUTER
+        )
 
     @property
     def files(self) -> set[File]:

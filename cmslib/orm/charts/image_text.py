@@ -1,11 +1,12 @@
 """Image / text charts."""
 
 from __future__ import annotations
-from typing import Union
+from typing import Iterator, Union
 
 from peewee import BooleanField
 from peewee import ForeignKeyField
 from peewee import IntegerField
+from peewee import Select
 from peewee import SmallIntegerField
 
 from hisfs import get_file, File
@@ -14,7 +15,7 @@ from peeweeplus import HTMLCharField, HTMLTextField, Transaction
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
 from cmslib.orm.charts.api import ChartMode, Chart
-from cmslib.orm.common import UNCHANGED, DSCMS4Model
+from cmslib.orm.common import UNCHANGED, Attachment, DSCMS4Model
 
 
 __all__ = ['ImageText', 'Image', 'Text']
@@ -58,6 +59,13 @@ class ImageText(Chart):
     def files(self) -> set[File]:
         """Returns a set of IDs of files used by the chart."""
         return {image.file for image in self.images}
+
+    @classmethod
+    def subqueries(cls) -> Iterator[Select]:
+        """Yields sub-queries"""
+        yield from super().subqueries()
+        yield Image.select(cascade=True, shallow=True)
+        yield Text.select()
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the respective chart."""
@@ -114,7 +122,7 @@ class ImageText(Chart):
         return xml
 
 
-class Image(DSCMS4Model):
+class Image(Attachment):
     """Image for an ImageText chart."""
 
     class Meta:
@@ -124,7 +132,6 @@ class Image(DSCMS4Model):
         ImageText, column_name='chart', backref='images', on_delete='CASCADE',
         lazy_load=False
     )
-    file = ForeignKeyField(File, column_name='file', lazy_load=False)
     index = IntegerField(default=0)
 
     @classmethod

@@ -1,10 +1,11 @@
 """New charts."""
 
-from typing import Union
+from typing import Iterator, Union
 
 from peewee import BooleanField
 from peewee import ForeignKeyField
 from peewee import IntegerField
+from peewee import Select
 from peewee import SmallIntegerField
 
 from newslib import Provider
@@ -45,6 +46,12 @@ class News(Chart):
             ))
 
         return transaction
+
+    @classmethod
+    def subqueries(cls) -> Iterator[Select]:
+        """Yields sub-queries"""
+        yield from super().subqueries()
+        yield NewsProvider.select()
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the chart and related components from a JSON-ish dict."""
