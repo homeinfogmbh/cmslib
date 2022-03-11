@@ -154,7 +154,6 @@ class Attachment(DSCMS4Model):
     """Image for an ImageText chart."""
 
     file = ForeignKeyField(hisfs.File, column_name='file', lazy_load=False)
-    index = IntegerField(default=0)
 
     @classmethod
     def select(
