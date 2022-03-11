@@ -1,8 +1,8 @@
 """Booking chart."""
 
-from typing import Iterable, Union
+from typing import Iterable, Iterator, Union
 
-from peewee import BooleanField, ForeignKeyField
+from peewee import BooleanField, ForeignKeyField, Model, Select
 
 from bookings import get_bookable, Bookable
 from peeweeplus import HTMLTextField, Transaction
@@ -35,6 +35,12 @@ class Booking(Chart):
         transaction = super().from_json(json, **kwargs)
         transaction.primary.update_bookable_mappings(bookables, transaction)
         return transaction
+
+    @classmethod
+    def subqueries(cls) -> Iterator[Union[Model, Select]]:
+        """Yields sub-queries"""
+        yield from super().subqueries()
+        yield BookableMapping.select(cascade=True)
 
     def update_bookable_mappings(
             self,
@@ -98,3 +104,11 @@ class BookableMapping(DSCMS4Model):
     bookable = ForeignKeyField(
         Bookable, column_name='bookable', on_delete='CASCADE', lazy_load=False
     )
+
+    @classmethod
+    def select(cls, *args, cascade: bool = False) -> Select:
+        """Selects bookable mappings."""
+        if not cascade:
+            return super().select(*args)
+
+        return super().select(cls, Bookable, *args).join(Bookable)
