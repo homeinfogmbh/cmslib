@@ -78,8 +78,7 @@ class News(Chart):
         json = super().to_json(mode=mode, **kwargs)
 
         if mode == ChartMode.FULL:
-            json['providers'] = [
-                provider.provider.value for provider in self.providers]
+            json['providers'] = [provider.name for provider in self.providers]
 
         return json
 
@@ -94,7 +93,7 @@ class News(Chart):
         xml.font_size_text = self.font_size_text
         xml.text_color = self.text_color
         xml.ken_burns = self.ken_burns
-        xml.provider = [provider.provider.value for provider in self.providers]
+        xml.provider = [provider.name for provider in self.providers]
         return xml
 
 
@@ -109,3 +108,8 @@ class NewsProvider(DSCMS4Model):
         on_update='CASCADE', lazy_load=False
     )
     provider = EnumField(Provider)
+
+    @property
+    def name(self) -> str:
+        """Returns the provider name."""
+        return self.provider.value

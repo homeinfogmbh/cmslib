@@ -64,7 +64,7 @@ class ImageText(Chart):
     def subqueries(cls) -> Iterator[Select]:
         """Yields sub-queries"""
         yield from super().subqueries()
-        yield Image.select(cascade=True, shallow=True)
+        yield Image.select(cascade=True, shallow=True).order_by(Image.index)
         yield Text.select()
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
@@ -99,7 +99,7 @@ class ImageText(Chart):
             json['texts'] = [text.to_json() for text in self.texts]
             json['images'] = [
                 image.to_json(fk_fields=False, autofields=False)
-                for image in self.images.order_by(Image.index)
+                for image in self.images
             ]
 
         return json
@@ -115,9 +115,7 @@ class ImageText(Chart):
         xml.title_color = self.title_color
         xml.ken_burns = self.ken_burns
         xml.random_image = self.random_image
-        xml.image = filter(None, (
-            image.to_dom() for image in self.images.order_by(Image.index)
-        ))
+        xml.image = filter(None, (image.to_dom() for image in self.images))
         xml.text = [text.text for text in self.texts]
         return xml
 

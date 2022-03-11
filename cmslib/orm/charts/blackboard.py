@@ -41,12 +41,6 @@ class Blackboard(Chart):
         table_name = 'chart_blackboard'
 
     @classmethod
-    def subqueries(cls) -> Iterator[Select]:
-        """Yields sub-queries"""
-        yield from super().subqueries()
-        yield Image.select(cascade=True, shallow=True)
-
-    @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates a new chart from a JSON-ish dict."""
         # Pop images first to exclude them from the
@@ -64,6 +58,12 @@ class Blackboard(Chart):
     def files(self) -> set[File]:
         """Returns a set of files used by the chart."""
         return {image.file for image in self.images}
+
+    @classmethod
+    def subqueries(cls) -> Iterator[Select]:
+        """Yields sub-queries"""
+        yield from super().subqueries()
+        yield Image.select(cascade=True, shallow=True).order_by(Image.index)
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the respective chart."""

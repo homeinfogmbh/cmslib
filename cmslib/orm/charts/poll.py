@@ -46,23 +46,18 @@ class Poll(Chart):
 
         return transaction
 
-    @property
-    def sorted_options(self) -> Select:
-        """Returns sorted options."""
-        return self.options.order_by(Option.index)
-
     @classmethod
     def subqueries(cls) -> Iterator[Select]:
         """Yields sub-queries"""
         yield from super().subqueries()
-        yield Option.select()
+        yield Option.select().order_by(Option.index)
 
     def _patch_options(self, transaction: Transaction, json: dict) -> None:
         """Patches the respective poll options."""
         if json == UNCHANGED:
             return
 
-        options = {option.text: option for option in self.sorted_options}
+        options = {option.text: option for option in self.options}
         json_objects = {option.get('text'): option for option in json}
         processed = set()
 
@@ -96,7 +91,7 @@ class Poll(Chart):
         if mode == ChartMode.FULL:
             json['options'] = [
                 option.to_json(fk_fields=False, autofields=True)
-                for option in self.sorted_options
+                for option in self.options
             ]
 
         return json
@@ -109,7 +104,7 @@ class Poll(Chart):
         xml = super().to_dom(dom.Poll)
         xml.text = self.text
         xml.mode = self.mode.value
-        xml.option = [option.to_dom() for option in self.sorted_options]
+        xml.option = [option.to_dom() for option in self.options]
         return xml
 
 

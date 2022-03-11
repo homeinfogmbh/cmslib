@@ -83,7 +83,8 @@ class Facebook(Chart):
         if mode == ChartMode.FULL:
             json['accounts'] = [
                 account.to_json(skip=('chart', 'id'))
-                for account in self.accounts]
+                for account in self.accounts
+            ]
 
         return json
 
