@@ -4,7 +4,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Iterator, Union
 
-from peewee import ForeignKeyField, IntegerField, Model, Select
+from peewee import ForeignKeyField, IntegerField, Select
 
 from filedb import META_FIELDS, File as FileDBFile
 from hisfs import get_file, File
@@ -42,7 +42,7 @@ class Blackboard(Chart):
         table_name = 'chart_blackboard'
 
     @classmethod
-    def subqueries(cls) -> Iterator[Union[Model, Select]]:
+    def subqueries(cls) -> Iterator[Select]:
         """Yields sub-queries"""
         yield from super().subqueries()
         yield Image.select(cascade=True, shallow=True)

@@ -3,7 +3,7 @@
 from __future__ import annotations
 from typing import Iterator, Optional, Union
 
-from peewee import JOIN, Expression, ForeignKeyField, Model, Select, prefetch
+from peewee import JOIN, Expression, ForeignKeyField, Select, prefetch
 
 from mdb import Company, Customer
 from peeweeplus import Transaction
@@ -75,10 +75,10 @@ class Chart(DSCMS4Model):
         )
 
     @classmethod
-    def subqueries(cls) -> Iterator[Union[Model, Select]]:
+    def subqueries(cls) -> Iterator[Select]:
         """Yields sub-queries"""
-        yield BaseChart
-        yield ChartPIN
+        yield BaseChart.select(cascade=True)
+        yield ChartPIN.select()
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the chart from a JSON-ish dict."""
