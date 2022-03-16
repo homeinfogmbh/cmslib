@@ -175,8 +175,8 @@ class Configuration(CustomerModel):
         dummy_picture_file = File.alias()
         dummy_picture_file_db_file = FileDBFile.alias()
         return super().select(
-            cls, Colors, logo_file, logo_file_db_file.meta_fields(),
-            dummy_picture_file, dummy_picture_file_db_file.meta_fields(),
+            cls, Colors, logo_file, *logo_file_db_file.meta_fields(),
+            dummy_picture_file, *dummy_picture_file_db_file.meta_fields(),
             *args, cascade=cascade
         ).join_from(
             cls, Colors
