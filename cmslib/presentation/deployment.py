@@ -57,10 +57,10 @@ def get_deployment(deployment: Union[Deployment, int]) -> Deployment:
         Deployment.id == deployment).get()
 
 
-class Presentation(Presentation):   # pylint: disable=E0102
+class Presentation(Presentation):
     """Accumulates content for a deployment."""
 
-    def __init__(self, deployment: Deployment):     # pylint: disable=W0231
+    def __init__(self, deployment: Deployment):
         """Sets the respective deployment."""
         self.deployment = get_deployment(deployment)
 
@@ -70,7 +70,7 @@ class Presentation(Presentation):   # pylint: disable=E0102
         return self.deployment.customer
 
     def get_base_charts(self) -> Iterator[IndexedBaseChart]:
-        """Selects charts directy attached to the deployment."""
+        """Selects charts directly attached to the deployment."""
         for deployment_base_chart in DeploymentBaseChart.select(
                 cascade=True).where(
                     (DeploymentBaseChart.deployment == self.deployment)
