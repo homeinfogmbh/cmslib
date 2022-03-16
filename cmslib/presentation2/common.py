@@ -65,13 +65,6 @@ class Presentation(NamedTuple):
             *deployment_menus,
             *group_menus
         }
-        play_order = sorted_base_charts(
-            chain(
-                IndexedBaseChart.from_deployment(deployment),
-                IndexedBaseChart.from_groups(groups_set),
-                IndexedBaseChart.from_menus(menu_ids)
-            )
-        )
 
         try:
             configuration = DeploymentConfiguration.select().where(
@@ -84,6 +77,14 @@ class Presentation(NamedTuple):
                 )
             except ValueError:
                 raise NoConfigurationFound()
+
+        play_order = sorted_base_charts(
+            chain(
+                IndexedBaseChart.from_deployment(deployment),
+                IndexedBaseChart.from_groups(groups_set),
+                IndexedBaseChart.from_menus(menu_ids)
+            )
+        )
 
         return cls(
             deployment.customer,
