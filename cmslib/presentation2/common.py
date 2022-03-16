@@ -18,6 +18,8 @@ from cmslib.orm import DeploymentConfiguration
 from cmslib.orm import DeploymentMenu
 from cmslib.orm import GroupMemberDeployment
 from cmslib.orm import GroupMenu
+from cmslib.orm import MenuItem
+from cmslib.orm import MenuItemChart
 from cmslib.presentation2.functions import get_charts
 from cmslib.presentation2.functions import get_group_configurations
 from cmslib.presentation2.functions import sorted_base_charts
@@ -84,11 +86,16 @@ class Presentation(NamedTuple):
                 IndexedBaseChart.from_deployment(deployment)
             )
         )
+        menu_base_charts = {
+            menu_item_chart.base_chart for menu_item_chart in
+            MenuItemChart.select().join(MenuItem).where(
+                MenuItem.menu << menu_ids
+            )
+        }
         base_charts = {
-            *IndexedBaseChart.from_menus(menu_ids),
+            *menu_base_charts,
             *play_order
         }
-        print('DEBUG BASE CHARTS:', base_charts)
         chart_map = {
             chart.base.id: chart for chart in get_charts(base_charts)
         }

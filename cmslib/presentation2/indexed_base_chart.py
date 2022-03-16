@@ -5,8 +5,6 @@ from typing import Iterable, Iterator, NamedTuple
 
 from cmslib.orm import DeploymentBaseChart
 from cmslib.orm import GroupBaseChart
-from cmslib.orm import MenuItem
-from cmslib.orm import MenuItemChart
 
 
 __all__ = ['IndexedBaseChart']
@@ -17,14 +15,6 @@ class IndexedBaseChart(NamedTuple):
 
     id: int
     index: int = 0
-
-    @classmethod
-    def from_menus(cls, menus: Iterable[int]) -> Iterator[IndexedBaseChart]:
-        """Yields indexed base charts from the given menus."""
-        for menu_item_chart in MenuItemChart.select().join(MenuItem).where(
-                MenuItem.menu << set(menus)
-        ):
-            yield cls(menu_item_chart.base_chart, menu_item_chart.index)
 
     @classmethod
     def from_groups(
