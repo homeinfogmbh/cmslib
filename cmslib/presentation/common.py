@@ -57,7 +57,8 @@ def get_indexed_charts(
 
     for chart_type in CHARTS.values():
         for chart in chart_type.select(cascade=True).where(
-                chart_type.base << base_chart_ids):
+                chart_type.base << base_chart_ids
+        ):
             charts_by_base_chart[chart.base] = chart
 
     for ibc in indexed_base_charts:
@@ -68,7 +69,8 @@ def select_files(ids: Iterator[int]) -> Select:
     """Yields files from their IDs."""
 
     return File.select(File, FileDBFile).join(FileDBFile).where(
-        File.id << set(ids)).iterator()
+        File.id << set(ids)
+    ).iterator()
 
 
 def key(model: Model) -> int:
@@ -104,7 +106,8 @@ def get_group_configurations(
     for config in Configuration.select(
             GroupConfiguration, cascade=True).join_from(
             Configuration, GroupConfiguration).where(
-            GroupConfiguration.group << groups):
+            GroupConfiguration.group << groups
+    ):
         configurations[config.groupconfiguration.group_id].add(config)
 
     for level in group_levels:
@@ -128,7 +131,8 @@ def get_group_base_charts(groups: set[Group]) -> Iterator[IndexedBaseChart]:
     for base_chart in BaseChart.select(GroupBaseChart, cascade=True).join_from(
             BaseChart, GroupBaseChart).where(
             (GroupBaseChart.group << groups)
-            & (BaseChart.trashed == 0)):
+            & (BaseChart.trashed == 0)
+    ):
         yield IndexedBaseChart(base_chart.groupbasechart.index, base_chart)
 
 
@@ -143,18 +147,21 @@ def get_menu_charts(menus: Iterable[Menu]) -> Iterator[Chart]:
 
     base_charts = BaseChart.select().join(
         MenuItemChart).join(MenuItem).where(
-        (BaseChart.trashed == 0) & (MenuItem.menu << menus))
+        (BaseChart.trashed == 0) & (MenuItem.menu << menus)
+    )
 
     for chart_type in CHARTS.values():
         yield from chart_type.select(cascade=True).where(
-            chart_type.base << base_charts)
+            chart_type.base << base_charts
+        )
 
 
 def get_group_menus(groups: set[Group]) -> Iterable[Menu]:
     """Yields menus attached to groups the object is a member of."""
 
     return Menu.select(cascade=True).join_from(Menu, GroupMenu).where(
-        GroupMenu.group << groups)
+        GroupMenu.group << groups
+    )
 
 
 def get_menutree(menus: Iterable[Menu]) -> Iterable[MenuTreeItem]:
@@ -250,7 +257,8 @@ class Presentation:
     def _group_configurations(self):
         """Returns the group configurations."""
         return list(get_group_configurations(
-            self._group_levels, self._group_set))
+            self._group_levels, self._group_set
+        ))
 
     @property
     @lru_cache()
@@ -318,7 +326,8 @@ class Presentation:
                 chart.to_json(fk_fields=False) for chart in self.charts
             ],
             'configuration': self.configuration.to_json(
-                cascade=True, fk_fields=False),
+                cascade=True, fk_fields=False
+            ),
             'customer': self.customer.id,
             'menuItems': [item.to_json() for item in self.menu_tree],
             'playlist': [
