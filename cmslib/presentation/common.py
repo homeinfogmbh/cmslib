@@ -286,12 +286,7 @@ class Presentation:
             yield from menu.files
 
         for chart in self.charts:
-            try:
-                files = chart.files
-            except AttributeError:
-                continue
-
-            yield from files
+            yield from chart.files
 
     @property
     def files(self) -> Iterator[File]:

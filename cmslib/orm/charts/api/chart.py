@@ -5,6 +5,7 @@ from typing import Iterator, Optional, Union
 
 from peewee import JOIN, Expression, ForeignKeyField, Select, prefetch
 
+from filedb import File
 from mdb import Company, Customer
 from peeweeplus import Transaction
 
@@ -79,6 +80,11 @@ class Chart(DSCMS4Model):
         """Yields sub-queries"""
         yield BaseChart.select(cascade=True)
         yield ChartPIN.select()
+
+    @property
+    def files(self) -> set[File]:
+        """Returns a set of files this chart uses."""
+        return set()
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the chart from a JSON-ish dict."""
