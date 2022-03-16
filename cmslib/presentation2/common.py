@@ -85,7 +85,7 @@ class Presentation(NamedTuple):
             )
         )
         base_charts = {
-            IndexedBaseChart.from_menus(menu_ids),
+            *IndexedBaseChart.from_menus(menu_ids),
             *play_order
         }
         chart_map = {
