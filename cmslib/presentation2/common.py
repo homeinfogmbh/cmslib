@@ -84,6 +84,7 @@ class Presentation(NamedTuple):
                 IndexedBaseChart.from_deployment(deployment)
             )
         )
+        print('DEBUG MENUS:', menu_ids)
         base_charts = {
             *IndexedBaseChart.from_menus(menu_ids),
             *play_order
