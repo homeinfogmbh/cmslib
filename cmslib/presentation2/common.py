@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from itertools import chain
-from typing import Iterator, NamedTuple
+from typing import Iterator, NamedTuple, ValuesView
 
 from mdb import Customer
 from hwdb import Deployment
@@ -97,9 +97,9 @@ class Presentation(NamedTuple):
         )
 
     @property
-    def charts(self) -> Iterator[Chart]:
+    def charts(self) -> ValuesView[Chart]:
         """Yields all charts."""
-        return self.chart_map.keys()
+        return self.chart_map.values()
 
     @property
     def playlist(self) -> Iterator[Chart]:
