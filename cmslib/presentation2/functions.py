@@ -5,6 +5,7 @@ from collections import defaultdict
 from typing import Iterable, Iterator
 
 from cmslib.orm import CHARTS
+from cmslib.orm import BaseChart
 from cmslib.orm import Chart
 from cmslib.orm import Configuration
 from cmslib.orm import Group
@@ -21,7 +22,8 @@ def get_charts(base_charts: Iterable[int]) -> Iterator[Chart]:
     for chart_type in CHARTS.values():
         yield from chart_type.prefetch(
             chart_type.select(cascade=True).where(
-                chart_type.base << base_charts
+                (BaseChart.id << base_charts)
+                & (BaseChart.trashed == 0)
             )
         )
 
