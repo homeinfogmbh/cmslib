@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from itertools import chain
-from typing import Iterable, NamedTuple
+from typing import Iterator, NamedTuple
 
 from mdb import Customer
 from hwdb import Deployment
@@ -97,12 +97,12 @@ class Presentation(NamedTuple):
         )
 
     @property
-    def charts(self) -> Iterable[Chart]:
+    def charts(self) -> Iterator[Chart]:
         """Yields all charts."""
         return self.chart_map.keys()
 
     @property
-    def playlist(self) -> Iterable[Chart]:
+    def playlist(self) -> Iterator[Chart]:
         """Yields the playlist charts."""
         for base_chart_id in self.play_order:
             yield self.chart_map[base_chart_id]
