@@ -163,8 +163,10 @@ def get_menu_charts(menus: Iterable[Menu]) -> Iterator[Chart]:
 def get_group_menus(groups: set[Group]) -> Iterable[Menu]:
     """Yields menus attached to groups the object is a member of."""
 
-    return Menu.select(cascade=True).join_from(Menu, GroupMenu).where(
-        GroupMenu.group << groups
+    return Menu.prefetch(
+        Menu.select(cascade=True).join_from(Menu, GroupMenu).where(
+            GroupMenu.group << groups
+        )
     )
 
 
