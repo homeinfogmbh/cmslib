@@ -88,8 +88,9 @@ class Presentation(NamedTuple):
             *IndexedBaseChart.from_menus(menu_ids),
             *play_order
         }
+        print('DEBUG BASE CHARTS:', base_charts)
         chart_map = {
-            chart.base.id: chart for chart in get_charts(set(base_charts))
+            chart.base.id: chart for chart in get_charts(base_charts)
         }
         return cls(
             deployment.customer,
