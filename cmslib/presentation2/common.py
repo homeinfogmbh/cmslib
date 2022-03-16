@@ -80,13 +80,16 @@ class Presentation(NamedTuple):
 
         play_order = sorted_base_charts(
             chain(
-                IndexedBaseChart.from_deployment(deployment),
                 IndexedBaseChart.from_groups(groups_set),
-                IndexedBaseChart.from_menus(menu_ids)
+                IndexedBaseChart.from_deployment(deployment)
             )
         )
+        base_charts = {
+            IndexedBaseChart.from_menus(menu_ids),
+            *play_order
+        }
         chart_map = {
-            chart.base.id: chart for chart in get_charts(set(play_order))
+            chart.base.id: chart for chart in get_charts(set(base_charts))
         }
         return cls(
             deployment.customer,
