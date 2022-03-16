@@ -43,7 +43,9 @@ class IndexedBaseChart(NamedTuple):
         for deployment_base_chart in DeploymentBaseChart.select().where(
                 DeploymentBaseChart.deployment == deployment
         ):
-            yield cls(deployment_base_chart.id, deployment_base_chart.index)
+            yield cls(
+                deployment_base_chart.base_chart, deployment_base_chart.index
+            )
 
     def key(self) -> int:
         """Returns the index for sorting."""
