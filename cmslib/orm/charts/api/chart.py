@@ -32,6 +32,11 @@ class Chart(DSCMS4Model):
         CHARTS[cls.__name__] = cls
 
     @classmethod
+    def prefetch(cls, select: Select) -> list[Chart]:
+        """Returns a list of prefetched, selected charts."""
+        return prefetch(select, *cls.subqueries())
+
+    @classmethod
     def fetch(
             cls,
             customer: Union[Customer, int],
