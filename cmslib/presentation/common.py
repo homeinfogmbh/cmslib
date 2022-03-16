@@ -10,11 +10,10 @@ from typing import Iterable, Iterator, NamedTuple
 from peewee import Model, Select
 
 from filedb import File as FileDBFile
-from functoolsplus import coerce    # pylint: disable=E0401
 from hisfs import File
 from mdb import Customer
 
-from cmslib import dom  # pylint: disable=E0611
+from cmslib import dom
 from cmslib.exceptions import NoConfigurationFound
 from cmslib.groups import Groups
 from cmslib.menutree import MenuTreeItem
@@ -65,12 +64,15 @@ def get_indexed_charts(
         yield IndexedChart(ibc.index, charts_by_base_chart[ibc.base_chart])
 
 
-def select_files(ids: Iterator[int]) -> Select:
+def select_files(ids: Iterator[int], metadata: bool = False) -> Select:
     """Yields files from their IDs."""
 
-    return File.select(File, FileDBFile).join(FileDBFile).where(
-        File.id << set(ids)
-    ).iterator()
+    if metadata:
+        select = File.select(File, *FileDBFile.meta_fields())
+    else:
+        select = File.select(File, FileDBFile)
+
+    return select.join(FileDBFile).where(File.id << set(ids)).iterator()
 
 
 def key(model: Model) -> int:
@@ -164,7 +166,7 @@ def get_group_menus(groups: set[Group]) -> Iterable[Menu]:
     )
 
 
-def get_menutree(menus: Iterable[Menu]) -> Iterable[MenuTreeItem]:
+def get_menu_tree(menus: Iterable[Menu]) -> Iterable[MenuTreeItem]:
     """Returns the merged menu tree."""
 
     return MenuTreeItem.from_menus(menus)
@@ -243,14 +245,14 @@ class Presentation:
     @property
     @lru_cache()
     def charts(self):
-        """REturns the charts."""
+        """Returns the charts."""
         return get_unique_charts(self.playlist, get_menu_charts(self.menus))
 
     @property
     @lru_cache()
     def menu_tree(self):
         """Returns the menu tree."""
-        return get_menutree(self.menus)
+        return get_menu_tree(self.menus)
 
     @property
     @lru_cache()
@@ -276,10 +278,8 @@ class Presentation:
         return get_configuration(self._configs, self._group_configurations)
 
     @property
-    @coerce(select_files)
-    def files(self) -> Iterator[File]:
+    def file_ids(self) -> Iterator[int]:
         """Yields the presentation's used file IDs."""
-
         yield from self.configuration.files
 
         for menu in self.menus:
@@ -292,6 +292,11 @@ class Presentation:
                 continue
 
             yield from files
+
+    @property
+    def files(self) -> Iterator[File]:
+        """Yields the presentation's used files."""
+        return select_files(self.file_ids)
 
     def get_base_charts(self) -> Iterable[IndexedBaseChart]:
         """Yields base charts directly attached to the target."""
