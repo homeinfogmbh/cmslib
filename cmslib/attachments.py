@@ -27,7 +27,7 @@ def attachment_dom(
         file: Optional[Union[File, int]],
         format: Optional[str] = None,
         index: Optional[int] = None
-) -> Attachment:
+) -> Optional[Attachment]:
     """Returns an attachment for the respective file ID."""
 
     if file is None:
@@ -45,7 +45,7 @@ def attachment_dom(
     return xml
 
 
-def attachment_json(file: File, json: Optional[dict] = None) -> dict:
+def attachment_json(file: Optional[File], json: Optional[dict] = None) -> dict:
     """Returns a JSON-ish representation of the attachment."""
 
     if file is None:
