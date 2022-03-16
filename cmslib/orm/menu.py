@@ -4,7 +4,7 @@ from __future__ import annotations
 from logging import getLogger
 from typing import Iterable, Iterator, Optional, Union
 
-from peewee import ForeignKeyField, IntegerField, Select
+from peewee import ForeignKeyField, IntegerField, Select, prefetch
 
 from hisfs import get_file, File
 from mdb import Company, Customer
@@ -33,6 +33,17 @@ class Menu(CustomerModel):
 
     name = HTMLCharField(255)
     description = HTMLCharField(255, null=True)
+
+    @classmethod
+    def prefetch(cls, select: Select) -> list[Menu]:
+        """Yields sub-queries for prefetch."""
+        menu_items = MenuItem.select(cascade=True).where(
+            MenuItem.menu << select
+        )
+        menu_item_charts = MenuItemChart.select(cascade=True).where(
+            MenuItemChart.menu_item << menu_items
+        )
+        return prefetch(select, menu_items, menu_item_charts)
 
     @property
     def root_items(self) -> Iterable[MenuItem]:
