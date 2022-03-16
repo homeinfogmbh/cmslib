@@ -7,6 +7,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Iterable
 
+from peewee import JOIN
 from peewee import BooleanField
 from peewee import ForeignKeyField
 from peewee import IntegerField
@@ -14,6 +15,7 @@ from peewee import Select
 from peewee import SmallIntegerField
 from peewee import TimeField
 
+from filedb import File as FileDBFile
 from hisfs import get_file, File
 from peeweeplus import EnumField, HTMLCharField, HTMLTextField, Transaction
 
@@ -168,8 +170,21 @@ class Configuration(CustomerModel):
         if not cascade:
             return super().select(*args)
 
-        return super().select(cls, Colors, *args, cascade=cascade).join_from(
-            cls, Colors
+        Logo = File.alias()
+        LogoFileDBFile = FileDBFile.alias()
+        DummyPicture = File.alias()
+        DummyPictureFileDBFile = FileDBFile.alias()
+        return super().select(
+            cls, Colors, Logo, LogoFileDBFile.meta_fields(),
+            DummyPicture, DummyPictureFileDBFile.meta_fields(),
+            *args, cascade=cascade
+        ).join_from(
+            cls, Colors).join_from(
+            cls, Logo, on=cls.logo == Logo.id, join_type=JOIN.LEFT_OUTER).join(
+            LogoFileDBFile).join_from(
+            cls, DummyPicture, on=cls.dummy_picture == DummyPicture.id,
+            join_type=JOIN.LEFT_OUTER).join(
+            DummyPictureFileDBFile
         )
 
     @property
