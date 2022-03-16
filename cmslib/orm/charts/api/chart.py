@@ -50,9 +50,9 @@ class Chart(DSCMS4Model):
         )
 
         if ident is None:
-            return prefetch(charts, *cls.subqueries())
+            return cls.prefetch(charts)
 
-        charts = prefetch(charts.where(cls.id == ident), *cls.subqueries())
+        charts = cls.prefetch(charts.where(cls.id == ident))
 
         try:
             return charts[0]
