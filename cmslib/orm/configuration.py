@@ -170,27 +170,10 @@ class Configuration(CustomerModel):
         if not cascade:
             return super().select(*args)
 
-        logo_file = File.alias()
-        logo_file_db_file = FileDBFile.alias()
-        dummy_picture_file = File.alias()
-        dummy_picture_file_db_file = FileDBFile.alias()
         return super().select(
-            cls, Colors, logo_file, *logo_file_db_file.meta_fields(),
-            dummy_picture_file, *dummy_picture_file_db_file.meta_fields(),
-            *args, cascade=cascade
+            cls, Colors, *args, cascade=cascade
         ).join_from(
             cls, Colors
-        ).join_from(
-            cls, logo_file, on=cls.logo == logo_file.id,
-            join_type=JOIN.LEFT_OUTER
-        ).join(
-            logo_file_db_file, join_type=JOIN.LEFT_OUTER
-        ).join_from(
-            cls, dummy_picture_file,
-            on=cls.dummy_picture == dummy_picture_file.id,
-            join_type=JOIN.LEFT_OUTER
-        ).join(
-            dummy_picture_file_db_file, join_type=JOIN.LEFT_OUTER
         )
 
     @property
