@@ -181,10 +181,10 @@ class Configuration(CustomerModel):
         ).join_from(
             cls, Colors).join_from(
             cls, Logo, on=cls.logo == Logo.id, join_type=JOIN.LEFT_OUTER).join(
-            LogoFileDBFile).join_from(
+            LogoFileDBFile, join_type=JOIN.LEFT_OUTER).join_from(
             cls, DummyPicture, on=cls.dummy_picture == DummyPicture.id,
             join_type=JOIN.LEFT_OUTER).join(
-            DummyPictureFileDBFile
+            DummyPictureFileDBFile, join_type=JOIN.LEFT_OUTER
         )
 
     @property
