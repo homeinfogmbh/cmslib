@@ -85,14 +85,16 @@ class Presentation(NamedTuple):
                 IndexedBaseChart.from_menus(menu_ids)
             )
         )
-
+        chart_map = {
+            chart.base.id: chart for chart in get_charts(set(play_order))
+        }
         return cls(
             deployment.customer,
             Configuration.select(cascade=True).where(
                 Configuration.id == configuration
             ).get(),
-            {chart.base.id: chart for chart in get_charts(set(play_order))},
-            play_order,
+            chart_map,
+            [ident for ident in play_order if ident in chart_map],
             list(MenuTreeItem.from_menu_ids(menu_ids))
         )
 
