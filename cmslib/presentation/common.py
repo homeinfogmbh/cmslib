@@ -55,10 +55,8 @@ def get_indexed_charts(
     charts_by_base_chart = {}
 
     for chart_type in CHARTS.values():
-        for chart in chart_type.prefetch(
-                chart_type.select(cascade=True).where(
-                    chart_type.base << base_chart_ids
-                )
+        for chart in chart_type.select(cascade=True).where(
+                chart_type.base << base_chart_ids
         ):
             charts_by_base_chart[chart.base] = chart
 
