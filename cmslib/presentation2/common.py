@@ -88,7 +88,9 @@ class Presentation(NamedTuple):
 
         return cls(
             deployment.customer,
-            configuration,
+            Configuration.select(cascade=True).where(
+                Configuration.id == configuration
+            ).get(),
             {chart.base.id: chart for chart in get_charts(set(play_order))},
             play_order,
             list(MenuTreeItem.from_menu_ids(menu_ids))
