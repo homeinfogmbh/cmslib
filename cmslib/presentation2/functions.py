@@ -31,10 +31,11 @@ def sorted_base_charts(
 ) -> list[int]:
     """Yields base chart IDs from indexed base charts."""
 
-    return sorted(
-        (indexed_base_chart.id for indexed_base_chart in indexed_base_charts),
-        key=IndexedBaseChart.key
-    )
+    return [
+        indexed_base_chart.id for indexed_base_chart in sorted(
+            indexed_base_charts, key=IndexedBaseChart.key
+        )
+    ]
 
 
 def get_group_configurations(
