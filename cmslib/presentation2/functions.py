@@ -20,6 +20,7 @@ def get_charts(base_charts: Iterable[int]) -> Iterator[Chart]:
     """Yields charts from the given base charts."""
 
     for chart_type in CHARTS.values():
+        print('DEBUG CHART TYPE:', chart_type, flush=True)
         yield from chart_type.prefetch(
             chart_type.select(cascade=True).where(
                 (BaseChart.id << base_charts)
