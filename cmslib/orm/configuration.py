@@ -7,7 +7,6 @@ from datetime import datetime
 from enum import Enum
 from typing import Iterable
 
-from peewee import JOIN
 from peewee import BooleanField
 from peewee import ForeignKeyField
 from peewee import IntegerField
@@ -15,7 +14,6 @@ from peewee import Select
 from peewee import SmallIntegerField
 from peewee import TimeField
 
-from filedb import File as FileDBFile
 from hisfs import get_file, File
 from peeweeplus import EnumField, HTMLCharField, HTMLTextField, Transaction
 
@@ -127,9 +125,11 @@ class Configuration(CustomerModel):
     title_size = SmallIntegerField()
     text_size = SmallIntegerField()
     logo = ForeignKeyField(
-        File, column_name='logo', null=True, lazy_load=False)
+        File, column_name='logo', null=True, lazy_load=False
+    )
     dummy_picture = ForeignKeyField(
-        File, column_name='dummy_picture', null=True, lazy_load=False)
+        File, column_name='dummy_picture', null=True, lazy_load=False
+    )
     hide_cursor = BooleanField(default=True)
     rotation = SmallIntegerField(default=0)
     email_form = BooleanField()
@@ -325,10 +325,12 @@ class Configuration(CustomerModel):
 
         if cascade:
             json['colors'] = self.colors.to_json(
-                autofields=False, fk_fields=False)
+                autofields=False, fk_fields=False
+            )
             json['tickers'] = [
                 ticker.to_json(autofields=False, fk_fields=False)
-                for ticker in self.tickers]
+                for ticker in self.tickers
+            ]
             json['backlight'] = self.backlight_dict
 
         return json
