@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from itertools import chain
-from typing import Iterator, NamedTuple, ValuesView
+from typing import Iterator, NamedTuple, Optional, ValuesView
 
 from mdb import Customer
 from hwdb import Deployment
@@ -20,6 +20,7 @@ from cmslib.orm import GroupMemberDeployment
 from cmslib.orm import GroupMenu
 from cmslib.orm import MenuItem
 from cmslib.orm import MenuItemChart
+from cmslib.presentation.deployment import deployment_to_dom
 from cmslib.presentation2.functions import get_charts
 from cmslib.presentation2.functions import get_group_configurations
 from cmslib.presentation2.functions import sorted_base_charts
@@ -37,6 +38,7 @@ class Presentation(NamedTuple):
     chart_map: dict[int, Chart]
     play_order: list[int]
     menu_tree: list[MenuTreeItem]
+    deployment: Optional[Deployment] = None
 
     @classmethod
     def from_deployment(cls, deployment: Deployment) -> Presentation:
@@ -106,7 +108,8 @@ class Presentation(NamedTuple):
             ).get(),
             chart_map,
             [ident for ident in play_order if ident in chart_map],
-            list(MenuTreeItem.from_menu_ids(menu_ids))
+            list(MenuTreeItem.from_menu_ids(menu_ids)),
+            deployment
         )
 
     @property
@@ -128,11 +131,12 @@ class Presentation(NamedTuple):
         xml.playlist = [chart.to_dom(brief=True) for chart in self.playlist]
         xml.menu_item = [item.to_dom() for item in self.menu_tree]
         xml.chart = [chart.to_dom() for chart in self.charts]
+        xml.deployment = deployment_to_dom(self.deployment)
         return xml
 
     def to_json(self) -> dict:
         """Returns a JSON presentation."""
-        return {
+        json = {
             'charts': [
                 chart.to_json(fk_fields=False) for chart in self.charts
             ],
@@ -146,3 +150,8 @@ class Presentation(NamedTuple):
                 for chart in self.playlist
             ]
         }
+
+        if self.deployment is not None:
+            json['deployment'] = self.deployment.to_json(address=True)
+
+        return json
