@@ -37,12 +37,8 @@ class Menu(CustomerModel):
     @classmethod
     def prefetch(cls, select: Select) -> list[Menu]:
         """Yields sub-queries for prefetch."""
-        menu_items = MenuItem.select(cascade=True).where(
-            MenuItem.menu << select
-        )
-        menu_item_charts = MenuItemChart.select(cascade=True).where(
-            MenuItemChart.menu_item << menu_items
-        )
+        menu_items = MenuItem.select(cascade=True)
+        menu_item_charts = MenuItemChart.select(cascade=True)
         return prefetch(select, menu_items, menu_item_charts)
 
     @property
