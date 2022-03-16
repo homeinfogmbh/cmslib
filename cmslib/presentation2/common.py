@@ -32,7 +32,7 @@ class Presentation(NamedTuple):
 
     customer: Customer
     configuration: Configuration
-    charts: dict[int, Chart]
+    chart_map: dict[int, Chart]
     play_order: list[int]
     menu_tree: list[MenuTreeItem]
 
@@ -97,10 +97,15 @@ class Presentation(NamedTuple):
         )
 
     @property
+    def charts(self) -> Iterable[Chart]:
+        """Yields all charts."""
+        return self.chart_map.keys()
+
+    @property
     def playlist(self) -> Iterable[Chart]:
         """Yields the playlist charts."""
         for base_chart_id in self.play_order:
-            yield self.charts[base_chart_id]
+            yield self.chart_map[base_chart_id]
 
     def to_dom(self) -> dom.presentation:
         """Returns an XML dom presentation."""
@@ -109,15 +114,14 @@ class Presentation(NamedTuple):
         xml.configuration = self.configuration.to_dom()
         xml.playlist = [chart.to_dom(brief=True) for chart in self.playlist]
         xml.menu_item = [item.to_dom() for item in self.menu_tree]
-        xml.chart = [chart.to_dom() for chart in self.charts.values()]
+        xml.chart = [chart.to_dom() for chart in self.charts]
         return xml
 
     def to_json(self) -> dict:
         """Returns a JSON presentation."""
         return {
             'charts': [
-                chart.to_json(fk_fields=False)
-                for chart in self.charts.values()
+                chart.to_json(fk_fields=False) for chart in self.charts
             ],
             'configuration': self.configuration.to_json(
                 cascade=True, fk_fields=False
