@@ -130,11 +130,6 @@ class MenuItem(DSCMS4Model):
             cls, Menu).join(Customer).join(Company)
 
     @property
-    def root(self) -> bool:
-        """Determines whether this is a root node entry."""
-        return self.menu is not None
-
-    @property
     def children(self) -> Select:
         """Returns the children."""
         if self.id is None:     # Prevent cascading over all menu items.
