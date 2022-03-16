@@ -184,7 +184,8 @@ class Configuration(CustomerModel):
             cls, logo_file, on=cls.logo == logo_file.id,
             join_type=JOIN.LEFT_OUTER
         ).join(
-            logo_file_db_file, join_type=JOIN.LEFT_OUTER).join_from(
+            logo_file_db_file, join_type=JOIN.LEFT_OUTER
+        ).join_from(
             cls, dummy_picture_file,
             on=cls.dummy_picture == dummy_picture_file.id,
             join_type=JOIN.LEFT_OUTER
