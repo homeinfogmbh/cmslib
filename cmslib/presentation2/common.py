@@ -109,14 +109,15 @@ class Presentation(NamedTuple):
         xml.configuration = self.configuration.to_dom()
         xml.playlist = [chart.to_dom(brief=True) for chart in self.playlist]
         xml.menu_item = [item.to_dom() for item in self.menu_tree]
-        xml.chart = [chart.to_dom() for chart in self.charts]
+        xml.chart = [chart.to_dom() for chart in self.charts.values()]
         return xml
 
     def to_json(self) -> dict:
         """Returns a JSON presentation."""
         return {
             'charts': [
-                chart.to_json(fk_fields=False) for chart in self.charts
+                chart.to_json(fk_fields=False)
+                for chart in self.charts.values()
             ],
             'configuration': self.configuration.to_json(
                 cascade=True, fk_fields=False
