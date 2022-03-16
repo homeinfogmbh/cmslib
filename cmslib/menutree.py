@@ -107,18 +107,22 @@ class MenuTreeItem(NamedTuple):
             yield cls.from_menu_item(root_item, menu_items, menu_item_charts)
 
     @classmethod
-    def from_menus(cls, menus: Iterable[Menu]) -> Iterator[MenuTreeItem]:
+    def from_menu_ids(cls, menu_ids: Iterable[int]) -> Iterator[MenuTreeItem]:
         """Creates a tree from several menus."""
         menu_items = MenuItem.select(cascade=True).where(True)
         menu_item_charts = MenuItemChart.select(cascade=True).where(True)
         trees = [
             cls.from_menu_items(
-                {item for item in menu_items if item.menu_id == menu.id},
+                {item for item in menu_items if item.menu_id == menu_id},
                 menu_item_charts
-            ) for menu in menus
+            ) for menu_id in menu_ids
         ]
         return sorted(merge(chain(*trees)), key=get_index)
 
+    @classmethod
+    def from_menus(cls, menus: Iterable[Menu]) -> Iterator[MenuTreeItem]:
+        """Creates a tree from several menus."""
+        return cls.from_menu_ids({menu.id for menu in menus})
 
     @property
     def signature(self) -> tuple[str, str, int, int]:
