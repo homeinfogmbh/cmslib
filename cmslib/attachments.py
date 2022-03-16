@@ -33,7 +33,7 @@ def attachment_dom(
     if file is None:
         return None
 
-    #file = ensure_file(file)
+    file = ensure_file(file)
     xml = Attachment()
     xml.id = file.id
     xml.mimetype = file.mimetype
@@ -51,7 +51,7 @@ def attachment_json(file: Optional[File], json: Optional[dict] = None) -> dict:
     if file is None:
         return json
 
-    #file = ensure_file(file)
+    file = ensure_file(file)
     result = file.to_json()
 
     if json:
