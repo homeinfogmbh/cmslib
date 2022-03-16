@@ -54,16 +54,16 @@ class Blackboard(Chart):
 
         return transaction
 
-    @property
-    def files(self) -> set[File]:
-        """Returns a set of files used by the chart."""
-        return {image.file for image in self.images}
-
     @classmethod
     def subqueries(cls) -> Iterator[Select]:
         """Yields sub-queries"""
         yield from super().subqueries()
         yield Image.select(cascade=True, shallow=True).order_by(Image.index)
+
+    @property
+    def files(self) -> set[File]:
+        """Returns a set of files used by the chart."""
+        return {image.file for image in self.images}
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the respective chart."""
