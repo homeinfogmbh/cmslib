@@ -15,8 +15,6 @@ from cmslib.orm.charts import BlackboardImage
 from cmslib.orm.charts import Booking
 from cmslib.orm.charts import BookableMapping
 from cmslib.orm.charts import Cleaning
-from cmslib.orm.charts import Facebook
-from cmslib.orm.charts import FacebookAccount
 from cmslib.orm.charts import Form
 from cmslib.orm.charts import GarbageCollection
 from cmslib.orm.charts import GuessPicture
@@ -94,8 +92,6 @@ __all__ = [
     'Booking',
     'BookableMapping',
     'Cleaning',
-    'Facebook',
-    'FacebookAccount',
     'Form',
     'GarbageCollection',
     'GuessPicture',

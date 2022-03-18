@@ -63,8 +63,6 @@ from cmslib.orm import BlackboardImage
 from cmslib.orm import Booking
 from cmslib.orm import BookableMapping
 from cmslib.orm import Cleaning
-from cmslib.orm import Facebook
-from cmslib.orm import FacebookAccount
 from cmslib.orm import Form
 from cmslib.orm import GarbageCollection
 from cmslib.orm import GuessPicture
@@ -198,8 +196,6 @@ __all__ = [
     'Booking',
     'BookableMapping',
     'Cleaning',
-    'Facebook',
-    'FacebookAccount',
     'Form',
     'GarbageCollection',
     'GuessPicture',

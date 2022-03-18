@@ -11,7 +11,6 @@ from cmslib.orm.charts.api import ChartPIN
 from cmslib.orm.charts.blackboard import Blackboard, Image as BlackboardImage
 from cmslib.orm.charts.booking import Booking, BookableMapping
 from cmslib.orm.charts.cleaning import Cleaning
-from cmslib.orm.charts.facebook import Facebook, Account as FacebookAccount
 from cmslib.orm.charts.form import Form
 from cmslib.orm.charts.garbage_collection import GarbageCollection
 from cmslib.orm.charts.guess_picture import GuessPicture
@@ -45,8 +44,6 @@ __all__ = [
     'Booking',
     'BookableMapping',
     'Cleaning',
-    'Facebook',
-    'FacebookAccount',
     'Form',
     'GarbageCollection',
     'GuessPicture',
@@ -73,9 +70,9 @@ __all__ = [
 
 
 MODELS = (
-    BaseChart, ChartPIN, Booking, BookableMapping, Cleaning, Facebook,
-    FacebookAccount, Form, GarbageCollection, GuessPicture, ImageText,
-    ImageTextImage, ImageTextText, Blackboard, BlackboardImage, News,
-    NewsProvider, Poll, PollOption, PublicTransport, Quotes, RealEstates,
-    IdFilter, ZipCodeFilter, SoccerTable, URL, Video, Weather, WeatherImage
+    BaseChart, ChartPIN, Booking, BookableMapping, Cleaning, Form,
+    GarbageCollection, GuessPicture, ImageText, ImageTextImage,
+    ImageTextText, Blackboard, BlackboardImage, News, NewsProvider, Poll,
+    PollOption, PublicTransport, Quotes, RealEstates, IdFilter,
+    ZipCodeFilter, SoccerTable, URL, Video, Weather, WeatherImage
 )
