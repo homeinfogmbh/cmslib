@@ -1,6 +1,6 @@
 """Menu related functions."""
 
-from typing import Optional, Union
+from typing import Iterable, Optional, Union
 
 from peewee import Select
 
@@ -39,7 +39,8 @@ def get_menu_item(ident: int, customer: Union[Customer, int]) -> MenuItem:
 
 def get_menu_items(
         customer: Union[Customer, int],
-        menu: Optional[Union[Menu, int]] = None
+        menu: Optional[Union[Menu, int]] = None,
+        ids: Optional[Iterable[int]] = None
 ) -> Select:
     """Lists the menu items of the given customer."""
 
@@ -47,6 +48,9 @@ def get_menu_items(
 
     if menu is not None:
         condition &= MenuItem.menu == menu
+
+    if ids is not None:
+        condition &= MenuItem.id << set(ids)
 
     return MenuItem.select(cascade=True).where(condition)
 
