@@ -39,6 +39,7 @@ def get_menu_item(ident: int, customer: Union[Customer, int]) -> MenuItem:
 
 def get_menu_items(
         customer: Union[Customer, int],
+        *,
         menu: Optional[Union[Menu, int]] = None,
         ids: Optional[Iterable[int]] = None
 ) -> Select:
