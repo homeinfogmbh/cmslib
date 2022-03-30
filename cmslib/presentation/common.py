@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 from contextlib import suppress
-from functools import lru_cache
+from functools import cached_property
 from itertools import chain
 from logging import getLogger
 from typing import Iterable, Iterator, NamedTuple
@@ -192,32 +192,27 @@ class Presentation:
         """Initializes the presentation."""
         self.customer = customer
 
-    @property
-    @lru_cache()
+    @cached_property
     def groups(self):
         """Returns Groups."""
         return Groups.for_customer(self.customer)
 
-    @property
-    @lru_cache()
+    @cached_property
     def _group_levels(self):
         """Returns the group levels."""
         return list(get_group_levels(self.groups, self.get_memberships()))
 
-    @property
-    @lru_cache()
+    @cached_property
     def _group_set(self):
         """Returns the group set."""
         return get_group_set(self._group_levels)
 
-    @property
-    @lru_cache()
+    @cached_property
     def _group_base_charts(self):
         """Returns the group base charts."""
         return list(get_group_base_charts(self._group_set))
 
-    @property
-    @lru_cache()
+    @cached_property
     def _base_charts(self):
         """Returns the base charts."""
         try:
@@ -225,14 +220,12 @@ class Presentation:
         except NotImplementedError:
             return []
 
-    @property
-    @lru_cache()
+    @cached_property
     def playlist(self):
         """Returns the playlist."""
         return get_playlist(self._group_base_charts, self._base_charts)
 
-    @property
-    @lru_cache()
+    @cached_property
     def _menus(self):
         """Returns the menus."""
         try:
@@ -240,34 +233,29 @@ class Presentation:
         except NotImplementedError:
             return []
 
-    @property
-    @lru_cache()
+    @cached_property
     def menus(self):
         """Returns the menus."""
         return set(chain(get_group_menus(self._group_set), self._menus))
 
-    @property
-    @lru_cache()
+    @cached_property
     def charts(self):
         """Returns the charts."""
         return get_unique_charts(self.playlist, get_menu_charts(self.menus))
 
-    @property
-    @lru_cache()
+    @cached_property
     def menu_tree(self):
         """Returns the menu tree."""
         return get_menu_tree(self.menus)
 
-    @property
-    @lru_cache()
+    @cached_property
     def _group_configurations(self):
         """Returns the group configurations."""
         return list(get_group_configurations(
             self._group_levels, self._group_set
         ))
 
-    @property
-    @lru_cache()
+    @cached_property
     def _configs(self):
         """Returns the configurations."""
         try:
@@ -275,8 +263,7 @@ class Presentation:
         except NotImplementedError:
             return []
 
-    @property
-    @lru_cache()
+    @cached_property
     def configuration(self):
         """Returns the configuration."""
         return get_configuration(self._configs, self._group_configurations)
