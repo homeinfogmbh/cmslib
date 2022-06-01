@@ -68,5 +68,12 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="created" type="xs:dateTime">
+            <xs:annotation>
+                <xs:documentation xml:lang="de">
+                    Erstellungsdatum des Standorts.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
     </xs:complexType>
 </xs:schema>
