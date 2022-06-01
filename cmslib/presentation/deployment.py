@@ -46,7 +46,6 @@ def deployment_to_dom(deployment: Deployment) -> dom.Deployment:
     deployment_dom.type = deployment.type.value
     deployment_dom.connection = deployment.connection.value
     deployment_dom.testing = deployment.testing
-    deployment_dom.scheduled = deployment.scheduled
     return deployment_dom
 
 

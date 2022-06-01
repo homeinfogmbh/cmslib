@@ -68,12 +68,5 @@ Maintainer: Richard Neumann <r dot neumann at homeinfo fullstop de>
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="scheduled" type="xs:date">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Das geplante Einbaudatum.
-                </xs:documentation>
-            </xs:annotation>
-        </xs:attribute>
     </xs:complexType>
 </xs:schema>
