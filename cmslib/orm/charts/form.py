@@ -33,7 +33,7 @@ class Form(Chart):
     class Meta:
         table_name = 'chart_form'
 
-    mode = EnumField(Mode, column_name='mode')
+    mode = EnumField(Mode)
     text = HTMLTextField(null=True)
 
     @classmethod
