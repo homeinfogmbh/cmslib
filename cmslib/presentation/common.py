@@ -271,7 +271,8 @@ class Presentation:
     @property
     def file_ids(self) -> Iterator[int]:
         """Yields the presentation's used file IDs."""
-        yield from self.configuration.files
+        with suppress(NoConfigurationFound):
+            yield from self.configuration.files
 
         for menu in self.menus:
             yield from menu.files
