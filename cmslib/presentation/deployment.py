@@ -7,7 +7,7 @@ from peewee import Select
 from hwdb import Deployment
 from mdb import Address
 
-from cmslib import dom  # pylint: disable=E0611
+from cmslib import dom
 from cmslib.orm.charts import BaseChart
 from cmslib.orm.configuration import Configuration
 from cmslib.orm.content.deployment import DeploymentBaseChart
@@ -76,25 +76,34 @@ class Presentation(Presentation):
                     (DeploymentBaseChart.deployment == self.deployment)
                     & (BaseChart.trashed == 0)
                 ):
-            yield IndexedBaseChart(deployment_base_chart.index,
-                                   deployment_base_chart.base_chart)
+            yield IndexedBaseChart(
+                deployment_base_chart.index,
+                deployment_base_chart.base_chart
+            )
 
     def get_configurations(self) -> Select:
         """Selects directly attached configurations."""
         return Configuration.select(cascade=True).join_from(
-            Configuration, DeploymentConfiguration).where(
-            DeploymentConfiguration.deployment == self.deployment)
+            Configuration, DeploymentConfiguration
+        ).where(
+            DeploymentConfiguration.deployment == self.deployment
+        )
 
     def get_memberships(self) -> Select:
         """Selects groups this deployment is a member of."""
         return Group.select(cascade=True).join_from(
-            Group, GroupMemberDeployment).where(
-            GroupMemberDeployment.deployment == self.deployment)
+            Group, GroupMemberDeployment
+        ).where(
+            GroupMemberDeployment.deployment == self.deployment
+        )
 
     def get_menus(self) -> Select:
         """Selects menus of this deployment."""
-        return Menu.select(cascade=True).join_from(Menu, DeploymentMenu).where(
-            DeploymentMenu.deployment == self.deployment)
+        return Menu.select(cascade=True).join_from(
+            Menu, DeploymentMenu
+        ).where(
+            DeploymentMenu.deployment == self.deployment
+        )
 
     def to_dom(self) -> dom.presentation:
         """Returns an XML DOM."""
