@@ -71,6 +71,7 @@ class Design(Enum):
     AIR = 'air'
     MUP = 'mup'
     EXPO = 'expo'
+    GRID = 'grid'
 
 
 class TickerType(Enum):
