@@ -40,15 +40,6 @@ __all__ = [
 TIME_FORMAT = '%H:%M'
 
 
-def percentage(value: float) -> int:
-    """Restricts a number to 0-100 %."""
-
-    if 0 <= (value := round(value)) <= 100:
-        return value
-
-    raise ValueError(f'Invalid percentage: {value}.')
-
-
 class Font(Enum):
     """Available fonts."""
 
@@ -456,6 +447,15 @@ class Backlight(DSCMS4Model):
         xml.time = self.time
         xml.brightness = self.brightness
         return xml
+
+
+def percentage(value: float) -> int:
+    """Restricts a number to 0-100 %."""
+
+    if 0 <= (value := round(value)) <= 100:
+        return value
+
+    raise ValueError(f'Invalid percentage: {value}.')
 
 
 MODELS = (Colors, Configuration, Ticker, Backlight)
