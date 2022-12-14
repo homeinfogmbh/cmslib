@@ -3,13 +3,14 @@
 from typing import Iterator, Union
 
 from peewee import BooleanField
+from peewee import CharField
 from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import Select
 from peewee import SmallIntegerField
 
 from newslib import Provider
-from peeweeplus import EnumField, Transaction
+from peeweeplus import Transaction
 
 from cmslib import dom
 from cmslib.orm.charts.api import Chart, ChartMode
@@ -93,7 +94,7 @@ class News(Chart):
         xml.font_size_text = self.font_size_text
         xml.text_color = self.text_color
         xml.ken_burns = self.ken_burns
-        xml.provider = [provider.name for provider in self.providers]
+        xml.provider = [provider.provider for provider in self.providers]
         return xml
 
 
@@ -107,9 +108,4 @@ class NewsProvider(DSCMS4Model):
         News, column_name='chart', backref='providers', on_delete='CASCADE',
         on_update='CASCADE', lazy_load=False
     )
-    provider = EnumField(Provider)
-
-    @property
-    def name(self) -> str:
-        """Returns the provider name."""
-        return self.provider.value
+    provider = CharField(255)
