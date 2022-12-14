@@ -79,7 +79,9 @@ class News(Chart):
         json = super().to_json(mode=mode, **kwargs)
 
         if mode == ChartMode.FULL:
-            json['providers'] = [provider.name for provider in self.providers]
+            json['providers'] = [
+                provider.provider for provider in self.providers
+            ]
 
         return json
 
