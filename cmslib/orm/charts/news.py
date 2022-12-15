@@ -9,7 +9,6 @@ from peewee import IntegerField
 from peewee import Select
 from peewee import SmallIntegerField
 
-from newslib import Provider
 from peeweeplus import Transaction
 
 from cmslib import dom
@@ -43,7 +42,7 @@ class News(Chart):
 
         for provider in providers:
             transaction.add(NewsProvider(
-                chart=transaction.primary, provider=Provider(provider)
+                chart=transaction.primary, provider=provider
             ))
 
         return transaction
@@ -69,7 +68,7 @@ class News(Chart):
 
             for provider in providers:
                 transaction.add(NewsProvider(
-                    chart=transaction.primary, provider=Provider(provider)
+                    chart=transaction.primary, provider=provider
                 ))
 
         return transaction
