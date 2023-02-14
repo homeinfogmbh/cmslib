@@ -154,7 +154,8 @@ class Configuration(CustomerModel):
         transaction.add(configuration, primary=True)
         configuration.update_colors(transaction, colors)
         configuration.update_backgrounds(
-            transaction, backgrounds, delete=False)
+            transaction, backgrounds, delete=False
+        )
         configuration.update_tickers(transaction, tickers, delete=False)
         configuration.update_backlights(transaction, backlight, delete=False)
         return transaction
