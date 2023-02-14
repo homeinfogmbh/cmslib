@@ -8,6 +8,7 @@ from enum import Enum
 from typing import Iterable
 
 from peewee import BooleanField
+from peewee import DateTimeField
 from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import Select
@@ -127,6 +128,8 @@ class Configuration(CustomerModel):
     email_form = BooleanField()
     volume = SmallIntegerField()
     text_bg_transparent = BooleanField(default=False)
+    power_saving_start = DateTimeField(null=True)
+    power_saving_end = DateTimeField(null=True)
 
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
