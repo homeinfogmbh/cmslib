@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 from enum import Enum
-from typing import Union
+from typing import Iterator, Union
 
-from peewee import ForeignKeyField, IntegerField
+from peewee import ForeignKeyField, IntegerField, Select
 
 from hisfs import get_file, File
 from peeweeplus import EnumField, Transaction
@@ -12,7 +12,7 @@ from peeweeplus import EnumField, Transaction
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
 from cmslib.orm.charts.api import ChartMode, Chart
-from cmslib.orm.common import UNCHANGED, DSCMS4Model
+from cmslib.orm.common import UNCHANGED, Attachment
 
 
 __all__ = ['Blackboard', 'Image']
@@ -37,12 +37,12 @@ class Format(Enum):
 class Blackboard(Chart):
     """A chart that may contain images."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_blackboard'
 
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
-        """Creates a new chart ffrom a JSON-ish dict."""
+        """Creates a new chart from a JSON-ish dict."""
         # Pop images first to exclude them from the
         # dictionary before invoking super().from_json().
         images = json.pop('images', ())
@@ -53,6 +53,12 @@ class Blackboard(Chart):
             transaction.add(image)
 
         return transaction
+
+    @classmethod
+    def subqueries(cls) -> Iterator[Select]:
+        """Yields sub-queries"""
+        yield from super().subqueries()
+        yield Image.select(cascade=True, shallow=True).order_by(Image.index)
 
     @property
     def files(self) -> set[File]:
@@ -81,7 +87,7 @@ class Blackboard(Chart):
         if mode == ChartMode.FULL:
             json['images'] = [
                 image.to_json(fk_fields=False, autofields=False)
-                for image in self.images.order_by(Image.index)
+                for image in self.images
             ]
 
         return json
@@ -92,21 +98,20 @@ class Blackboard(Chart):
             return super().to_dom(dom.BriefChart)
 
         xml = super().to_dom(dom.Blackboard)
-        images = (img.to_dom() for img in self.images.order_by(Image.index))
-        xml.image = filter(None, images)
+        xml.image = filter(None, (img.to_dom() for img in self.images))
         return xml
 
 
-class Image(DSCMS4Model):
+class Image(Attachment):
     """Image for an ImageText chart."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_blackboard_image'
 
     chart = ForeignKeyField(
         Blackboard, column_name='chart', backref='images', on_delete='CASCADE',
-        lazy_load=False)
-    file = ForeignKeyField(File, column_name='file', lazy_load=False)
+        lazy_load=False
+    )
     format = EnumField(Format, default=Format.A4)
     index = IntegerField(default=0)
 
@@ -127,4 +132,5 @@ class Image(DSCMS4Model):
     def to_dom(self) -> dom.Attachment:
         """Returns an XML DOM of this record."""
         return attachment_dom(
-            self.file, format=self.format.value, index=self.index)
+            self.file, format=self.format.value, index=self.index
+        )

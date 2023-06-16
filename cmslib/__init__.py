@@ -10,15 +10,11 @@ from cmslib.exceptions import InvalidChartType
 from cmslib.exceptions import MissingMenu
 from cmslib.exceptions import NoConfigurationFound
 from cmslib.exceptions import OrphanedBaseChart
-from cmslib.functions import CHART_TYPE
-from cmslib.functions import CHART_TYPES
 from cmslib.functions import get_base_chart
 from cmslib.functions import get_base_charts
 from cmslib.functions import get_chart
 from cmslib.functions import get_charts
 from cmslib.functions import get_chart_acls
-from cmslib.functions import get_mode
-from cmslib.functions import get_trashed
 from cmslib.functions import get_configuration
 from cmslib.functions import get_configurations
 from cmslib.functions import get_deployment_base_charts
@@ -67,8 +63,6 @@ from cmslib.orm import BlackboardImage
 from cmslib.orm import Booking
 from cmslib.orm import BookableMapping
 from cmslib.orm import Cleaning
-from cmslib.orm import Facebook
-from cmslib.orm import FacebookAccount
 from cmslib.orm import Form
 from cmslib.orm import GarbageCollection
 from cmslib.orm import GuessPicture
@@ -121,6 +115,10 @@ from cmslib.orm import ContentChart
 from cmslib.presentation import DeploymentPresentation
 from cmslib.presentation import GroupPresentation
 from cmslib.presentation import Presentation
+from cmslib.request import CHART_TYPE
+from cmslib.request import CHART_TYPES
+from cmslib.request import get_chart_mode
+from cmslib.request import get_trashed_flag
 
 
 __all__ = [
@@ -145,8 +143,6 @@ __all__ = [
     'get_chart',
     'get_charts',
     'get_chart_acls',
-    'get_mode',
-    'get_trashed',
     'get_configuration',
     'get_configurations',
     'get_deployment_base_charts',
@@ -182,6 +178,9 @@ __all__ = [
     'get_root',
     'get_directory',
     'get_unassigned_base_charts',
+    # Context-sensitive functions
+    'get_chart_mode',
+    'get_trashed_flag',
     # Groups utility
     'Groups',
     # Menu tree
@@ -197,8 +196,6 @@ __all__ = [
     'Booking',
     'BookableMapping',
     'Cleaning',
-    'Facebook',
-    'FacebookAccount',
     'Form',
     'GarbageCollection',
     'GuessPicture',

@@ -2,7 +2,7 @@
 
 This package provides the CMS's database models.
 """
-from sys import stderr
+from logging import getLogger
 
 from cmslib.orm.charts import CHARTS
 from cmslib.orm.charts import MODELS as CHART_MODELS
@@ -15,8 +15,6 @@ from cmslib.orm.charts import BlackboardImage
 from cmslib.orm.charts import Booking
 from cmslib.orm.charts import BookableMapping
 from cmslib.orm.charts import Cleaning
-from cmslib.orm.charts import Facebook
-from cmslib.orm.charts import FacebookAccount
 from cmslib.orm.charts import Form
 from cmslib.orm.charts import GarbageCollection
 from cmslib.orm.charts import GuessPicture
@@ -94,8 +92,6 @@ __all__ = [
     'Booking',
     'BookableMapping',
     'Cleaning',
-    'Facebook',
-    'FacebookAccount',
     'Form',
     'GarbageCollection',
     'GuessPicture',
@@ -156,6 +152,8 @@ __all__ = [
 ]
 
 
+LOGGER = getLogger(__file__)
+
 # Order matters here!
 MODELS = (
     *CHART_MODELS, *CONFIGURATION_MODELS, *GROUP_MODELS, *MENU_MODELS,
@@ -170,6 +168,7 @@ def create_tables(fail_silently: bool = True) -> None:
     for model in MODELS:
         try:
             model.create_table(fail_silently=fail_silently)
-        except Exception as error:  # pylint: disable=W0703
-            print(f'Could not create table for model "{model}":\n{error}.',
-                  file=stderr)
+        except Exception as error:
+            LOGGER.error(
+                'Could not create table for model "%s":\n%s.', model, error
+            )

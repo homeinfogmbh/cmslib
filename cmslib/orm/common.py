@@ -5,8 +5,10 @@ from logging import getLogger
 from typing import Optional, Union
 
 from flask import has_request_context
-from peewee import JOIN, ForeignKeyField, ModelSelect
+from peewee import JOIN, ForeignKeyField, IntegerField, Select
 
+import filedb
+import hisfs
 from his import CUSTOMER
 from mdb import Address, Company, Customer
 from peeweeplus import MySQLDatabaseProxy, JSONModel
@@ -17,7 +19,8 @@ __all__ = [
     'DATABASE',
     'DSCMS4Model',
     'CustomerModel',
-    'TreeNode'
+    'TreeNode',
+    'Attachment'
 ]
 
 
@@ -29,12 +32,12 @@ UNCHANGED = object()    # Sentinel object for unchanged JSON fields.
 class DSCMS4Model(JSONModel):
     """Base Model for the DSCMS4 database."""
 
-    class Meta:     # pylint: disable=C0115,R0903
+    class Meta:
         database = DATABASE
         schema = database.database
 
     def __str__(self):
-        """Returns the models's ID and class."""
+        """Returns the models' ID and class."""
         cls = type(self)
         return f'{self.id}@{cls.__name__}'
 
@@ -43,10 +46,11 @@ class CustomerModel(DSCMS4Model):
     """Entity that relates to a customer."""
 
     customer = ForeignKeyField(
-        Customer, column_name='customer', on_delete='CASCADE', lazy_load=False)
+        Customer, column_name='customer', on_delete='CASCADE', lazy_load=False
+    )
 
     def __str__(self):
-        """Returns the models's ID and class."""
+        """Returns the models' ID and class."""
         cls = type(self)
         return f'{self.id}:{self.customer_id}@{cls.__name__}'
 
@@ -60,7 +64,7 @@ class CustomerModel(DSCMS4Model):
         context exists, the current HIS customer will be used.
         """
         if customer is not None:
-            LOGGER.warning('Explicitely set customer to: %s.', customer)
+            LOGGER.warning('Explicitly set customer to: %s.', customer)
         elif has_request_context():
             customer = CUSTOMER.id
         else:
@@ -71,14 +75,13 @@ class CustomerModel(DSCMS4Model):
         return record
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+    def select(cls, *args, cascade: bool = False) -> Select:
         """Selects records."""
         if not cascade:
-            return super().select(*args, **kwargs)
+            return super().select(*args)
 
-        args = {cls, Customer, Company, Address, *args}
-        return super().select(*args, **kwargs).join(Customer).join(
-            Company).join(Address, join_type=JOIN.LEFT_OUTER)
+        return super().select(cls, Customer, Company, Address, *args).join(
+            Customer).join(Company).join(Address, join_type=JOIN.LEFT_OUTER)
 
 
 class TreeNode(CustomerModel):
@@ -145,3 +148,29 @@ class TreeNode(CustomerModel):
             json.pop('parent', None)
 
         return json
+
+
+class Attachment(DSCMS4Model):
+    """Image for an ImageText chart."""
+
+    file = ForeignKeyField(hisfs.File, column_name='file', lazy_load=False)
+
+    @classmethod
+    def select(
+            cls,
+            *args,
+            cascade: bool = False,
+            shallow: bool = False
+    ) -> Select:
+        """Selects images."""
+        if not cascade:
+            return super().select(*args)
+
+        if shallow:
+            return super().select(
+                cls, hisfs.File, *filedb.META_FIELDS, *args
+            ).join(hisfs.File).join(filedb.File)
+
+        return super().select(
+            cls, hisfs.File, filedb.File, *args
+        ).join(hisfs.File).join(filedb.File)

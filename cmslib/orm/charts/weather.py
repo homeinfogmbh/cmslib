@@ -1,8 +1,8 @@
 """Weather chart."""
 
-from typing import Union
+from typing import Iterator, Union
 
-from peewee import ForeignKeyField, IntegerField
+from peewee import ForeignKeyField, IntegerField, Select
 
 from hisfs import get_file, File
 from peeweeplus import HTMLCharField, Transaction
@@ -10,7 +10,7 @@ from peeweeplus import HTMLCharField, Transaction
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
 from cmslib.orm.charts.api import ChartMode, Chart
-from cmslib.orm.common import UNCHANGED, DSCMS4Model
+from cmslib.orm.common import UNCHANGED, Attachment
 
 
 __all__ = ['Weather', 'Image']
@@ -22,7 +22,7 @@ DomModel = Union[dom.BriefChart, dom.Weather]
 class Weather(Chart):
     """Weather data."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_weather'
 
     location = HTMLCharField(255)
@@ -54,6 +54,12 @@ class Weather(Chart):
     def files(self) -> set[File]:
         """Returns a set of IDs of files used by the chart."""
         return {image.file for image in self.images}
+
+    @classmethod
+    def subqueries(cls) -> Iterator[Select]:
+        """Yields sub-queries"""
+        yield from super().subqueries()
+        yield Image.select(cascade=True, shallow=True)
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the respective chart."""
@@ -100,16 +106,16 @@ class Weather(Chart):
         return xml
 
 
-class Image(DSCMS4Model):
+class Image(Attachment):
     """Image for an ImageTextChart."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_weather_image'
 
     chart = ForeignKeyField(
         Weather, column_name='chart', backref='images', on_delete='CASCADE',
-        lazy_load=False)
-    file = ForeignKeyField(File, column_name='file', lazy_load=False)
+        lazy_load=False
+    )
 
     def to_json(self, *args, **kwargs) -> dict:
         """Returns a JSON representation of this record."""

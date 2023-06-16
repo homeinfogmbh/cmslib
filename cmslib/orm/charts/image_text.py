@@ -1,11 +1,12 @@
 """Image / text charts."""
 
 from __future__ import annotations
-from typing import Union
+from typing import Iterator, Union
 
 from peewee import BooleanField
 from peewee import ForeignKeyField
 from peewee import IntegerField
+from peewee import Select
 from peewee import SmallIntegerField
 
 from hisfs import get_file, File
@@ -14,7 +15,7 @@ from peeweeplus import HTMLCharField, HTMLTextField, Transaction
 from cmslib import dom
 from cmslib.attachments import attachment_dom, attachment_json
 from cmslib.orm.charts.api import ChartMode, Chart
-from cmslib.orm.common import UNCHANGED, DSCMS4Model
+from cmslib.orm.common import UNCHANGED, Attachment, DSCMS4Model
 
 
 __all__ = ['ImageText', 'Image', 'Text']
@@ -26,7 +27,7 @@ DomModel = Union[dom.BriefChart, dom.ImageText]
 class ImageText(Chart):
     """A chart that may contain images and text."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_image_text'
 
     title = HTMLCharField(255)
@@ -36,7 +37,7 @@ class ImageText(Chart):
     random_image = BooleanField(default=False)
 
     @classmethod
-    def from_json(cls, json: dict, **kwargs) -> ImageText:
+    def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates a new chart from a JSON-ish dict."""
         # Pop images and texts first to exclude them from the
         # dictionary before invoking super().from_json().
@@ -58,6 +59,13 @@ class ImageText(Chart):
     def files(self) -> set[File]:
         """Returns a set of IDs of files used by the chart."""
         return {image.file for image in self.images}
+
+    @classmethod
+    def subqueries(cls) -> Iterator[Select]:
+        """Yields sub-queries"""
+        yield from super().subqueries()
+        yield Image.select(cascade=True, shallow=True).order_by(Image.index)
+        yield Text.select()
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the respective chart."""
@@ -91,7 +99,7 @@ class ImageText(Chart):
             json['texts'] = [text.to_json() for text in self.texts]
             json['images'] = [
                 image.to_json(fk_fields=False, autofields=False)
-                for image in self.images.order_by(Image.index)
+                for image in self.images
             ]
 
         return json
@@ -107,22 +115,21 @@ class ImageText(Chart):
         xml.title_color = self.title_color
         xml.ken_burns = self.ken_burns
         xml.random_image = self.random_image
-        xml.image = filter(None, (
-            image.to_dom() for image in self.images.order_by(Image.index)))
+        xml.image = filter(None, (image.to_dom() for image in self.images))
         xml.text = [text.text for text in self.texts]
         return xml
 
 
-class Image(DSCMS4Model):
+class Image(Attachment):
     """Image for an ImageText chart."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_image_text_image'
 
     chart = ForeignKeyField(
         ImageText, column_name='chart', backref='images', on_delete='CASCADE',
-        lazy_load=False)
-    file = ForeignKeyField(File, column_name='file', lazy_load=False)
+        lazy_load=False
+    )
     index = IntegerField(default=0)
 
     @classmethod
@@ -147,12 +154,13 @@ class Image(DSCMS4Model):
 class Text(DSCMS4Model):
     """Text for an ImageText chart."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_image_text_text'
 
     chart = ForeignKeyField(
         ImageText, column_name='chart', backref='texts', on_delete='CASCADE',
-        lazy_load=False)
+        lazy_load=False
+    )
     text = HTMLTextField()
 
     @classmethod

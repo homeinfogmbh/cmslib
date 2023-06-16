@@ -1,8 +1,10 @@
 """Schedule related functions."""
 
-from peewee import ModelSelect
+from typing import Union
 
-from his import CUSTOMER
+from peewee import Select
+
+from mdb import Customer
 
 from cmslib.orm.schedule import Schedule
 
@@ -10,14 +12,15 @@ from cmslib.orm.schedule import Schedule
 __all__ = ['get_schedule', 'get_schedules']
 
 
-def get_schedule(ident: int) -> Schedule:
-    """Returns the respective schedule."""
+def get_schedule(ident: int, customer: Union[Customer, int]) -> Schedule:
+    """Returns the respective schedule of the given customer."""
 
-    return get_schedules().where(Schedule.id == ident).get()
+    return get_schedules(customer).where(Schedule.id == ident).get()
 
 
-def get_schedules() -> ModelSelect:
-    """Selects the schedules of the current customer."""
+def get_schedules(customer: Union[Customer, int]) -> Select:
+    """Selects the schedules of the given customer."""
 
     return Schedule.select(cascade=True).where(
-        Schedule.customer == CUSTOMER.id)
+        Schedule.customer == customer
+    )

@@ -8,9 +8,10 @@ from enum import Enum
 from typing import Iterable
 
 from peewee import BooleanField
+from peewee import DateTimeField
 from peewee import ForeignKeyField
 from peewee import IntegerField
-from peewee import ModelSelect
+from peewee import Select
 from peewee import SmallIntegerField
 from peewee import TimeField
 
@@ -40,15 +41,6 @@ __all__ = [
 TIME_FORMAT = '%H:%M'
 
 
-def percentage(value: float) -> int:
-    """Restricts a number to 0-100 %."""
-
-    if 0 <= (value := round(value)) <= 100:
-        return value
-
-    raise ValueError(f'Invalid percentage: {value}.')
-
-
 class Font(Enum):
     """Available fonts."""
 
@@ -70,6 +62,8 @@ class Design(Enum):
     HD = 'hd'
     AIR = 'air'
     MUP = 'mup'
+    EXPO = 'expo'
+    GRID = 'grid'
 
 
 class TickerType(Enum):
@@ -124,14 +118,18 @@ class Configuration(CustomerModel):
     title_size = SmallIntegerField()
     text_size = SmallIntegerField()
     logo = ForeignKeyField(
-        File, column_name='logo', null=True, lazy_load=False)
+        File, column_name='logo', null=True, lazy_load=False
+    )
     dummy_picture = ForeignKeyField(
-        File, column_name='dummy_picture', null=True, lazy_load=False)
+        File, column_name='dummy_picture', null=True, lazy_load=False
+    )
     hide_cursor = BooleanField(default=True)
     rotation = SmallIntegerField(default=0)
     email_form = BooleanField()
     volume = SmallIntegerField()
     text_bg_transparent = BooleanField(default=False)
+    power_saving_start = DateTimeField(null=True)
+    power_saving_end = DateTimeField(null=True)
 
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
@@ -156,20 +154,23 @@ class Configuration(CustomerModel):
         transaction.add(configuration, primary=True)
         configuration.update_colors(transaction, colors)
         configuration.update_backgrounds(
-            transaction, backgrounds, delete=False)
+            transaction, backgrounds, delete=False
+        )
         configuration.update_tickers(transaction, tickers, delete=False)
         configuration.update_backlights(transaction, backlight, delete=False)
         return transaction
 
     @classmethod
-    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+    def select(cls, *args, cascade: bool = False) -> Select:
         """Selects records."""
         if not cascade:
-            return super().select(*args, **kwargs)
+            return super().select(*args)
 
-        args = {cls, Colors, *args}
-        return super().select(*args, cascade=cascade, **kwargs).join_from(
-            cls, Colors)
+        return super().select(
+            cls, Colors, *args, cascade=cascade
+        ).join_from(
+            cls, Colors
+        )
 
     @property
     def files(self) -> set[File]:
@@ -200,42 +201,62 @@ class Configuration(CustomerModel):
 
     def update_colors(self, transaction: Transaction, colors: Colors) -> None:
         """Updates the respective colors."""
-        if colors:
-            try:
-                self.colors.patch_json(colors)
-            except Colors.DoesNotExist:
-                self.colors = Colors.from_json(colors)
+        if not colors:
+            return
 
-            transaction.add(self.colors, left=True)
+        if self.colors is None:
+            self.colors = Colors.from_json(colors)
+        else:
+            self.colors.patch_json(colors)
 
-    def update_backgrounds(self, transaction: Transaction,
-                           backgrounds: Iterable[int], *,
-                           delete: bool) -> None:
+        transaction.add(self.colors, left=True)
+
+    def update_backgrounds(
+            self,
+            transaction: Transaction,
+            backgrounds: Iterable[int],
+            *,
+            delete: bool
+    ) -> None:
         """Updates the related backgrounds."""
         if delete:
             for background in self.backgrounds:
                 transaction.delete(background)
 
-        if backgrounds:
-            for background in backgrounds:
-                file = get_file(background)
-                background = Background(configuration=self, file=file)
-                transaction.add(background)
+        if not backgrounds:
+            return
 
-    def update_tickers(self, transaction: Transaction,
-                       tickers: Iterable[dict], *, delete: bool) -> None:
+        for background in backgrounds:
+            file = get_file(background)
+            background = Background(configuration=self, file=file)
+            transaction.add(background)
+
+    def update_tickers(
+            self,
+            transaction: Transaction,
+            tickers: Iterable[dict],
+            *,
+            delete: bool
+    ) -> None:
         """Updates the respective ticker records."""
         if delete:
             for ticker in self.tickers:
                 transaction.delete(ticker)
 
-        if tickers:
-            for json in tickers:
-                ticker = Ticker.from_json(json, self)
-                transaction.add(ticker)
+        if not tickers:
+            return
 
-    def update_backlights(self, transaction: Transaction, backlights: dict, *,
-                          delete: bool) -> None:
+        for json in tickers:
+            ticker = Ticker.from_json(json, self)
+            transaction.add(ticker)
+
+    def update_backlights(
+            self,
+            transaction: Transaction,
+            backlights: dict,
+            *,
+            delete: bool
+    ) -> None:
         """Updates the respective backlight records."""
         if delete:
             for backlight in self.backlights:
@@ -293,16 +314,19 @@ class Configuration(CustomerModel):
         json = super().to_json(**kwargs)
         json['backgrounds'] = [
             attachment_json(background.file) for background
-            in self.backgrounds]
+            in self.backgrounds
+        ]
         json['logo'] = attachment_json(self.logo)
         json['dummyPicture'] = attachment_json(self.dummy_picture)
 
         if cascade:
             json['colors'] = self.colors.to_json(
-                autofields=False, fk_fields=False)
+                autofields=False, fk_fields=False
+            )
             json['tickers'] = [
                 ticker.to_json(autofields=False, fk_fields=False)
-                for ticker in self.tickers]
+                for ticker in self.tickers
+            ]
             json['backlight'] = self.backlight_dict
 
         return json
@@ -330,7 +354,8 @@ class Configuration(CustomerModel):
         xml.text_bg_transparent = self.text_bg_transparent
         xml.background = [
             attachment_dom(background.file)
-            for background in self.backgrounds]
+            for background in self.backgrounds
+        ]
         xml.ticker = [ticker.to_dom() for ticker in self.tickers]
         xml.backlight = [backlight.to_dom() for backlight in self.backlights]
         return xml
@@ -348,7 +373,8 @@ class Background(DSCMS4Model):
 
     configuration = ForeignKeyField(
         Configuration, column_name='configuration', backref='backgrounds',
-        on_delete='CASCADE', lazy_load=False)
+        on_delete='CASCADE', lazy_load=False
+    )
     file = ForeignKeyField(File, column_name='file', lazy_load=False)
 
     def to_json(self, *args, **kwargs) -> dict:
@@ -362,7 +388,8 @@ class Ticker(DSCMS4Model):
 
     configuration = ForeignKeyField(
         Configuration, column_name='configuration', backref='tickers',
-        on_delete='CASCADE', lazy_load=False)
+        on_delete='CASCADE', lazy_load=False
+    )
     type_ = EnumField(TickerType, column_name='type')
     content = HTMLTextField()
 
@@ -383,17 +410,22 @@ class Ticker(DSCMS4Model):
 
 
 class Backlight(DSCMS4Model):
-    """Backlight beightness settings of the respective configuration."""
+    """Backlight brightness settings of the respective configuration."""
 
     configuration = ForeignKeyField(
         Configuration, column_name='configuration', backref='backlights',
-        on_delete='CASCADE', lazy_load=False)
+        on_delete='CASCADE', lazy_load=False
+    )
     time = TimeField()
     brightness = SmallIntegerField()   # Brightness in percent.
 
     @classmethod
-    def from_json(cls, json: dict, configuration: Configuration,
-                  **kwargs) -> Backlight:
+    def from_json(
+            cls,
+            json: dict,
+            configuration: Configuration,
+            **kwargs
+    ) -> Backlight:
         """Yields new records from the provided JSON-ish dictionary."""
         backlight = super().from_json(json, **kwargs)
         backlight.configuration = configuration
@@ -419,6 +451,15 @@ class Backlight(DSCMS4Model):
         xml.time = self.time
         xml.brightness = self.brightness
         return xml
+
+
+def percentage(value: float) -> int:
+    """Restricts a number to 0-100 %."""
+
+    if 0 <= (value := round(value)) <= 100:
+        return value
+
+    raise ValueError(f'Invalid percentage: {value}.')
 
 
 MODELS = (Colors, Configuration, Ticker, Backlight)

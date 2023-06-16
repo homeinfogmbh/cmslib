@@ -15,7 +15,7 @@ DomModel = Union[dom.BriefChart, dom.PublicTransport]
 class PublicTransport(Chart):
     """Public transport chart."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_public_transport'
 
     def to_dom(self, brief: bool = False) -> DomModel:

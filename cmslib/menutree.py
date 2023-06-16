@@ -63,9 +63,10 @@ class MenuTreeItem(NamedTuple):
                 base_charts.add(mic.base_chart_id)
                 menu_item_charts.add(mic)
 
-        return type(self)(
+        return MenuTreeItem(
             self.name, self.icon, self.icon_image, self.text_color,
-            self.background_color, self.index, menu_item_charts, children)
+            self.background_color, self.index, menu_item_charts, children
+        )
 
     def __radd__(self, other: Union[MenuTreeItem, int]):
         """Compensate for start=0 on sum() call."""
@@ -75,10 +76,12 @@ class MenuTreeItem(NamedTuple):
         return self + other
 
     @classmethod
-    def from_menu_item(cls, menu_item: MenuItem,
-                       menu_items: Iterable[MenuItem],
-                       menu_item_charts: Iterable[MenuItemChart]
-                       ) -> MenuTreeItem:
+    def from_menu_item(
+            cls,
+            menu_item: MenuItem,
+            menu_items: Iterable[MenuItem],
+            menu_item_charts: Iterable[MenuItemChart]
+    ) -> MenuTreeItem:
         """Creates a menu item tree from the given menu item."""
         children = [
             cls.from_menu_item(child, menu_items, menu_item_charts) for child
@@ -94,31 +97,37 @@ class MenuTreeItem(NamedTuple):
             menu_item_charts, children)
 
     @classmethod
-    def from_menu_items(cls, menu_items: Iterable[MenuItem],
-                        menu_item_charts: Iterable[MenuItemChart]
-                        ) -> Iterator[MenuTreeItem]:
+    def from_menu_items(
+            cls,
+            menu_items: Iterable[MenuItem],
+            menu_item_charts: Iterable[MenuItemChart]
+    ) -> Iterator[MenuTreeItem]:
         """Yields menu tree items from the respective menu."""
         for root_item in filter(lambda item: item.parent is None, menu_items):
             yield cls.from_menu_item(root_item, menu_items, menu_item_charts)
 
     @classmethod
-    def from_menus(cls, menus: Iterable[Menu]) -> Iterator[MenuTreeItem]:
+    def from_menu_ids(cls, menu_ids: Iterable[int]) -> Iterator[MenuTreeItem]:
         """Creates a tree from several menus."""
         menu_items = MenuItem.select(cascade=True).where(True)
         menu_item_charts = MenuItemChart.select(cascade=True).where(True)
         trees = [
             cls.from_menu_items(
-                {item for item in menu_items if item.menu_id == menu.id},
+                {item for item in menu_items if item.menu_id == menu_id},
                 menu_item_charts
-            ) for menu in menus
+            ) for menu_id in menu_ids
         ]
         return sorted(merge(chain(*trees)), key=get_index)
 
+    @classmethod
+    def from_menus(cls, menus: Iterable[Menu]) -> Iterator[MenuTreeItem]:
+        """Creates a tree from several menus."""
+        return cls.from_menu_ids({menu.id for menu in menus})
 
     @property
     def signature(self) -> tuple[str, str, int, int]:
         """Returns a tuple, identifying the menu tree item."""
-        return (self.name, self.icon, self.text_color, self.background_color)
+        return self.name, self.icon, self.text_color, self.background_color
 
     def to_json(self) -> dict:
         """Returns a nested JSON-ish dict."""
@@ -132,7 +141,8 @@ class MenuTreeItem(NamedTuple):
             'charts': [
                 menu_item_chart.to_json(menu_item=False, base_chart=True)
                 for menu_item_chart in sorted(
-                    self.menu_item_charts, key=get_index)
+                    self.menu_item_charts, key=get_index
+                )
                 if not menu_item_chart.base_chart.trashed
             ],
             'menuItems': [

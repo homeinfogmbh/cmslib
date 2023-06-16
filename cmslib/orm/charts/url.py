@@ -27,7 +27,7 @@ class Mode(Enum):
 class URL(Chart):
     """A chart for with configurable URLs."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_url'
 
     url = CharField()

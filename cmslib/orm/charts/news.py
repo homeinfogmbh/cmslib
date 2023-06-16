@@ -1,15 +1,15 @@
 """New charts."""
 
-from __future__ import annotations
-from typing import Union
+from typing import Iterator, Union
 
 from peewee import BooleanField
+from peewee import CharField
 from peewee import ForeignKeyField
 from peewee import IntegerField
+from peewee import Select
 from peewee import SmallIntegerField
 
-from newslib import Provider
-from peeweeplus import EnumField, Transaction
+from peeweeplus import Transaction
 
 from cmslib import dom
 from cmslib.orm.charts.api import Chart, ChartMode
@@ -25,7 +25,7 @@ DomModel = Union[dom.BriefChart, dom.News]
 class News(Chart):
     """Chart to display news."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_news'
 
     font_size_title = SmallIntegerField(default=8)
@@ -36,18 +36,24 @@ class News(Chart):
 
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
-        """Creates an new news chart from a JSON-ish dict."""
+        """Creates a new news chart from a JSON-ish dict."""
         providers = json.pop('providers', None) or ()
         transaction = super().from_json(json, **kwargs)
 
         for provider in providers:
-            provider = NewsProvider(
-                chart=transaction.primary, provider=Provider(provider))
-            transaction.add(provider)
+            transaction.add(NewsProvider(
+                chart=transaction.primary, provider=provider
+            ))
 
         return transaction
 
-    def patch_json(self, json: dict, **kwargs) -> News:
+    @classmethod
+    def subqueries(cls) -> Iterator[Select]:
+        """Yields sub-queries"""
+        yield from super().subqueries()
+        yield NewsProvider.select()
+
+    def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the chart and related components from a JSON-ish dict."""
         try:
             providers = json.pop('providers') or ()
@@ -61,9 +67,9 @@ class News(Chart):
                 provider.delete_instance()
 
             for provider in providers:
-                provider = NewsProvider(
-                    chart=transaction.primary, provider=Provider(provider))
-                transaction.add(provider)
+                transaction.add(NewsProvider(
+                    chart=transaction.primary, provider=provider
+                ))
 
         return transaction
 
@@ -73,7 +79,8 @@ class News(Chart):
 
         if mode == ChartMode.FULL:
             json['providers'] = [
-                provider.provider.value for provider in self.providers]
+                provider.provider for provider in self.providers
+            ]
 
         return json
 
@@ -88,17 +95,18 @@ class News(Chart):
         xml.font_size_text = self.font_size_text
         xml.text_color = self.text_color
         xml.ken_burns = self.ken_burns
-        xml.provider = [provider.provider.value for provider in self.providers]
+        xml.provider = [provider.provider for provider in self.providers]
         return xml
 
 
 class NewsProvider(DSCMS4Model):
     """Mapping between a News chart and news providers."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'news_provider'
 
     chart = ForeignKeyField(
         News, column_name='chart', backref='providers', on_delete='CASCADE',
-        on_update='CASCADE', lazy_load=False)
-    provider = EnumField(Provider)
+        on_update='CASCADE', lazy_load=False
+    )
+    provider = CharField(255)

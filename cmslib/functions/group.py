@@ -1,11 +1,11 @@
 """Group related functions."""
 
-from typing import Callable, Iterable, Iterator, Optional, Union
+from typing import Iterator, Optional, Union
 
 from peewee import Select
 
-from his import CUSTOMER
 from hwdb import Deployment
+from mdb import Customer
 
 from cmslib.orm.group import Group, GroupMemberDeployment
 from cmslib.groups import Groups
@@ -21,31 +21,36 @@ __all__ = [
 ]
 
 
-def get_group(ident: int) -> Group:
-    """Returns the respective group of the current customer."""
+def get_group(ident: int, customer: Union[Customer, int]) -> Group:
+    """Returns the respective group of the given customer."""
 
-    return get_groups().where(Group.id == ident).get()
-
-
-def get_groups() -> Select:
-    """Selects the groups of the current customer."""
-
-    return Group.select(cascade=True).where(Group.customer == CUSTOMER.id)
+    return get_groups(customer).where(Group.id == ident).get()
 
 
-def get_group_member_deployment(ident: int) -> GroupMemberDeployment:
-    """Selects group members deployments."""
+def get_groups(customer: Union[Customer, int]) -> Select:
+    """Selects the groups of the given customer."""
 
-    return get_group_member_deployments().where(
-        GroupMemberDeployment.id == ident).get()
+    return Group.select(cascade=True).where(Group.customer == customer)
+
+
+def get_group_member_deployment(
+        ident: int,
+        customer: Union[Customer, int]
+) -> GroupMemberDeployment:
+    """Selects a group members deployment for the given customer."""
+
+    return get_group_member_deployments(customer).where(
+        GroupMemberDeployment.id == ident
+    ).get()
 
 
 def get_group_member_deployments(
+        customer: Union[Customer, int],
         group: Optional[Union[Group, int]] = None
 ) -> Select:
-    """Selects group members deployments."""
+    """Selects group member deployments for the given customer."""
 
-    condition = Group.customer == CUSTOMER.id
+    condition = Group.customer == customer
 
     if group is not None:
         condition &= GroupMemberDeployment.group == group

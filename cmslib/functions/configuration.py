@@ -1,8 +1,10 @@
 """Configuration related functions."""
 
-from peewee import ModelSelect
+from typing import Union
 
-from his import CUSTOMER
+from peewee import Select
+
+from mdb import Customer
 
 from cmslib.orm.configuration import Configuration
 
@@ -10,14 +12,18 @@ from cmslib.orm.configuration import Configuration
 __all__ = ['get_configuration', 'get_configurations']
 
 
-def get_configuration(ident: int) -> Configuration:
-    """Returns the respective configuration."""
+def get_configuration(
+        ident: int,
+        customer: Union[Customer, int]
+) -> Configuration:
+    """Returns the respective configuration of the given customer."""
 
-    return get_configurations().where(Configuration.id == ident).get()
+    return get_configurations(customer).where(Configuration.id == ident).get()
 
 
-def get_configurations() -> ModelSelect:
-    """Returns the respective configuration."""
+def get_configurations(customer: Union[Customer, int]) -> Select:
+    """Returns the configurations of the given customer."""
 
     return Configuration.select(cascade=True).where(
-        Configuration.customer == CUSTOMER.id)
+        Configuration.customer == customer
+    )

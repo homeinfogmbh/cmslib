@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 from enum import Enum
-from typing import Union
+from typing import Iterator, Union
 
-from peewee import ForeignKeyField, IntegerField, ModelSelect
+from peewee import ForeignKeyField, IntegerField, Select
 
 from peeweeplus import EnumField, HTMLCharField, HTMLTextField, Transaction
 
@@ -29,7 +29,7 @@ class Mode(Enum):
 class Poll(Chart):
     """Chart to display a poll."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_poll'
 
     text = HTMLTextField()
@@ -42,22 +42,22 @@ class Poll(Chart):
         transaction = super().from_json(json, **kwargs)
 
         for option in options:
-            option = Option.from_json(option, transaction.primary)
-            transaction.add(option)
+            transaction.add(Option.from_json(option, transaction.primary))
 
         return transaction
 
-    @property
-    def sorted_options(self) -> ModelSelect:
-        """Returns sorted options."""
-        return self.options.order_by(Option.index)
+    @classmethod
+    def subqueries(cls) -> Iterator[Select]:
+        """Yields sub-queries"""
+        yield from super().subqueries()
+        yield Option.select().order_by(Option.index)
 
     def _patch_options(self, transaction: Transaction, json: dict) -> None:
         """Patches the respective poll options."""
         if json == UNCHANGED:
             return
 
-        options = {option.text: option for option in self.sorted_options}
+        options = {option.text: option for option in self.options}
         json_objects = {option.get('text'): option for option in json}
         processed = set()
 
@@ -91,7 +91,7 @@ class Poll(Chart):
         if mode == ChartMode.FULL:
             json['options'] = [
                 option.to_json(fk_fields=False, autofields=True)
-                for option in self.sorted_options
+                for option in self.options
             ]
 
         return json
@@ -104,19 +104,20 @@ class Poll(Chart):
         xml = super().to_dom(dom.Poll)
         xml.text = self.text
         xml.mode = self.mode.value
-        xml.option = [option.to_dom() for option in self.sorted_options]
+        xml.option = [option.to_dom() for option in self.options]
         return xml
 
 
 class Option(DSCMS4Model):
     """An option for a poll."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'poll_option'
 
     poll = ForeignKeyField(
         Poll, column_name='poll', backref='options', on_delete='CASCADE',
-        lazy_load=False)
+        lazy_load=False
+    )
     text = HTMLCharField(255)
     votes = IntegerField(default=0)
     index = IntegerField(default=0)

@@ -1,8 +1,8 @@
 """Booking chart."""
 
-from typing import Iterable, Union
+from typing import Iterable, Iterator, Union
 
-from peewee import BooleanField, ForeignKeyField
+from peewee import BooleanField, ForeignKeyField, Select
 
 from bookings import get_bookable, Bookable
 from peeweeplus import HTMLTextField, Transaction
@@ -21,7 +21,7 @@ DomModel = Union[dom.BriefChart, dom.Booking]
 class Booking(Chart):
     """Chart for booking."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_booking'
 
     rentee = BooleanField(null=True)
@@ -36,8 +36,17 @@ class Booking(Chart):
         transaction.primary.update_bookable_mappings(bookables, transaction)
         return transaction
 
-    def update_bookable_mappings(self, bookables: Iterable[int],
-                                 transaction: Transaction) -> None:
+    @classmethod
+    def subqueries(cls) -> Iterator[Select]:
+        """Yields sub-queries"""
+        yield from super().subqueries()
+        yield BookableMapping.select(cascade=True)
+
+    def update_bookable_mappings(
+            self,
+            bookables: Iterable[int],
+            transaction: Transaction
+    ) -> None:
         """Updates the bookable objects."""
         if bookables == UNCHANGED:
             return
@@ -82,14 +91,24 @@ class Booking(Chart):
         return xml
 
 
-class BookableMapping(DSCMS4Model):     # pylint: disable=R0903
+class BookableMapping(DSCMS4Model):
     """Many-to-many mapping of bookables and charts."""
 
-    class Meta:     # pylint: disable=C0111,R0903
+    class Meta:
         table_name = 'chart_booking_bookable_mapping'
 
     chart = ForeignKeyField(
         Booking, column_name='chart', backref='bookable_mappings',
-        on_delete='CASCADE', lazy_load=False)
+        on_delete='CASCADE', lazy_load=False
+    )
     bookable = ForeignKeyField(
-        Bookable, column_name='bookable', on_delete='CASCADE', lazy_load=False)
+        Bookable, column_name='bookable', on_delete='CASCADE', lazy_load=False
+    )
+
+    @classmethod
+    def select(cls, *args, cascade: bool = False) -> Select:
+        """Selects bookable mappings."""
+        if not cascade:
+            return super().select(*args)
+
+        return super().select(cls, Bookable, *args).join(Bookable)
