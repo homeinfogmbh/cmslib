@@ -10,14 +10,14 @@ from cmslib.orm.common import CustomerModel
 from cmslib.orm.charts.api.chart import Chart
 
 
-__all__ = ['ChartACL', 'MODELS']
+__all__ = ["ChartACL", "MODELS"]
 
 
 class ChartACL(CustomerModel):
     """Access control list for charts that customers are allowed to use."""
 
     class Meta:
-        table_name = 'chart_acl'
+        table_name = "chart_acl"
 
     chart_type = CharField(255)
 
@@ -28,8 +28,7 @@ class ChartACL(CustomerModel):
         """
         try:
             cls.get(
-                (cls.customer == customer)
-                & (cls.chart_type == chart_class.__name__)
+                (cls.customer == customer) & (cls.chart_type == chart_class.__name__)
             )
         except cls.DoesNotExist:
             return False

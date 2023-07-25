@@ -10,20 +10,13 @@ from cmslib.orm.charts import BaseChart
 from cmslib.orm.vfs import ContentChart, Directory
 
 
-__all__ = [
-    'get_directories',
-    'get_root',
-    'get_directory',
-    'get_unassigned_base_charts'
-]
+__all__ = ["get_directories", "get_root", "get_directory", "get_unassigned_base_charts"]
 
 
 def get_directories(customer: Union[Customer, int]) -> Select:
     """Lists directories of the given customer."""
 
-    return Directory.select(cascade=True).where(
-        Directory.customer == customer
-    )
+    return Directory.select(cascade=True).where(Directory.customer == customer)
 
 
 def get_root(customer: Union[Customer, int]) -> Select:
@@ -41,8 +34,8 @@ def get_directory(ident: int, customer: Union[Customer, int]) -> Directory:
 def get_unassigned_base_charts(customer: Union[Customer, int]) -> Select:
     """Lists unassigned base charts of the given customer."""
 
-    return BaseChart.select(cascade=True).join_from(
-        BaseChart, ContentChart, join_type=JOIN.LEFT_OUTER).where(
-        (BaseChart.customer == customer)
-        & (ContentChart.directory >> None)
+    return (
+        BaseChart.select(cascade=True)
+        .join_from(BaseChart, ContentChart, join_type=JOIN.LEFT_OUTER)
+        .where((BaseChart.customer == customer) & (ContentChart.directory >> None))
     )

@@ -11,11 +11,11 @@ from cmslib.orm.charts import BaseChart, Chart
 
 
 __all__ = [
-    'get_base_chart',
-    'get_base_charts',
-    'get_chart',
-    'get_charts',
-    'get_chart_acls'
+    "get_base_chart",
+    "get_base_charts",
+    "get_chart",
+    "get_charts",
+    "get_chart_acls",
 ]
 
 
@@ -28,25 +28,19 @@ def get_base_chart(ident: int, customer: Union[Customer, int]) -> BaseChart:
 def get_base_charts(customer: Union[Customer, int]) -> Select:
     """Returns the base charts of the given customer."""
 
-    return BaseChart.select(cascade=True).where(
-        BaseChart.customer == customer
-    )
+    return BaseChart.select(cascade=True).where(BaseChart.customer == customer)
 
 
-def get_chart(
-        ident: int,
-        customer: Union[Customer, int],
-        typ: Type[Chart]
-) -> Chart:
+def get_chart(ident: int, customer: Union[Customer, int], typ: Type[Chart]) -> Chart:
     """Returns the selected chart of the given customer."""
 
     return typ.fetch(customer, ident=ident)
 
 
 def get_charts(
-        customer: Union[Customer, int],
-        types: Iterable[Type[Chart]],
-        trashed: Union[Expression, bool] = True
+    customer: Union[Customer, int],
+    types: Iterable[Type[Chart]],
+    trashed: Union[Expression, bool] = True,
 ) -> Iterator[Chart]:
     """Lists the chart types available to the given customer."""
 
@@ -57,6 +51,4 @@ def get_charts(
 def get_chart_acls(customer: Union[Customer, int]) -> Select:
     """Returns chart ACLs of the given customer."""
 
-    return ChartACL.select(cascade=True).where(
-        ChartACL.customer == customer
-    )
+    return ChartACL.select(cascade=True).where(ChartACL.customer == customer)

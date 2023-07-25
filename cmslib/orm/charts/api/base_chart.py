@@ -28,7 +28,7 @@ from cmslib.orm.common import UNCHANGED, DSCMS4Model, CustomerModel
 from cmslib.orm.schedule import Schedule
 
 
-__all__ = ['BaseChart', 'ChartPIN']
+__all__ = ["BaseChart", "ChartPIN"]
 
 
 LOGGER = getLogger(__file__)
@@ -38,7 +38,7 @@ class BaseChart(CustomerModel):
     """Common basic chart data model."""
 
     class Meta:
-        table_name = 'base_chart'
+        table_name = "base_chart"
 
     type = CharField()
     uuid = UUIDField(default=uuid4)
@@ -53,22 +53,20 @@ class BaseChart(CustomerModel):
     trashed = BooleanField(default=False)
     log = BooleanField(default=False)
     schedule = ForeignKeyField(
-        Schedule, column_name='schedule', null=True, on_delete='SET NULL',
-        on_update='CASCADE', lazy_load=False
+        Schedule,
+        column_name="schedule",
+        null=True,
+        on_delete="SET NULL",
+        on_update="CASCADE",
+        lazy_load=False,
     )
 
     @classmethod
-    def from_json(
-            cls,
-            json: dict,
-            typ: str,
-            skip: set = None,
-            **kwargs
-    ) -> Transaction:
+    def from_json(cls, json: dict, typ: str, skip: set = None, **kwargs) -> Transaction:
         """Creates a base chart from a JSON-ish dict."""
-        skip = {'type', 'uuid', *(skip or ())}
-        pins = json.pop('pins', ())
-        schedule = json.pop('schedule', None)
+        skip = {"type", "uuid", *(skip or ())}
+        pins = json.pop("pins", ())
+        schedule = json.pop("schedule", None)
         record = super().from_json(json, skip=skip, **kwargs)
         record.type = typ
         transaction = Transaction()
@@ -105,7 +103,7 @@ class BaseChart(CustomerModel):
                     LOGGER.error(ambiguous_base_chart)
             else:
                 if verbose:
-                    LOGGER.info('%s ↔ %s', base_chart, chart)
+                    LOGGER.info("%s ↔ %s", base_chart, chart)
 
         return CheckResult(frozenset(orphans), frozenset(ambiguous))
 
@@ -115,8 +113,10 @@ class BaseChart(CustomerModel):
         if not cascade:
             return super().select(*args)
 
-        return super().select(cls, Schedule, *args, cascade=cascade).join_from(
-            BaseChart, Schedule, join_type=JOIN.LEFT_OUTER
+        return (
+            super()
+            .select(cls, Schedule, *args, cascade=cascade)
+            .join_from(BaseChart, Schedule, join_type=JOIN.LEFT_OUTER)
         )
 
     @property
@@ -132,9 +132,12 @@ class BaseChart(CustomerModel):
     @property
     def chart(self) -> DSCMS4Model:
         """Returns the mapped implementation of this base chart."""
-        return (Chart := self.chart_class).select(cascade=True).where(
-            Chart.base == self
-        ).get()
+        return (
+            (Chart := self.chart_class)
+            .select(cascade=True)
+            .where(Chart.base == self)
+            .get()
+        )
 
     def _patch_pins(self, pins: dict, transaction: Transaction):
         """Patches the PINs."""
@@ -167,16 +170,14 @@ class BaseChart(CustomerModel):
 
     def is_active_at(self, timestamp: datetime) -> bool:
         """Checks whether this chart is active at the given timestamp."""
-        return (
-            self.display_from is None or self.display_from > timestamp
-        ) and (
+        return (self.display_from is None or self.display_from > timestamp) and (
             self.display_until is None or self.display_until < timestamp
         )
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the base chart."""
-        pins = json.pop('pins', UNCHANGED)
-        schedule = json.pop('schedule', UNCHANGED)
+        pins = json.pop("pins", UNCHANGED)
+        schedule = json.pop("schedule", UNCHANGED)
         super().patch_json(json, **kwargs)
         transaction = Transaction()
         transaction.add(self, primary=True)
@@ -187,13 +188,13 @@ class BaseChart(CustomerModel):
     def to_json(self, brief: bool = False, **kwargs) -> dict:
         """Returns a JSON-ish dictionary."""
         if brief:
-            return {'title': self.title}
+            return {"title": self.title}
 
         json = super().to_json(**kwargs)
-        json['pins'] = [pin.pin for pin in self.pins]
+        json["pins"] = [pin.pin for pin in self.pins]
 
         if self.schedule:
-            json['schedule'] = self.schedule.to_json()
+            json["schedule"] = self.schedule.to_json()
 
         return json
 
@@ -227,10 +228,14 @@ class ChartPIN(DSCMS4Model):
     """PINs to lock a chart."""
 
     class Meta:
-        table_name = 'chart_pin'
+        table_name = "chart_pin"
 
     base_chart = ForeignKeyField(
-        BaseChart, column_name='base_chart', backref='pins',
-        on_delete='CASCADE', on_update='CASCADE', lazy_load=False
+        BaseChart,
+        column_name="base_chart",
+        backref="pins",
+        on_delete="CASCADE",
+        on_update="CASCADE",
+        lazy_load=False,
     )
     pin = HTMLCharField(8)

@@ -77,78 +77,78 @@ from cmslib.orm.vfs import ContentChart
 
 __all__ = [
     # Misc
-    'DATABASE',
-    'MODELS',
-    'UNCHANGED',
-    'create_tables',
+    "DATABASE",
+    "MODELS",
+    "UNCHANGED",
+    "create_tables",
     # Charts
-    'CHARTS',
-    'ChartMode',
-    'BaseChart',
-    'Chart',
-    'ChartPIN',
-    'Blackboard',
-    'BlackboardImage',
-    'Booking',
-    'BookableMapping',
-    'Cleaning',
-    'Form',
-    'GarbageCollection',
-    'GuessPicture',
-    'ImageText',
-    'ImageTextImage',
-    'ImageTextText',
-    'News',
-    'NewsProvider',
-    'Poll',
-    'PollMode',
-    'PollOption',
-    'PublicTransport',
-    'Quotes',
-    'RealEstates',
-    'IdFilter',     # Filter for real estates.
-    'ZipCodeFilter',    # Filter for real estates.
-    'SoccerTable',
-    'URL',
-    'URLMode',
-    'Video',
-    'Weather',
-    'WeatherImage',
+    "CHARTS",
+    "ChartMode",
+    "BaseChart",
+    "Chart",
+    "ChartPIN",
+    "Blackboard",
+    "BlackboardImage",
+    "Booking",
+    "BookableMapping",
+    "Cleaning",
+    "Form",
+    "GarbageCollection",
+    "GuessPicture",
+    "ImageText",
+    "ImageTextImage",
+    "ImageTextText",
+    "News",
+    "NewsProvider",
+    "Poll",
+    "PollMode",
+    "PollOption",
+    "PublicTransport",
+    "Quotes",
+    "RealEstates",
+    "IdFilter",  # Filter for real estates.
+    "ZipCodeFilter",  # Filter for real estates.
+    "SoccerTable",
+    "URL",
+    "URLMode",
+    "Video",
+    "Weather",
+    "WeatherImage",
     # Content
-    'DeploymentBaseChart',
-    'DeploymentConfiguration',
-    'DeploymentMenu',
-    'GroupBaseChart',
-    'GroupConfiguration',
-    'GroupMenu',
+    "DeploymentBaseChart",
+    "DeploymentConfiguration",
+    "DeploymentMenu",
+    "GroupBaseChart",
+    "GroupConfiguration",
+    "GroupMenu",
     # Chart ACLs
-    'ChartACL',
+    "ChartACL",
     # Configuration
-    'Background',
-    'Backlight',
-    'Colors',
-    'Configuration',
-    'Design',
-    'Font',
-    'Ticker',
-    'TickerType',
+    "Background",
+    "Backlight",
+    "Colors",
+    "Configuration",
+    "Design",
+    "Font",
+    "Ticker",
+    "TickerType",
     # Group
-    'Group',
-    'GroupMemberDeployment',
+    "Group",
+    "GroupMemberDeployment",
     # Menu
-    'Menu',
-    'MenuItem',
-    'MenuItemChart',
-    'MenuItemGroup',
+    "Menu",
+    "MenuItem",
+    "MenuItemChart",
+    "MenuItemGroup",
     # Schedule
-    'Schedule',
-    'TimeUnit',
+    "Schedule",
+    "TimeUnit",
     # Settings
-    'Settings',
+    "Settings",
     # VFS
-    'DirectoryNotEmpty',
-    'Directory',
-    'ContentChart'
+    "DirectoryNotEmpty",
+    "Directory",
+    "ContentChart",
 ]
 
 
@@ -156,9 +156,15 @@ LOGGER = getLogger(__file__)
 
 # Order matters here!
 MODELS = (
-    *CHART_MODELS, *CONFIGURATION_MODELS, *GROUP_MODELS, *MENU_MODELS,
-    *CONTENT_MODELS, *CHART_ACL_MODELS, *SCHEDULE_MODELS, *SETTINGS_MODELS,
-    *VFS_MODELS
+    *CHART_MODELS,
+    *CONFIGURATION_MODELS,
+    *GROUP_MODELS,
+    *MENU_MODELS,
+    *CONTENT_MODELS,
+    *CHART_ACL_MODELS,
+    *SCHEDULE_MODELS,
+    *SETTINGS_MODELS,
+    *VFS_MODELS,
 )
 
 
@@ -169,6 +175,4 @@ def create_tables(fail_silently: bool = True) -> None:
         try:
             model.create_table(fail_silently=fail_silently)
         except Exception as error:
-            LOGGER.error(
-                'Could not create table for model "%s":\n%s.', model, error
-            )
+            LOGGER.error('Could not create table for model "%s":\n%s.', model, error)

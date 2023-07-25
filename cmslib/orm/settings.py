@@ -10,7 +10,7 @@ from mdb import Customer
 from cmslib.orm.common import CustomerModel
 
 
-__all__ = ['MODELS', 'Settings']
+__all__ = ["MODELS", "Settings"]
 
 
 class Settings(CustomerModel):
@@ -18,7 +18,7 @@ class Settings(CustomerModel):
     All fields should have default values.
     """
 
-    testing = BooleanField(default=False)   # Show testing deployments.
+    testing = BooleanField(default=False)  # Show testing deployments.
     trashed = BooleanField(null=True, default=None)  # Select trashed charts.
 
     @classmethod

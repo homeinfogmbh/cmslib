@@ -16,7 +16,7 @@ from cmslib.orm.charts.api import Chart, ChartMode
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
 
-__all__ = ['News', 'NewsProvider']
+__all__ = ["News", "NewsProvider"]
 
 
 DomModel = Union[dom.BriefChart, dom.News]
@@ -26,7 +26,7 @@ class News(Chart):
     """Chart to display news."""
 
     class Meta:
-        table_name = 'chart_news'
+        table_name = "chart_news"
 
     font_size_title = SmallIntegerField(default=8)
     title_color = IntegerField(default=0x000000)
@@ -37,13 +37,11 @@ class News(Chart):
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates a new news chart from a JSON-ish dict."""
-        providers = json.pop('providers', None) or ()
+        providers = json.pop("providers", None) or ()
         transaction = super().from_json(json, **kwargs)
 
         for provider in providers:
-            transaction.add(NewsProvider(
-                chart=transaction.primary, provider=provider
-            ))
+            transaction.add(NewsProvider(chart=transaction.primary, provider=provider))
 
         return transaction
 
@@ -56,7 +54,7 @@ class News(Chart):
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the chart and related components from a JSON-ish dict."""
         try:
-            providers = json.pop('providers') or ()
+            providers = json.pop("providers") or ()
         except KeyError:
             providers = UNCHANGED
 
@@ -67,9 +65,9 @@ class News(Chart):
                 provider.delete_instance()
 
             for provider in providers:
-                transaction.add(NewsProvider(
-                    chart=transaction.primary, provider=provider
-                ))
+                transaction.add(
+                    NewsProvider(chart=transaction.primary, provider=provider)
+                )
 
         return transaction
 
@@ -78,9 +76,7 @@ class News(Chart):
         json = super().to_json(mode=mode, **kwargs)
 
         if mode == ChartMode.FULL:
-            json['providers'] = [
-                provider.provider for provider in self.providers
-            ]
+            json["providers"] = [provider.provider for provider in self.providers]
 
         return json
 
@@ -103,10 +99,14 @@ class NewsProvider(DSCMS4Model):
     """Mapping between a News chart and news providers."""
 
     class Meta:
-        table_name = 'news_provider'
+        table_name = "news_provider"
 
     chart = ForeignKeyField(
-        News, column_name='chart', backref='providers', on_delete='CASCADE',
-        on_update='CASCADE', lazy_load=False
+        News,
+        column_name="chart",
+        backref="providers",
+        on_delete="CASCADE",
+        on_update="CASCADE",
+        lazy_load=False,
     )
     provider = CharField(255)

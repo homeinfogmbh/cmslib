@@ -18,7 +18,7 @@ from cmslib.orm.charts.api import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, Attachment, DSCMS4Model
 
 
-__all__ = ['ImageText', 'Image', 'Text']
+__all__ = ["ImageText", "Image", "Text"]
 
 
 DomModel = Union[dom.BriefChart, dom.ImageText]
@@ -28,7 +28,7 @@ class ImageText(Chart):
     """A chart that may contain images and text."""
 
     class Meta:
-        table_name = 'chart_image_text'
+        table_name = "chart_image_text"
 
     title = HTMLCharField(255)
     font_size = SmallIntegerField(default=26)
@@ -41,8 +41,8 @@ class ImageText(Chart):
         """Creates a new chart from a JSON-ish dict."""
         # Pop images and texts first to exclude them from the
         # dictionary before invoking super().from_json().
-        images = json.pop('images', ())
-        texts = json.pop('texts', ())
+        images = json.pop("images", ())
+        texts = json.pop("texts", ())
         transaction = super().from_json(json, **kwargs)
 
         for image in images:
@@ -69,8 +69,8 @@ class ImageText(Chart):
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the respective chart."""
-        images = json.pop('images', UNCHANGED) or ()
-        texts = json.pop('texts', UNCHANGED) or ()
+        images = json.pop("images", UNCHANGED) or ()
+        texts = json.pop("texts", UNCHANGED) or ()
         transaction = super().patch_json(json, **kwargs)
 
         if images is not UNCHANGED:
@@ -96,8 +96,8 @@ class ImageText(Chart):
         json = super().to_json(mode=mode, **kwargs)
 
         if mode == ChartMode.FULL:
-            json['texts'] = [text.to_json() for text in self.texts]
-            json['images'] = [
+            json["texts"] = [text.to_json() for text in self.texts]
+            json["images"] = [
                 image.to_json(fk_fields=False, autofields=False)
                 for image in self.images
             ]
@@ -124,18 +124,21 @@ class Image(Attachment):
     """Image for an ImageText chart."""
 
     class Meta:
-        table_name = 'chart_image_text_image'
+        table_name = "chart_image_text_image"
 
     chart = ForeignKeyField(
-        ImageText, column_name='chart', backref='images', on_delete='CASCADE',
-        lazy_load=False
+        ImageText,
+        column_name="chart",
+        backref="images",
+        on_delete="CASCADE",
+        lazy_load=False,
     )
     index = IntegerField(default=0)
 
     @classmethod
     def from_json(cls, json: dict, chart: ImageText = None, **kwargs) -> Image:
         """Creates an image from the respective JSON-ish dict."""
-        file_id = json.pop('file')
+        file_id = json.pop("file")
         record = super().from_json(json, **kwargs)
         record.chart = chart
         record.file = get_file(file_id)
@@ -155,11 +158,14 @@ class Text(DSCMS4Model):
     """Text for an ImageText chart."""
 
     class Meta:
-        table_name = 'chart_image_text_text'
+        table_name = "chart_image_text_text"
 
     chart = ForeignKeyField(
-        ImageText, column_name='chart', backref='texts', on_delete='CASCADE',
-        lazy_load=False
+        ImageText,
+        column_name="chart",
+        backref="texts",
+        on_delete="CASCADE",
+        lazy_load=False,
     )
     text = HTMLTextField()
 

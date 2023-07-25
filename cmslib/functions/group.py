@@ -12,12 +12,12 @@ from cmslib.groups import Groups
 
 
 __all__ = [
-    'get_group',
-    'get_groups',
-    'get_group_member_deployment',
-    'get_group_member_deployments',
-    'get_group_ids',
-    'get_groups_lineage'
+    "get_group",
+    "get_groups",
+    "get_group_member_deployment",
+    "get_group_member_deployments",
+    "get_group_ids",
+    "get_groups_lineage",
 ]
 
 
@@ -34,19 +34,19 @@ def get_groups(customer: Union[Customer, int]) -> Select:
 
 
 def get_group_member_deployment(
-        ident: int,
-        customer: Union[Customer, int]
+    ident: int, customer: Union[Customer, int]
 ) -> GroupMemberDeployment:
     """Selects a group members deployment for the given customer."""
 
-    return get_group_member_deployments(customer).where(
-        GroupMemberDeployment.id == ident
-    ).get()
+    return (
+        get_group_member_deployments(customer)
+        .where(GroupMemberDeployment.id == ident)
+        .get()
+    )
 
 
 def get_group_member_deployments(
-        customer: Union[Customer, int],
-        group: Optional[Union[Group, int]] = None
+    customer: Union[Customer, int], group: Optional[Union[Group, int]] = None
 ) -> Select:
     """Selects group member deployments for the given customer."""
 
@@ -62,14 +62,13 @@ def get_group_ids(deployment: Union[Deployment, int]) -> Iterator[int]:
     """Yield group IDs of the given deployment."""
 
     for group_member_deployment in GroupMemberDeployment.select().where(
-            GroupMemberDeployment.deployment == deployment
+        GroupMemberDeployment.deployment == deployment
     ):
         yield group_member_deployment.group
 
 
 def get_groups_lineage(
-        deployment: Union[Deployment, int], *,
-        groups: Optional[Groups] = None
+    deployment: Union[Deployment, int], *, groups: Optional[Groups] = None
 ) -> Iterator[Group]:
     """Select the groups-lineage of the given user."""
 

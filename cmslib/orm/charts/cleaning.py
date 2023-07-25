@@ -10,7 +10,7 @@ from cmslib import dom
 from cmslib.orm.charts.api import Chart
 
 
-__all__ = ['Mode', 'Cleaning']
+__all__ = ["Mode", "Cleaning"]
 
 
 DomModel = Union[dom.BriefChart, dom.Cleaning]
@@ -19,15 +19,15 @@ DomModel = Union[dom.BriefChart, dom.Cleaning]
 class Mode(Enum):
     """Possible displaying modes."""
 
-    SHOW = 'show'
-    INPUT = 'input'
+    SHOW = "show"
+    INPUT = "input"
 
 
 class Cleaning(Chart):
     """Cleaning chart."""
 
     class Meta:
-        table_name = 'chart_cleaning'
+        table_name = "chart_cleaning"
 
     title = CharField(255, null=True)
     mode = EnumField(Mode)

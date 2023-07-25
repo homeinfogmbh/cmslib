@@ -24,53 +24,53 @@ from cmslib.orm.common import UNCHANGED, DSCMS4Model, CustomerModel
 
 
 __all__ = [
-    'MODELS',
-    'TIME_FORMAT',
-    'Background',
-    'Backlight',
-    'Colors',
-    'Configuration',
-    'Design',
-    'Font',
-    'Ticker',
-    'TickerType',
-    'percentage'
+    "MODELS",
+    "TIME_FORMAT",
+    "Background",
+    "Backlight",
+    "Colors",
+    "Configuration",
+    "Design",
+    "Font",
+    "Ticker",
+    "TickerType",
+    "percentage",
 ]
 
 
-TIME_FORMAT = '%H:%M'
+TIME_FORMAT = "%H:%M"
 
 
 class Font(Enum):
     """Available fonts."""
 
-    VERDANA = 'verdana'
-    ARIAL = 'arial'
-    LATO = 'lato'
-    SPARKASSE = 'sparkasse'
-    NETTOO = 'nettoo'
-    MUSEO = 'museo'
-    SEGOE = 'segoe'
+    VERDANA = "verdana"
+    ARIAL = "arial"
+    LATO = "lato"
+    SPARKASSE = "sparkasse"
+    NETTOO = "nettoo"
+    MUSEO = "museo"
+    SEGOE = "segoe"
 
 
 class Design(Enum):
     """Available designs."""
 
-    THREE_D = '3d'
-    NEWS = 'news'
-    FLAT = 'flat'
-    HD = 'hd'
-    AIR = 'air'
-    MUP = 'mup'
-    EXPO = 'expo'
-    GRID = 'grid'
+    THREE_D = "3d"
+    NEWS = "news"
+    FLAT = "flat"
+    HD = "hd"
+    AIR = "air"
+    MUP = "mup"
+    EXPO = "expo"
+    GRID = "grid"
 
 
 class TickerType(Enum):
     """Valid ticker types."""
 
-    TEXT = 'text'
-    RSS = 'RSS'
+    TEXT = "text"
+    RSS = "RSS"
 
 
 class Colors(DSCMS4Model):
@@ -114,14 +114,12 @@ class Configuration(CustomerModel):
     design = EnumField(Design)
     effects = BooleanField()
     ticker_speed = SmallIntegerField()
-    colors = ForeignKeyField(Colors, column_name='colors', lazy_load=False)
+    colors = ForeignKeyField(Colors, column_name="colors", lazy_load=False)
     title_size = SmallIntegerField()
     text_size = SmallIntegerField()
-    logo = ForeignKeyField(
-        File, column_name='logo', null=True, lazy_load=False
-    )
+    logo = ForeignKeyField(File, column_name="logo", null=True, lazy_load=False)
     dummy_picture = ForeignKeyField(
-        File, column_name='dummy_picture', null=True, lazy_load=False
+        File, column_name="dummy_picture", null=True, lazy_load=False
     )
     hide_cursor = BooleanField(default=True)
     rotation = SmallIntegerField(default=0)
@@ -136,12 +134,12 @@ class Configuration(CustomerModel):
         """Creates a new configuration from the provided
         dictionary for the respective customer.
         """
-        colors = json.pop('colors', None)
-        backgrounds = json.pop('backgrounds', None)
-        tickers = json.pop('tickers', ())
-        backlight = json.pop('backlight', None)
-        logo = json.pop('logo', None)
-        dummy_picture = json.pop('dummyPicture', None)
+        colors = json.pop("colors", None)
+        backgrounds = json.pop("backgrounds", None)
+        tickers = json.pop("tickers", ())
+        backlight = json.pop("backlight", None)
+        logo = json.pop("logo", None)
+        dummy_picture = json.pop("dummyPicture", None)
         configuration = super().from_json(json, **kwargs)
 
         if logo:
@@ -153,9 +151,7 @@ class Configuration(CustomerModel):
         transaction = Transaction()
         transaction.add(configuration, primary=True)
         configuration.update_colors(transaction, colors)
-        configuration.update_backgrounds(
-            transaction, backgrounds, delete=False
-        )
+        configuration.update_backgrounds(transaction, backgrounds, delete=False)
         configuration.update_tickers(transaction, tickers, delete=False)
         configuration.update_backlights(transaction, backlight, delete=False)
         return transaction
@@ -166,10 +162,8 @@ class Configuration(CustomerModel):
         if not cascade:
             return super().select(*args)
 
-        return super().select(
-            cls, Colors, *args, cascade=cascade
-        ).join_from(
-            cls, Colors
+        return (
+            super().select(cls, Colors, *args, cascade=cascade).join_from(cls, Colors)
         )
 
     @property
@@ -212,11 +206,7 @@ class Configuration(CustomerModel):
         transaction.add(self.colors, left=True)
 
     def update_backgrounds(
-            self,
-            transaction: Transaction,
-            backgrounds: Iterable[int],
-            *,
-            delete: bool
+        self, transaction: Transaction, backgrounds: Iterable[int], *, delete: bool
     ) -> None:
         """Updates the related backgrounds."""
         if delete:
@@ -232,11 +222,7 @@ class Configuration(CustomerModel):
             transaction.add(background)
 
     def update_tickers(
-            self,
-            transaction: Transaction,
-            tickers: Iterable[dict],
-            *,
-            delete: bool
+        self, transaction: Transaction, tickers: Iterable[dict], *, delete: bool
     ) -> None:
         """Updates the respective ticker records."""
         if delete:
@@ -251,11 +237,7 @@ class Configuration(CustomerModel):
             transaction.add(ticker)
 
     def update_backlights(
-            self,
-            transaction: Transaction,
-            backlights: dict,
-            *,
-            delete: bool
+        self, transaction: Transaction, backlights: dict, *, delete: bool
     ) -> None:
         """Updates the respective backlight records."""
         if delete:
@@ -265,7 +247,7 @@ class Configuration(CustomerModel):
         if backlights:
             for time, brightness in backlights.items():
                 time = datetime.strptime(time, TIME_FORMAT).time()
-                json = {'time': time, 'brightness': brightness}
+                json = {"time": time, "brightness": brightness}
                 backlight = Backlight.from_json(json, self)
                 transaction.add(backlight)
 
@@ -275,30 +257,30 @@ class Configuration(CustomerModel):
         transaction.add(self, primary=True)
 
         try:
-            colors = json.pop('colors')
+            colors = json.pop("colors")
         except KeyError:
             pass
         else:
             self.update_colors(transaction, colors)
 
         try:
-            backgrounds = json.pop('backgrounds')
+            backgrounds = json.pop("backgrounds")
         except KeyError:
             pass
         else:
             self.update_backgrounds(transaction, backgrounds, delete=True)
 
         try:
-            tickers = json.pop('tickers')
+            tickers = json.pop("tickers")
         except KeyError:
             pass
         else:
             self.update_tickers(transaction, tickers, delete=True)
 
-        backlight = json.pop('backlight', None)
+        backlight = json.pop("backlight", None)
         self.update_backlights(transaction, backlight, delete=True)
-        logo = json.pop('logo', UNCHANGED)
-        dpic = json.pop('dummyPicture', UNCHANGED)
+        logo = json.pop("logo", UNCHANGED)
+        dpic = json.pop("dummyPicture", UNCHANGED)
         super().patch_json(json, **kwargs)
 
         if logo is not UNCHANGED:
@@ -312,22 +294,19 @@ class Configuration(CustomerModel):
     def to_json(self, cascade: bool = False, **kwargs) -> dict:
         """Converts the configuration into a JSON-like dictionary."""
         json = super().to_json(**kwargs)
-        json['backgrounds'] = [
-            attachment_json(background.file) for background
-            in self.backgrounds
+        json["backgrounds"] = [
+            attachment_json(background.file) for background in self.backgrounds
         ]
-        json['logo'] = attachment_json(self.logo)
-        json['dummyPicture'] = attachment_json(self.dummy_picture)
+        json["logo"] = attachment_json(self.logo)
+        json["dummyPicture"] = attachment_json(self.dummy_picture)
 
         if cascade:
-            json['colors'] = self.colors.to_json(
-                autofields=False, fk_fields=False
-            )
-            json['tickers'] = [
+            json["colors"] = self.colors.to_json(autofields=False, fk_fields=False)
+            json["tickers"] = [
                 ticker.to_json(autofields=False, fk_fields=False)
                 for ticker in self.tickers
             ]
-            json['backlight'] = self.backlight_dict
+            json["backlight"] = self.backlight_dict
 
         return json
 
@@ -353,8 +332,7 @@ class Configuration(CustomerModel):
         xml.volume = self.volume / 100
         xml.text_bg_transparent = self.text_bg_transparent
         xml.background = [
-            attachment_dom(background.file)
-            for background in self.backgrounds
+            attachment_dom(background.file) for background in self.backgrounds
         ]
         xml.ticker = [ticker.to_dom() for ticker in self.tickers]
         xml.backlight = [backlight.to_dom() for backlight in self.backlights]
@@ -372,10 +350,13 @@ class Background(DSCMS4Model):
     """Background images for configurations."""
 
     configuration = ForeignKeyField(
-        Configuration, column_name='configuration', backref='backgrounds',
-        on_delete='CASCADE', lazy_load=False
+        Configuration,
+        column_name="configuration",
+        backref="backgrounds",
+        on_delete="CASCADE",
+        lazy_load=False,
     )
-    file = ForeignKeyField(File, column_name='file', lazy_load=False)
+    file = ForeignKeyField(File, column_name="file", lazy_load=False)
 
     def to_json(self, *args, **kwargs) -> dict:
         """Returns a JSON-ish dict."""
@@ -387,15 +368,17 @@ class Ticker(DSCMS4Model):
     """Ticker."""
 
     configuration = ForeignKeyField(
-        Configuration, column_name='configuration', backref='tickers',
-        on_delete='CASCADE', lazy_load=False
+        Configuration,
+        column_name="configuration",
+        backref="tickers",
+        on_delete="CASCADE",
+        lazy_load=False,
     )
-    type_ = EnumField(TickerType, column_name='type')
+    type_ = EnumField(TickerType, column_name="type")
     content = HTMLTextField()
 
     @classmethod
-    def from_json(cls, json: dict, configuration: Configuration,
-                  **kwargs) -> Ticker:
+    def from_json(cls, json: dict, configuration: Configuration, **kwargs) -> Ticker:
         """Creates a new ticker from the respective dictionary."""
         ticker = super().from_json(json, **kwargs)
         ticker.configuration = configuration
@@ -405,7 +388,7 @@ class Ticker(DSCMS4Model):
         """Returns an XML DOM of the model."""
         xml = dom.Ticker()
         xml.type = self.type_.value
-        xml.content_ = self.content     # xml.content is reserved by PyXB.
+        xml.content_ = self.content  # xml.content is reserved by PyXB.
         return xml
 
 
@@ -413,19 +396,17 @@ class Backlight(DSCMS4Model):
     """Backlight brightness settings of the respective configuration."""
 
     configuration = ForeignKeyField(
-        Configuration, column_name='configuration', backref='backlights',
-        on_delete='CASCADE', lazy_load=False
+        Configuration,
+        column_name="configuration",
+        backref="backlights",
+        on_delete="CASCADE",
+        lazy_load=False,
     )
     time = TimeField()
-    brightness = SmallIntegerField()   # Brightness in percent.
+    brightness = SmallIntegerField()  # Brightness in percent.
 
     @classmethod
-    def from_json(
-            cls,
-            json: dict,
-            configuration: Configuration,
-            **kwargs
-    ) -> Backlight:
+    def from_json(cls, json: dict, configuration: Configuration, **kwargs) -> Backlight:
         """Yields new records from the provided JSON-ish dictionary."""
         backlight = super().from_json(json, **kwargs)
         backlight.configuration = configuration
@@ -459,7 +440,7 @@ def percentage(value: float) -> int:
     if 0 <= (value := round(value)) <= 100:
         return value
 
-    raise ValueError(f'Invalid percentage: {value}.')
+    raise ValueError(f"Invalid percentage: {value}.")
 
 
 MODELS = (Colors, Configuration, Ticker, Backlight)

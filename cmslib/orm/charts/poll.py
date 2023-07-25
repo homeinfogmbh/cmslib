@@ -13,7 +13,7 @@ from cmslib.orm.charts.api import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
 
-__all__ = ['Mode', 'Poll', 'Option']
+__all__ = ["Mode", "Poll", "Option"]
 
 
 DomModel = Union[dom.BriefChart, dom.Poll]
@@ -22,15 +22,15 @@ DomModel = Union[dom.BriefChart, dom.Poll]
 class Mode(Enum):
     """Available poll modes."""
 
-    SINGLE_CHOICE = 'single choice'
-    MULTIPLE_CHOICE = 'multiple choice'
+    SINGLE_CHOICE = "single choice"
+    MULTIPLE_CHOICE = "multiple choice"
 
 
 class Poll(Chart):
     """Chart to display a poll."""
 
     class Meta:
-        table_name = 'chart_poll'
+        table_name = "chart_poll"
 
     text = HTMLTextField()
     mode = EnumField(Mode)
@@ -38,7 +38,7 @@ class Poll(Chart):
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates a new poll from JSON."""
-        options = json.pop('options', ())
+        options = json.pop("options", ())
         transaction = super().from_json(json, **kwargs)
 
         for option in options:
@@ -58,7 +58,7 @@ class Poll(Chart):
             return
 
         options = {option.text: option for option in self.options}
-        json_objects = {option.get('text'): option for option in json}
+        json_objects = {option.get("text"): option for option in json}
         processed = set()
 
         for text, option in options.items():
@@ -79,7 +79,7 @@ class Poll(Chart):
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the respective chart."""
-        options = json.pop('options', UNCHANGED) or ()
+        options = json.pop("options", UNCHANGED) or ()
         transaction = super().patch_json(json, **kwargs)
         self._patch_options(transaction, options)
         return transaction
@@ -89,7 +89,7 @@ class Poll(Chart):
         json = super().to_json(mode=mode, **kwargs)
 
         if mode == ChartMode.FULL:
-            json['options'] = [
+            json["options"] = [
                 option.to_json(fk_fields=False, autofields=True)
                 for option in self.options
             ]
@@ -112,11 +112,14 @@ class Option(DSCMS4Model):
     """An option for a poll."""
 
     class Meta:
-        table_name = 'poll_option'
+        table_name = "poll_option"
 
     poll = ForeignKeyField(
-        Poll, column_name='poll', backref='options', on_delete='CASCADE',
-        lazy_load=False
+        Poll,
+        column_name="poll",
+        backref="options",
+        on_delete="CASCADE",
+        lazy_load=False,
     )
     text = HTMLCharField(255)
     votes = IntegerField(default=0)

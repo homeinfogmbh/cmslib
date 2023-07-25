@@ -18,7 +18,7 @@ from cmslib.orm.menu import Menu
 from cmslib.presentation.common import IndexedBaseChart, Presentation
 
 
-__all__ = ['Presentation']
+__all__ = ["Presentation"]
 
 
 def address_to_dom(address: Address) -> dom.Address:
@@ -53,8 +53,7 @@ def deployment_to_dom(deployment: Deployment) -> dom.Deployment:
 def get_deployment(deployment: Union[Deployment, int]) -> Deployment:
     """Returns a deep-joined deployment."""
 
-    return Deployment.select(cascade=True).where(
-        Deployment.id == deployment).get()
+    return Deployment.select(cascade=True).where(Deployment.id == deployment).get()
 
 
 class Presentation(Presentation):
@@ -71,38 +70,36 @@ class Presentation(Presentation):
 
     def get_base_charts(self) -> Iterator[IndexedBaseChart]:
         """Selects charts directly attached to the deployment."""
-        for deployment_base_chart in DeploymentBaseChart.select(
-                cascade=True).where(
-                    (DeploymentBaseChart.deployment == self.deployment)
-                    & (BaseChart.trashed == 0)
-                ):
+        for deployment_base_chart in DeploymentBaseChart.select(cascade=True).where(
+            (DeploymentBaseChart.deployment == self.deployment)
+            & (BaseChart.trashed == 0)
+        ):
             yield IndexedBaseChart(
-                deployment_base_chart.index,
-                deployment_base_chart.base_chart
+                deployment_base_chart.index, deployment_base_chart.base_chart
             )
 
     def get_configurations(self) -> Select:
         """Selects directly attached configurations."""
-        return Configuration.select(cascade=True).join_from(
-            Configuration, DeploymentConfiguration
-        ).where(
-            DeploymentConfiguration.deployment == self.deployment
+        return (
+            Configuration.select(cascade=True)
+            .join_from(Configuration, DeploymentConfiguration)
+            .where(DeploymentConfiguration.deployment == self.deployment)
         )
 
     def get_memberships(self) -> Select:
         """Selects groups this deployment is a member of."""
-        return Group.select(cascade=True).join_from(
-            Group, GroupMemberDeployment
-        ).where(
-            GroupMemberDeployment.deployment == self.deployment
+        return (
+            Group.select(cascade=True)
+            .join_from(Group, GroupMemberDeployment)
+            .where(GroupMemberDeployment.deployment == self.deployment)
         )
 
     def get_menus(self) -> Select:
         """Selects menus of this deployment."""
-        return Menu.select(cascade=True).join_from(
-            Menu, DeploymentMenu
-        ).where(
-            DeploymentMenu.deployment == self.deployment
+        return (
+            Menu.select(cascade=True)
+            .join_from(Menu, DeploymentMenu)
+            .where(DeploymentMenu.deployment == self.deployment)
         )
 
     def to_dom(self) -> dom.presentation:
@@ -114,5 +111,5 @@ class Presentation(Presentation):
     def to_json(self) -> dict:
         """Returns a JSON-ish dict."""
         json = super().to_json()
-        json['deployment'] = self.deployment.to_json(address=True)
+        json["deployment"] = self.deployment.to_json(address=True)
         return json

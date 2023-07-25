@@ -4,14 +4,14 @@ from peewee import Model
 
 
 __all__ = [
-    'AmbiguousBaseChart',
-    'AmbiguousConfigurations',
-    'CircularReference',
-    'DifferentMenus',
-    'InvalidChartType',
-    'MissingMenu',
-    'NoConfigurationFound',
-    'OrphanedBaseChart',
+    "AmbiguousBaseChart",
+    "AmbiguousConfigurations",
+    "CircularReference",
+    "DifferentMenus",
+    "InvalidChartType",
+    "MissingMenu",
+    "NoConfigurationFound",
+    "OrphanedBaseChart",
 ]
 
 
@@ -28,8 +28,8 @@ class AmbiguousBaseChart(Exception):
 
     def __str__(self):
         """Returns an appropriate message."""
-        charts = ', '.join(str(chart) for chart in self.references)
-        return f'Base chart #{self.base_chart.id} is ambiguous: {charts}.'
+        charts = ", ".join(str(chart) for chart in self.references)
+        return f"Base chart #{self.base_chart.id} is ambiguous: {charts}."
 
 
 class AmbiguousConfigurations(Exception):
@@ -79,4 +79,4 @@ class OrphanedBaseChart(Exception):
 
     def __str__(self):
         """Returns an appropriate message."""
-        return f'Base chart {self.base_chart.id} is orphaned.'
+        return f"Base chart {self.base_chart.id} is orphaned."

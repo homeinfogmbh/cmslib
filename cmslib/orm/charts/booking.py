@@ -12,7 +12,7 @@ from cmslib.orm.charts.api import Chart, ChartMode
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
 
-__all__ = ['Booking', 'BookableMapping']
+__all__ = ["Booking", "BookableMapping"]
 
 
 DomModel = Union[dom.BriefChart, dom.Booking]
@@ -22,7 +22,7 @@ class Booking(Chart):
     """Chart for booking."""
 
     class Meta:
-        table_name = 'chart_booking'
+        table_name = "chart_booking"
 
     rentee = BooleanField(null=True)
     purpose = BooleanField(null=True)
@@ -31,7 +31,7 @@ class Booking(Chart):
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates a booking chart from a JSON-ish dict."""
-        bookables = json.pop('bookables', ())
+        bookables = json.pop("bookables", ())
         transaction = super().from_json(json, **kwargs)
         transaction.primary.update_bookable_mappings(bookables, transaction)
         return transaction
@@ -43,9 +43,7 @@ class Booking(Chart):
         yield BookableMapping.select(cascade=True)
 
     def update_bookable_mappings(
-            self,
-            bookables: Iterable[int],
-            transaction: Transaction
+        self, bookables: Iterable[int], transaction: Transaction
     ) -> None:
         """Updates the bookable objects."""
         if bookables == UNCHANGED:
@@ -62,7 +60,7 @@ class Booking(Chart):
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the bookable chart."""
-        bookables = json.pop('bookables', UNCHANGED)
+        bookables = json.pop("bookables", UNCHANGED)
         transaction = super().patch_json(json, **kwargs)
         self.update_bookable_mappings(bookables, transaction)
         return transaction
@@ -72,9 +70,7 @@ class Booking(Chart):
         json = super().to_json(mode=mode, **kwargs)
 
         if mode == ChartMode.FULL:
-            json['bookables'] = [
-                bmap.bookable_id for bmap in self.bookable_mappings
-            ]
+            json["bookables"] = [bmap.bookable_id for bmap in self.bookable_mappings]
 
         return json
 
@@ -95,14 +91,17 @@ class BookableMapping(DSCMS4Model):
     """Many-to-many mapping of bookables and charts."""
 
     class Meta:
-        table_name = 'chart_booking_bookable_mapping'
+        table_name = "chart_booking_bookable_mapping"
 
     chart = ForeignKeyField(
-        Booking, column_name='chart', backref='bookable_mappings',
-        on_delete='CASCADE', lazy_load=False
+        Booking,
+        column_name="chart",
+        backref="bookable_mappings",
+        on_delete="CASCADE",
+        lazy_load=False,
     )
     bookable = ForeignKeyField(
-        Bookable, column_name='bookable', on_delete='CASCADE', lazy_load=False
+        Bookable, column_name="bookable", on_delete="CASCADE", lazy_load=False
     )
 
     @classmethod

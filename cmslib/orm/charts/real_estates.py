@@ -23,17 +23,17 @@ from cmslib.orm.charts.api import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, Attachment, DSCMS4Model
 
 
-__all__ = ['RealEstates', 'IdFilter', 'ZipCodeFilter']
+__all__ = ["RealEstates", "IdFilter", "ZipCodeFilter"]
 
 
 DomModel = Union[dom.BriefChart, dom.RealEstates]
 
 
 def _update_json_transaction(
-        model: Type[Model],
-        json_list: list[dict],
-        transaction: Transaction,
-        delete: list[Model] = None
+    model: Type[Model],
+    json_list: list[dict],
+    transaction: Transaction,
+    delete: list[Model] = None,
 ) -> None:
     """Adds models for the given JSON data to a transaction."""
 
@@ -52,28 +52,26 @@ def _update_json_transaction(
 class DisplayFormat(Enum):
     """Display formats."""
 
-    BIG_PICTURE = 'big picture'
-    THREE = 'three'
-    FIFTY_FIFTY = 'fifty-fifty'
+    BIG_PICTURE = "big picture"
+    THREE = "three"
+    FIFTY_FIFTY = "fifty-fifty"
 
 
 class IdTypes(Enum):
     """Real estate ID types."""
 
-    INTERN = 'objektnr_intern'
-    EXTERN = 'objektnr_extern'
-    OPENIMMO = 'openimmo_obid'
+    INTERN = "objektnr_intern"
+    EXTERN = "objektnr_extern"
+    OPENIMMO = "openimmo_obid"
 
 
 class RealEstates(Chart):
     """Chart for real estate displaying."""
 
     class Meta:
-        table_name = 'chart_real_estates'
+        table_name = "chart_real_estates"
 
-    display_format = EnumField(
-        DisplayFormat, default=DisplayFormat.BIG_PICTURE
-    )
+    display_format = EnumField(DisplayFormat, default=DisplayFormat.BIG_PICTURE)
     ken_burns = BooleanField(default=False)
     scaling = BooleanField(default=False)
     slideshow = BooleanField(default=True)
@@ -164,7 +162,7 @@ class RealEstates(Chart):
     room = BooleanField(default=True)
     income_property = BooleanField(default=True)
     # Sale type:
-    emphyteusis = BooleanField(default=True)     # Erbpacht.
+    emphyteusis = BooleanField(default=True)  # Erbpacht.
     leasing = BooleanField(default=True)
     rent = BooleanField(default=True)
     sale = BooleanField(default=True)
@@ -172,13 +170,11 @@ class RealEstates(Chart):
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates a new chart from the respective dictionary."""
-        filters = json.pop('filters', {})
-        contacts = json.pop('contacts', ())
+        filters = json.pop("filters", {})
+        contacts = json.pop("contacts", ())
         transaction = super().from_json(json, **kwargs)
-        _update_json_transaction(IdFilter, filters.get('id'), transaction)
-        _update_json_transaction(
-            ZipCodeFilter, filters.get('zipCode'), transaction
-        )
+        _update_json_transaction(IdFilter, filters.get("id"), transaction)
+        _update_json_transaction(ZipCodeFilter, filters.get("zipCode"), transaction)
         _update_json_transaction(Contact, contacts, transaction)
         return transaction
 
@@ -195,20 +191,21 @@ class RealEstates(Chart):
     @property
     def real_estates(self) -> Iterable[Immobilie]:
         """Yields filtered real estates for this chart."""
-        return self.filter(Immobilie.select(cascade=True).where(
-            Immobilie.customer == self.customer))
+        return self.filter(
+            Immobilie.select(cascade=True).where(Immobilie.customer == self.customer)
+        )
 
     @property
     def filters_dictionary(self) -> dict[str, list[dict]]:
         """Dictionary of filters."""
         filters = defaultdict(list)
-        skip = ('id', 'chart')
+        skip = ("id", "chart")
 
         for fltr in self.id_filters:
-            filters['id'].append(fltr.to_json(skip=skip))
+            filters["id"].append(fltr.to_json(skip=skip))
 
         for fltr in self.zip_code_filters:
-            filters['zipCode'].append(fltr.to_json(skip=skip))
+            filters["zipCode"].append(fltr.to_json(skip=skip))
 
         return filters
 
@@ -227,30 +224,35 @@ class RealEstates(Chart):
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Creates a new chart from the respective dictionary."""
-        filters = json.pop('filters', {})
-        contacts = json.pop('contacts', UNCHANGED)
+        filters = json.pop("filters", {})
+        contacts = json.pop("contacts", UNCHANGED)
         transaction = super().patch_json(json, **kwargs)
 
         try:
-            id_filters = filters['id']
+            id_filters = filters["id"]
         except KeyError:
             pass
         else:
             _update_json_transaction(
-                IdFilter, id_filters, transaction, delete=self.id_filters)
+                IdFilter, id_filters, transaction, delete=self.id_filters
+            )
 
         try:
-            zip_code_filters = filters['zipCode']
+            zip_code_filters = filters["zipCode"]
         except KeyError:
             pass
         else:
             _update_json_transaction(
-                ZipCodeFilter, zip_code_filters, transaction,
-                delete=self.zip_code_filters)
+                ZipCodeFilter,
+                zip_code_filters,
+                transaction,
+                delete=self.zip_code_filters,
+            )
 
         if contacts is not UNCHANGED:
             _update_json_transaction(
-                Contact, contacts, transaction, delete=self.contacts)
+                Contact, contacts, transaction, delete=self.contacts
+            )
 
         return transaction
 
@@ -289,8 +291,8 @@ class RealEstates(Chart):
         json = super().to_json(mode=mode, **kwargs)
 
         if mode == ChartMode.FULL:
-            json['filters'] = self.filters_dictionary
-            json['contacts'] = [
+            json["filters"] = self.filters_dictionary
+            json["contacts"] = [
                 contact.to_json(fk_fields=False, autofields=False)
                 for contact in self.contacts
             ]
@@ -399,9 +401,7 @@ class RealEstates(Chart):
         xml.rent = self.rent
         xml.sale = self.sale
         xml.filter = [
-            filter.to_dom() for filter in chain(
-                self.id_filters, self.zip_code_filters
-            )
+            filter.to_dom() for filter in chain(self.id_filters, self.zip_code_filters)
         ]
         xml.contact = [contact.to_dom() for contact in self.contacts]
         return xml
@@ -411,11 +411,14 @@ class IdFilter(DSCMS4Model):
     """Filter for the object IDs."""
 
     class Meta:
-        table_name = 'filter_id'
+        table_name = "filter_id"
 
     chart = ForeignKeyField(
-        RealEstates, column_name='chart', backref='id_filters',
-        on_delete='CASCADE', lazy_load=False
+        RealEstates,
+        column_name="chart",
+        backref="id_filters",
+        on_delete="CASCADE",
+        lazy_load=False,
     )
     value = HTMLCharField(255)
     type = EnumField(IdTypes)
@@ -431,7 +434,7 @@ class IdFilter(DSCMS4Model):
         if self.type == IdTypes.OPENIMMO:
             return self.value == real_estate.openimmo_obid
 
-        raise ValueError('Unexpected ID type.')
+        raise ValueError("Unexpected ID type.")
 
     @classmethod
     def from_json(cls, json: dict, chart: RealEstates) -> IdFilter:
@@ -454,11 +457,14 @@ class ZipCodeFilter(DSCMS4Model):
     """Filter for real estate ZIP codes."""
 
     class Meta:
-        table_name = 'filter_zip_code'
+        table_name = "filter_zip_code"
 
     chart = ForeignKeyField(
-        RealEstates, column_name='chart', backref='zip_code_filters',
-        on_delete='CASCADE', lazy_load=False
+        RealEstates,
+        column_name="chart",
+        backref="zip_code_filters",
+        on_delete="CASCADE",
+        lazy_load=False,
     )
     zip_code = HTMLCharField(255)
     # True: blacklist, False: whitelist.
@@ -500,18 +506,21 @@ class Contact(Attachment):
     """Represents a real estate contact."""
 
     class Meta:
-        table_name = 'real_estate_contact'
+        table_name = "real_estate_contact"
 
     chart = ForeignKeyField(
-        RealEstates, column_name='chart', backref='contacts',
-        on_delete='CASCADE', lazy_load=False
+        RealEstates,
+        column_name="chart",
+        backref="contacts",
+        on_delete="CASCADE",
+        lazy_load=False,
     )
     name = HTMLCharField(255)
 
     @classmethod
     def from_json(cls, json: dict, chart: RealEstates) -> Contact:
         """Creates a new record from the respective dictionary."""
-        file = json.pop('file')
+        file = json.pop("file")
         record = super().from_json(json)
         record.chart = chart
         record.file = get_file(file)

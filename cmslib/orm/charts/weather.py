@@ -13,7 +13,7 @@ from cmslib.orm.charts.api import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, Attachment
 
 
-__all__ = ['Weather', 'Image']
+__all__ = ["Weather", "Image"]
 
 
 DomModel = Union[dom.BriefChart, dom.Weather]
@@ -23,7 +23,7 @@ class Weather(Chart):
     """Weather data."""
 
     class Meta:
-        table_name = 'chart_weather'
+        table_name = "chart_weather"
 
     location = HTMLCharField(255)
     font_color = IntegerField()
@@ -40,7 +40,7 @@ class Weather(Chart):
         """
         # Pop images and texts first to exclude them from the
         # dictionary before invoking super().from_json().
-        images = json.pop('images', ())
+        images = json.pop("images", ())
         transaction = super().from_json(json, **kwargs)
 
         for image in images:
@@ -63,7 +63,7 @@ class Weather(Chart):
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the respective chart."""
-        images = json.pop('images', UNCHANGED) or ()
+        images = json.pop("images", UNCHANGED) or ()
         transaction = super().patch_json(json, **kwargs)
 
         if images is not UNCHANGED:
@@ -82,7 +82,7 @@ class Weather(Chart):
         json = super().to_json(mode=mode, **kwargs)
 
         if mode == ChartMode.FULL:
-            json['images'] = [
+            json["images"] = [
                 image.to_json(fk_fields=False, autofields=False)
                 for image in self.images
             ]
@@ -110,11 +110,14 @@ class Image(Attachment):
     """Image for an ImageTextChart."""
 
     class Meta:
-        table_name = 'chart_weather_image'
+        table_name = "chart_weather_image"
 
     chart = ForeignKeyField(
-        Weather, column_name='chart', backref='images', on_delete='CASCADE',
-        lazy_load=False
+        Weather,
+        column_name="chart",
+        backref="images",
+        on_delete="CASCADE",
+        lazy_load=False,
     )
 
     def to_json(self, *args, **kwargs) -> dict:

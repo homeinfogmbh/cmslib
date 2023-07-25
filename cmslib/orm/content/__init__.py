@@ -14,13 +14,13 @@ from cmslib.orm.content.group import GroupMenu
 
 
 __all__ = [
-    'MODELS',
-    'DeploymentBaseChart',
-    'DeploymentConfiguration',
-    'DeploymentMenu',
-    'GroupBaseChart',
-    'GroupConfiguration',
-    'GroupMenu'
+    "MODELS",
+    "DeploymentBaseChart",
+    "DeploymentConfiguration",
+    "DeploymentMenu",
+    "GroupBaseChart",
+    "GroupConfiguration",
+    "GroupMenu",
 ]
 
 

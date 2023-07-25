@@ -21,11 +21,11 @@ from cmslib.orm.common import UNCHANGED, CustomerModel, DSCMS4Model
 from cmslib.orm.charts import BaseChart, Chart
 
 
-__all__ = ['MODELS', 'Menu', 'MenuItem', 'MenuItemChart', 'MenuItemGroup']
+__all__ = ["MODELS", "Menu", "MenuItem", "MenuItemChart", "MenuItemGroup"]
 
 
 LOGGER = getLogger(__file__)
-SUFFIX = ' (Kopie)'
+SUFFIX = " (Kopie)"
 
 
 class Menu(CustomerModel):
@@ -49,10 +49,7 @@ class Menu(CustomerModel):
     @property
     def files(self) -> set[File]:
         """Returns a set of IDs of files used by the chart."""
-        return {
-            item.icon_image for item in self.items
-            if item.icon_image is not None
-        }
+        return {item.icon_image for item in self.items if item.icon_image is not None}
 
     def copy(self, suffix: str = SUFFIX) -> Iterator[Union[Menu, MenuItem]]:
         """Copies the respective menu."""
@@ -65,19 +62,21 @@ class Menu(CustomerModel):
             yield from root_item.copy(menu=copy)
 
     def to_json(
-            self,
-            menu_items: Iterable[MenuItem] = None,
-            menu_item_charts: Iterable[MenuItemChart] = None,
-            **kwargs
+        self,
+        menu_items: Iterable[MenuItem] = None,
+        menu_item_charts: Iterable[MenuItemChart] = None,
+        **kwargs,
     ) -> dict:
         """Returns the menu as a dictionary."""
         json = super().to_json(**kwargs)
 
         if menu_items:
-            json['items'] = [
+            json["items"] = [
                 menu_item.to_json(
-                    menu_items=menu_items, menu_item_charts=menu_item_charts,
-                    fk_fields=False)
+                    menu_items=menu_items,
+                    menu_item_charts=menu_item_charts,
+                    fk_fields=False,
+                )
                 for menu_item in menu_items
                 if menu_item.menu_id == self.id and menu_item.parent is None
             ]
@@ -89,36 +88,39 @@ class MenuItem(DSCMS4Model):
     """A menu item."""
 
     class Meta:
-        table_name = 'menu_item'
+        table_name = "menu_item"
 
     menu = ForeignKeyField(
-        Menu, column_name='menu', on_delete='CASCADE', backref='items',
-        lazy_load=False
+        Menu, column_name="menu", on_delete="CASCADE", backref="items", lazy_load=False
     )
     parent = ForeignKeyField(
-        'self', column_name='parent', null=True, on_delete='CASCADE',
-        backref='_children', lazy_load=True
+        "self",
+        column_name="parent",
+        null=True,
+        on_delete="CASCADE",
+        backref="_children",
+        lazy_load=True,
     )
     name = HTMLCharField(255)
     icon = HTMLCharField(255, null=True)
     icon_image = ForeignKeyField(
-        File, column_name='icon_image', null=True, lazy_load=False
+        File, column_name="icon_image", null=True, lazy_load=False
     )
     text_color = IntegerField(default=0x000000)
-    background_color = IntegerField(default=0xffffff)
+    background_color = IntegerField(default=0xFFFFFF)
     index = IntegerField(default=0)
 
     @classmethod
     def from_json(
-            cls,
-            json: dict,
-            customer: Union[int],
-            menu: Union[Menu, int],
-            parent: Union[MenuItem, int],
-            **kwargs
+        cls,
+        json: dict,
+        customer: Union[int],
+        menu: Union[Menu, int],
+        parent: Union[MenuItem, int],
+        **kwargs,
     ) -> Union[MenuItem, MenuItemGroup]:
         """Creates a new menu item from the provided dictionary."""
-        icon_image = json.pop('iconImage', None)
+        icon_image = json.pop("iconImage", None)
         menu_item = super().from_json(json, **kwargs)
         menu_item.customer = customer
 
@@ -133,13 +135,18 @@ class MenuItem(DSCMS4Model):
         if not cascade:
             return super().select(*args)
 
-        return super().select(cls, Menu, Customer, Company, *args).join_from(
-            cls, Menu).join(Customer).join(Company)
+        return (
+            super()
+            .select(cls, Menu, Customer, Company, *args)
+            .join_from(cls, Menu)
+            .join(Customer)
+            .join(Company)
+        )
 
     @property
     def children(self) -> Select:
         """Returns the children."""
-        if self.id is None:     # Prevent cascading over all menu items.
+        if self.id is None:  # Prevent cascading over all menu items.
             return type(self).select().where(False)
 
         return self._children.order_by(type(self).index)
@@ -161,9 +168,9 @@ class MenuItem(DSCMS4Model):
             try:
                 yield base_chart.chart
             except OrphanedBaseChart:
-                LOGGER.error('Base chart #%i is orphaned.', base_chart.id)
+                LOGGER.error("Base chart #%i is orphaned.", base_chart.id)
             except AmbiguousBaseChart:
-                LOGGER.error('Base chart #%i is ambiguous.', base_chart.id)
+                LOGGER.error("Base chart #%i is ambiguous.", base_chart.id)
 
     def _get_menu(self, menu: int, customer: int = None) -> Menu:
         """Returns the respective menu."""
@@ -190,13 +197,15 @@ class MenuItem(DSCMS4Model):
             customer = self.menu.customer
 
         cls = type(self)
-        return cls.select().join(Menu).where(
-            (Menu.customer == customer) & (cls.id == parent)).get()
+        return (
+            cls.select()
+            .join(Menu)
+            .where((Menu.customer == customer) & (cls.id == parent))
+            .get()
+        )
 
     def move(
-            self, *,
-            menu: Menu = UNCHANGED,
-            parent: MenuItem = UNCHANGED
+        self, *, menu: Menu = UNCHANGED, parent: MenuItem = UNCHANGED
     ) -> Union[MenuItem, MenuItemGroup]:
         """Moves the menu item to another menu and / or parent."""
         if parent is not UNCHANGED:
@@ -220,9 +229,7 @@ class MenuItem(DSCMS4Model):
         return menu_items
 
     def copy(
-            self,
-            menu: Optional[Menu] = None,
-            parent: Optional[MenuItem] = None
+        self, menu: Optional[Menu] = None, parent: Optional[MenuItem] = None
     ) -> Iterator[Union[MenuItem, MenuItemChart]]:
         """Copies this menu item."""
         copy = type(self)[self.id]
@@ -246,14 +253,10 @@ class MenuItem(DSCMS4Model):
         return super().delete_instance(**kwargs)
 
     def patch_json(
-            self,
-            json: dict,
-            menu: Union[Menu, int],
-            parent: Union[MenuItem, int],
-            **kwargs
+        self, json: dict, menu: Union[Menu, int], parent: Union[MenuItem, int], **kwargs
     ) -> Union[MenuItem, MenuItemGroup]:
         """Patches the menu item."""
-        icon_image = json.pop('iconImage', UNCHANGED)
+        icon_image = json.pop("iconImage", UNCHANGED)
         super().patch_json(json, **kwargs)
 
         if icon_image is None:
@@ -264,17 +267,18 @@ class MenuItem(DSCMS4Model):
         return self.move(menu=menu, parent=parent)
 
     def to_json(
-            self,
-            menu_items: Iterable[MenuItem] = None,
-            menu_item_charts: Iterable[MenuItemChart] = None,
-            trashed: bool = False, **kwargs
+        self,
+        menu_items: Iterable[MenuItem] = None,
+        menu_item_charts: Iterable[MenuItemChart] = None,
+        trashed: bool = False,
+        **kwargs,
     ) -> dict:
         """Returns a JSON-ish dictionary."""
         json = super().to_json(**kwargs)
-        json['iconImage'] = attachment_json(self.icon_image)
+        json["iconImage"] = attachment_json(self.icon_image)
 
         if menu_item_charts:
-            json['charts'] = [
+            json["charts"] = [
                 menu_item_chart.to_json(menu_item=False, base_chart=True)
                 for menu_item_chart in menu_item_charts
                 if menu_item_chart.menu_item_id == self.id
@@ -282,10 +286,10 @@ class MenuItem(DSCMS4Model):
             ]
 
         if menu_items:
-            json['items'] = [
+            json["items"] = [
                 menu_item.to_json(
-                    menu_items=menu_items, menu_item_charts=menu_item_charts,
-                    **kwargs)
+                    menu_items=menu_items, menu_item_charts=menu_item_charts, **kwargs
+                )
                 for menu_item in menu_items
                 if menu_item.parent_id == self.id
             ]
@@ -297,25 +301,23 @@ class MenuItemChart(DSCMS4Model):
     """Mapping in-between menu items and base charts."""
 
     class Meta:
-        table_name = 'menu_item_chart'
+        table_name = "menu_item_chart"
 
     menu_item = ForeignKeyField(
-        MenuItem, column_name='menu_item', backref='menu_item_charts',
-        on_delete='CASCADE', lazy_load=False
+        MenuItem,
+        column_name="menu_item",
+        backref="menu_item_charts",
+        on_delete="CASCADE",
+        lazy_load=False,
     )
     base_chart = ForeignKeyField(
-        BaseChart, column_name='base_chart', on_delete='CASCADE',
-        lazy_load=False
+        BaseChart, column_name="base_chart", on_delete="CASCADE", lazy_load=False
     )
     index = IntegerField(default=0)
 
     @classmethod
     def from_json(
-            cls,
-            json: dict,
-            menu_item: MenuItem,
-            base_chart: BaseChart,
-            **kwargs
+        cls, json: dict, menu_item: MenuItem, base_chart: BaseChart, **kwargs
     ) -> MenuItemChart:
         """Creates a record from a JSON-ish dictionary."""
         menu_item_chart = super().from_json(json, **kwargs)
@@ -329,10 +331,15 @@ class MenuItemChart(DSCMS4Model):
         if not cascade:
             return super().select(*args)
 
-        return super().select(
-            cls, MenuItem, Menu, Customer, Company, BaseChart, *args
-        ).join_from(cls, MenuItem).join(Menu).join(Customer).join(
-            Company).join_from(cls, BaseChart)
+        return (
+            super()
+            .select(cls, MenuItem, Menu, Customer, Company, BaseChart, *args)
+            .join_from(cls, MenuItem)
+            .join(Menu)
+            .join(Customer)
+            .join(Company)
+            .join_from(cls, BaseChart)
+        )
 
     def copy(self, menu_item: MenuItem = None) -> MenuItemChart:
         """Copies this menu item chart."""
@@ -349,10 +356,10 @@ class MenuItemChart(DSCMS4Model):
         skip = set()
 
         if not menu_item:
-            skip.add('menuItem')
+            skip.add("menuItem")
 
         if not base_chart:
-            skip.add('baseChart')
+            skip.add("baseChart")
 
         return super().to_json(skip=skip)
 

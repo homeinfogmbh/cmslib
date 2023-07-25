@@ -13,7 +13,7 @@ from cmslib.attachments import attachment_dom, attachment_json
 from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
 
 
-__all__ = ['MenuTreeItem']
+__all__ = ["MenuTreeItem"]
 
 
 def merge(children: Iterable[MenuTreeItem]) -> list[MenuTreeItem]:
@@ -52,7 +52,7 @@ class MenuTreeItem(NamedTuple):
     def __add__(self, other: MenuTreeItem) -> MenuTreeItem:
         """Adds two menu tree items."""
         if self.signature != other.signature:
-            raise ValueError('Can only add menu items with same signature.')
+            raise ValueError("Can only add menu items with same signature.")
 
         children = merge(chain(self.children, other.children))
         base_charts = set()
@@ -64,8 +64,14 @@ class MenuTreeItem(NamedTuple):
                 menu_item_charts.add(mic)
 
         return MenuTreeItem(
-            self.name, self.icon, self.icon_image, self.text_color,
-            self.background_color, self.index, menu_item_charts, children
+            self.name,
+            self.icon,
+            self.icon_image,
+            self.text_color,
+            self.background_color,
+            self.index,
+            menu_item_charts,
+            children,
         )
 
     def __radd__(self, other: Union[MenuTreeItem, int]):
@@ -77,30 +83,35 @@ class MenuTreeItem(NamedTuple):
 
     @classmethod
     def from_menu_item(
-            cls,
-            menu_item: MenuItem,
-            menu_items: Iterable[MenuItem],
-            menu_item_charts: Iterable[MenuItemChart]
+        cls,
+        menu_item: MenuItem,
+        menu_items: Iterable[MenuItem],
+        menu_item_charts: Iterable[MenuItemChart],
     ) -> MenuTreeItem:
         """Creates a menu item tree from the given menu item."""
         children = [
-            cls.from_menu_item(child, menu_items, menu_item_charts) for child
-            in filter(lambda item: item.parent_id == menu_item.id, menu_items)
+            cls.from_menu_item(child, menu_items, menu_item_charts)
+            for child in filter(lambda item: item.parent_id == menu_item.id, menu_items)
         ]
         menu_item_charts = [
-            menu_item_chart for menu_item_chart in menu_item_charts
+            menu_item_chart
+            for menu_item_chart in menu_item_charts
             if menu_item_chart.menu_item_id == menu_item.id
         ]
         return cls(
-            menu_item.name, menu_item.icon, menu_item.icon_image,
-            menu_item.text_color, menu_item.background_color, menu_item.index,
-            menu_item_charts, children)
+            menu_item.name,
+            menu_item.icon,
+            menu_item.icon_image,
+            menu_item.text_color,
+            menu_item.background_color,
+            menu_item.index,
+            menu_item_charts,
+            children,
+        )
 
     @classmethod
     def from_menu_items(
-            cls,
-            menu_items: Iterable[MenuItem],
-            menu_item_charts: Iterable[MenuItemChart]
+        cls, menu_items: Iterable[MenuItem], menu_item_charts: Iterable[MenuItemChart]
     ) -> Iterator[MenuTreeItem]:
         """Yields menu tree items from the respective menu."""
         for root_item in filter(lambda item: item.parent is None, menu_items):
@@ -114,8 +125,9 @@ class MenuTreeItem(NamedTuple):
         trees = [
             cls.from_menu_items(
                 {item for item in menu_items if item.menu_id == menu_id},
-                menu_item_charts
-            ) for menu_id in menu_ids
+                menu_item_charts,
+            )
+            for menu_id in menu_ids
         ]
         return sorted(merge(chain(*trees)), key=get_index)
 
@@ -132,23 +144,20 @@ class MenuTreeItem(NamedTuple):
     def to_json(self) -> dict:
         """Returns a nested JSON-ish dict."""
         return {
-            'name': self.name,
-            'icon': self.icon,
-            'iconImage': attachment_json(self.icon_image),
-            'textColor': self.text_color,
-            'backgroundColor': self.background_color,
-            'index': self.index,
-            'charts': [
+            "name": self.name,
+            "icon": self.icon,
+            "iconImage": attachment_json(self.icon_image),
+            "textColor": self.text_color,
+            "backgroundColor": self.background_color,
+            "index": self.index,
+            "charts": [
                 menu_item_chart.to_json(menu_item=False, base_chart=True)
-                for menu_item_chart in sorted(
-                    self.menu_item_charts, key=get_index
-                )
+                for menu_item_chart in sorted(self.menu_item_charts, key=get_index)
                 if not menu_item_chart.base_chart.trashed
             ],
-            'menuItems': [
-                child.to_json() for child in sorted(
-                    self.children, key=get_index)
-            ]
+            "menuItems": [
+                child.to_json() for child in sorted(self.children, key=get_index)
+            ],
         }
 
     def to_dom(self) -> dom.MenuItem:
@@ -162,8 +171,8 @@ class MenuTreeItem(NamedTuple):
         xml.index = self.index
         xml.menu_item = [item.to_dom() for item in self.children]
         xml.chart = [
-            menu_item_chart.to_dom() for menu_item_chart
-            in sorted(self.menu_item_charts, key=get_index)
+            menu_item_chart.to_dom()
+            for menu_item_chart in sorted(self.menu_item_charts, key=get_index)
             if not menu_item_chart.base_chart.trashed
         ]
         return xml

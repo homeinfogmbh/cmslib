@@ -9,7 +9,7 @@ from hisfs import File
 from cmslib.dom import Attachment
 
 
-__all__ = ['attachment_dom', 'attachment_json']
+__all__ = ["attachment_dom", "attachment_json"]
 
 
 def ensure_file(file: Union[File, int]) -> File:
@@ -18,15 +18,14 @@ def ensure_file(file: Union[File, int]) -> File:
     if isinstance(file, File) and isinstance(file.file, FileDBFile):
         return file
 
-    getLogger('attachments').warning('Selecting attachment from database.')
-    return File.select(File, FileDBFile).join(FileDBFile).where(
-        File.id == file).get()
+    getLogger("attachments").warning("Selecting attachment from database.")
+    return File.select(File, FileDBFile).join(FileDBFile).where(File.id == file).get()
 
 
 def attachment_dom(
-        file: Optional[Union[File, int]],
-        format: Optional[str] = None,
-        index: Optional[int] = None
+    file: Optional[Union[File, int]],
+    format: Optional[str] = None,
+    index: Optional[int] = None,
 ) -> Optional[Attachment]:
     """Returns an attachment for the respective file ID."""
 

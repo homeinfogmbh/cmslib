@@ -14,7 +14,7 @@ from cmslib.orm.charts.api import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED
 
 
-__all__ = ['Video']
+__all__ = ["Video"]
 
 
 DomModel = Union[dom.BriefChart, dom.Video]
@@ -24,16 +24,14 @@ class Video(Chart):
     """A chart that may contain images and texts."""
 
     class Meta:
-        table_name = 'chart_video'
+        table_name = "chart_video"
 
-    file = ForeignKeyField(
-        File, column_name='file', null=True, lazy_load=False
-    )
+    file = ForeignKeyField(File, column_name="file", null=True, lazy_load=False)
 
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates a new video chart from a JSON-ish dict."""
-        file = json.pop('file', None)
+        file = json.pop("file", None)
         transaction = super().from_json(json)
         chart = transaction.primary
 
@@ -48,12 +46,11 @@ class Video(Chart):
         if not cascade:
             return super().select(*args)
 
-        return super().select(
-            *args, File, *META_FIELDS, cascade=True
-        ).join_from(
-            cls, File, on=cls.file == File.id, join_type=JOIN.LEFT_OUTER).join(
-            FileDBFile, on=File.file == FileDBFile.id,
-            join_type=JOIN.LEFT_OUTER
+        return (
+            super()
+            .select(*args, File, *META_FIELDS, cascade=True)
+            .join_from(cls, File, on=cls.file == File.id, join_type=JOIN.LEFT_OUTER)
+            .join(FileDBFile, on=File.file == FileDBFile.id, join_type=JOIN.LEFT_OUTER)
         )
 
     @property
@@ -63,7 +60,7 @@ class Video(Chart):
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches a video chart."""
-        file = json.pop('file', UNCHANGED)
+        file = json.pop("file", UNCHANGED)
         transaction = super().patch_json(json)
 
         if file is not UNCHANGED:
@@ -76,7 +73,7 @@ class Video(Chart):
         json = super().to_json(mode=mode, **kwargs)
 
         if mode == ChartMode.FULL:
-            json['file'] = attachment_json(self.file)
+            json["file"] = attachment_json(self.file)
 
         return json
 

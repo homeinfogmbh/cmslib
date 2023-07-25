@@ -8,7 +8,7 @@ from cmslib import dom
 from cmslib.orm.charts.api import Chart
 
 
-__all__ = ['SoccerTable']
+__all__ = ["SoccerTable"]
 
 
 DomModel = Union[dom.BriefChart, dom.SoccerTable]
@@ -18,7 +18,7 @@ class SoccerTable(Chart):
     """Chart to display news."""
 
     class Meta:
-        table_name = 'chart_soccer_table'
+        table_name = "chart_soccer_table"
 
     font_size_title = SmallIntegerField(default=8)
     title_color = IntegerField(default=0x000000)

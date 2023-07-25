@@ -20,36 +20,37 @@ from cmslib.orm.menu import Menu
 
 
 __all__ = [
-    'get_deployment_base_charts',
-    'get_deployment_base_chart',
-    'get_deployment_configurations',
-    'get_deployment_configuration',
-    'get_deployment_menus',
-    'get_deployment_menu',
-    'get_group_base_charts',
-    'get_group_base_chart',
-    'get_group_configurations',
-    'get_group_configuration',
-    'get_group_menus',
-    'get_group_menu'
+    "get_deployment_base_charts",
+    "get_deployment_base_chart",
+    "get_deployment_configurations",
+    "get_deployment_configuration",
+    "get_deployment_menus",
+    "get_deployment_menu",
+    "get_group_base_charts",
+    "get_group_base_chart",
+    "get_group_configurations",
+    "get_group_configuration",
+    "get_group_menus",
+    "get_group_menu",
 ]
 
 
 def get_deployment_base_chart(
-        ident: int,
-        customer: Union[Customer, int]
+    ident: int, customer: Union[Customer, int]
 ) -> DeploymentBaseChart:
     """Returns the respective deployment base chart of the given customer."""
 
-    return get_deployment_base_charts(customer).where(
-        DeploymentBaseChart.id == ident
-    ).get()
+    return (
+        get_deployment_base_charts(customer)
+        .where(DeploymentBaseChart.id == ident)
+        .get()
+    )
 
 
 def get_deployment_base_charts(
-        customer: Union[Customer, int],
-        deployment: Optional[Union[Deployment, int]] = None,
-        trashed: Union[Expression, bool] = True
+    customer: Union[Customer, int],
+    deployment: Optional[Union[Deployment, int]] = None,
+    trashed: Union[Expression, bool] = True,
 ) -> Select:
     """Selects deployment base charts of the given customer.
 
@@ -65,21 +66,21 @@ def get_deployment_base_charts(
 
 
 def get_deployment_configuration(
-        ident: int,
-        customer: Union[Customer, int]
+    ident: int, customer: Union[Customer, int]
 ) -> DeploymentConfiguration:
     """Returns the respective deployment
     configuration for the given customer.
     """
 
-    return get_deployment_configurations(customer).where(
-        DeploymentConfiguration.id == ident
-    ).get()
+    return (
+        get_deployment_configurations(customer)
+        .where(DeploymentConfiguration.id == ident)
+        .get()
+    )
 
 
 def get_deployment_configurations(
-        customer: Union[Customer, int],
-        deployment: Optional[Union[Deployment, int]] = None
+    customer: Union[Customer, int], deployment: Optional[Union[Deployment, int]] = None
 ) -> Select:
     """Selects deployment configurations of the given customer."""
 
@@ -91,20 +92,14 @@ def get_deployment_configurations(
     return DeploymentConfiguration.select(cascade=True).where(condition)
 
 
-def get_deployment_menu(
-        ident: int,
-        customer: Union[Customer, int]
-) -> DeploymentMenu:
+def get_deployment_menu(ident: int, customer: Union[Customer, int]) -> DeploymentMenu:
     """Returns the respective deployment menu of the given customer."""
 
-    return get_deployment_menus(customer).where(
-        DeploymentMenu.id == ident
-    ).get()
+    return get_deployment_menus(customer).where(DeploymentMenu.id == ident).get()
 
 
 def get_deployment_menus(
-        customer: Union[Customer, int],
-        deployment: Optional[Union[Deployment, int]] = None
+    customer: Union[Customer, int], deployment: Optional[Union[Deployment, int]] = None
 ) -> Select:
     """Selects deployment menus of the given customer."""
 
@@ -116,21 +111,16 @@ def get_deployment_menus(
     return DeploymentMenu.select(cascade=True).where(condition)
 
 
-def get_group_base_chart(
-        ident: int,
-        customer: Union[Customer, int]
-) -> GroupBaseChart:
+def get_group_base_chart(ident: int, customer: Union[Customer, int]) -> GroupBaseChart:
     """Returns the respective group base chart of the given customer."""
 
-    return get_group_base_charts(customer).where(
-        GroupBaseChart.id == ident
-    ).get()
+    return get_group_base_charts(customer).where(GroupBaseChart.id == ident).get()
 
 
 def get_group_base_charts(
-        customer: Union[Customer, int],
-        group: Optional[Union[Group, int]] = None,
-        trashed: Union[Expression, bool] = True
+    customer: Union[Customer, int],
+    group: Optional[Union[Group, int]] = None,
+    trashed: Union[Expression, bool] = True,
 ) -> Select:
     """Selects deployment base charts of the given customer.
 
@@ -146,19 +136,17 @@ def get_group_base_charts(
 
 
 def get_group_configuration(
-        ident: int,
-        customer: Union[Customer, int]
+    ident: int, customer: Union[Customer, int]
 ) -> GroupConfiguration:
     """Returns the respective group configuration of the given customer."""
 
-    return get_group_configurations(customer).where(
-        GroupConfiguration.id == ident
-    ).get()
+    return (
+        get_group_configurations(customer).where(GroupConfiguration.id == ident).get()
+    )
 
 
 def get_group_configurations(
-        customer: Union[Customer, int],
-        group: Optional[Union[Group, int]] = None
+    customer: Union[Customer, int], group: Optional[Union[Group, int]] = None
 ) -> Select:
     """Selects deployment configurations of the given customer."""
 
@@ -177,8 +165,7 @@ def get_group_menu(ident: int, customer: Union[Customer, int]) -> GroupMenu:
 
 
 def get_group_menus(
-        customer: Union[Customer, int],
-        group: Optional[Union[Group, int]] = None
+    customer: Union[Customer, int], group: Optional[Union[Group, int]] = None
 ) -> Select:
     """Selects deployment menus of the given customer."""
 

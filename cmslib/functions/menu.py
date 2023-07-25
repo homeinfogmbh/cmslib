@@ -10,12 +10,12 @@ from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
 
 
 __all__ = [
-    'get_menu',
-    'get_menus',
-    'get_menu_item',
-    'get_menu_items',
-    'get_menu_item_chart',
-    'get_menu_item_charts'
+    "get_menu",
+    "get_menus",
+    "get_menu_item",
+    "get_menu_items",
+    "get_menu_item_chart",
+    "get_menu_item_charts",
 ]
 
 
@@ -38,10 +38,10 @@ def get_menu_item(ident: int, customer: Union[Customer, int]) -> MenuItem:
 
 
 def get_menu_items(
-        customer: Union[Customer, int],
-        *,
-        menu: Optional[Union[Menu, int]] = None,
-        ids: Optional[Iterable[int]] = None
+    customer: Union[Customer, int],
+    *,
+    menu: Optional[Union[Menu, int]] = None,
+    ids: Optional[Iterable[int]] = None
 ) -> Select:
     """Lists the menu items of the given customer."""
 
@@ -56,20 +56,14 @@ def get_menu_items(
     return MenuItem.select(cascade=True).where(condition)
 
 
-def get_menu_item_chart(
-        ident: int,
-        customer: Union[Customer, int]
-) -> MenuItemChart:
+def get_menu_item_chart(ident: int, customer: Union[Customer, int]) -> MenuItemChart:
     """Returns the respective menu item chart of the given customer."""
 
-    return get_menu_item_charts(customer).where(
-        MenuItemChart.id == ident
-    ).get()
+    return get_menu_item_charts(customer).where(MenuItemChart.id == ident).get()
 
 
 def get_menu_item_charts(
-        customer: Union[Customer, int],
-        menu: Optional[Union[Menu, int]] = None
+    customer: Union[Customer, int], menu: Optional[Union[Menu, int]] = None
 ) -> Select:
     """Selects the menu item charts of the given customer."""
 

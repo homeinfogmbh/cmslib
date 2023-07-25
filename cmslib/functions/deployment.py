@@ -17,7 +17,7 @@ from cmslib.orm.content.deployment import DeploymentMenu
 from cmslib.orm.menu import Menu
 
 
-__all__ = ['get_deployment', 'get_deployments', 'with_deployment']
+__all__ = ["get_deployment", "get_deployments", "with_deployment"]
 
 
 class AssocDeployment(NamedTuple):
@@ -35,23 +35,27 @@ class AssocDeployment(NamedTuple):
     def to_json(self, **kwargs) -> dict[str, Any]:
         """Returns a JSON-ish dict."""
         deployment = self.deployment.to_json(address=True, **kwargs)
-        deployment['systems'] = self.systems_map.get(self.deployment.id, [])
+        deployment["systems"] = self.systems_map.get(self.deployment.id, [])
         return {
-            'deployment': deployment,
-            'content': {
-                'charts': [
-                    dbc.to_json() for dbc in
-                    self.deployment_base_charts.get(self.deployment.id, [])
+            "deployment": deployment,
+            "content": {
+                "charts": [
+                    dbc.to_json()
+                    for dbc in self.deployment_base_charts.get(self.deployment.id, [])
                 ],
-                'configurations': [
-                    dep_conf.to_json() for dep_conf in
-                    self.deployment_configurations.get(self.deployment.id, [])
+                "configurations": [
+                    dep_conf.to_json()
+                    for dep_conf in self.deployment_configurations.get(
+                        self.deployment.id, []
+                    )
                 ],
-                'menus': [
-                    deployment_menu.to_json() for deployment_menu in
-                    self.deployment_menus.get(self.deployment.id, [])
-                ]
-            }
+                "menus": [
+                    deployment_menu.to_json()
+                    for deployment_menu in self.deployment_menus.get(
+                        self.deployment.id, []
+                    )
+                ],
+            },
         }
 
 
@@ -59,9 +63,7 @@ class AssocDeployments:
     """Deployments with associated data."""
 
     def __init__(
-            self,
-            deployments: Iterable[Deployment],
-            trashed: Union[Expression, bool] = True
+        self, deployments: Iterable[Deployment], trashed: Union[Expression, bool] = True
     ):
         """Sets the deployments and trashed expression for charts."""
         self.deployments = deployments
@@ -79,7 +81,7 @@ class AssocDeployments:
                 deployment_base_charts_map,
                 deployment_configurations_map,
                 deployment_menus_map,
-                systems_map
+                systems_map,
             )
 
     @property
@@ -90,8 +92,10 @@ class AssocDeployments:
     @property
     def deployment_base_charts(self) -> Select:
         """Selects deployment base charts for the respective deployments."""
-        return DeploymentBaseChart.select().join(BaseChart).where(
-            (DeploymentBaseChart.deployment << self.ids) & self.trashed
+        return (
+            DeploymentBaseChart.select()
+            .join(BaseChart)
+            .where((DeploymentBaseChart.deployment << self.ids) & self.trashed)
         )
 
     @property
@@ -104,9 +108,7 @@ class AssocDeployments:
     @property
     def deployment_menus(self) -> Select:
         """Selects deployment menus of the respective deployments."""
-        return DeploymentMenu.select().where(
-            DeploymentMenu.deployment << self.ids
-        )
+        return DeploymentMenu.select().where(DeploymentMenu.deployment << self.ids)
 
     @property
     def systems(self) -> Select:
@@ -162,10 +164,10 @@ def get_deployment(ident: int, customer: Union[Customer, int]) -> Deployment:
 
 
 def get_deployments(
-        customer: Union[Customer, int],
-        testing: bool = True,
-        content: bool = False,
-        trashed: Union[Expression, bool] = True
+    customer: Union[Customer, int],
+    testing: bool = True,
+    content: bool = False,
+    trashed: Union[Expression, bool] = True,
 ) -> Union[Select, AssocDeployments]:
     """Selects the deployments of the given customer."""
 

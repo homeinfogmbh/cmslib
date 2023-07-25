@@ -4,7 +4,7 @@ from enum import Enum
 from typing import NamedTuple
 
 
-__all__ = ['CHARTS', 'ChartMode', 'CheckResult', 'Transitions']
+__all__ = ["CHARTS", "ChartMode", "CheckResult", "Transitions"]
 
 
 CHARTS = {}
@@ -13,9 +13,9 @@ CHARTS = {}
 class ChartMode(Enum):
     """JSON serialization modes."""
 
-    FULL = 'full'
-    BRIEF = 'brief'
-    ANON = 'anon'
+    FULL = "full"
+    BRIEF = "brief"
+    ANON = "anon"
 
 
 class CheckResult(NamedTuple):
@@ -28,7 +28,7 @@ class CheckResult(NamedTuple):
 class Transitions(Enum):
     """Effects available for chart transition effects."""
 
-    FADE_IN = 'fade-in'
-    MOSAIK = 'mosaik'
-    SLIDE_IN = 'slide-in'
-    RANDOM = 'random'
+    FADE_IN = "fade-in"
+    MOSAIK = "mosaik"
+    SLIDE_IN = "slide-in"
+    RANDOM = "random"

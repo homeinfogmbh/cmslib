@@ -8,7 +8,7 @@ from cmslib import dom
 from cmslib.orm.charts.api import Chart
 
 
-__all__ = ['Quotes']
+__all__ = ["Quotes"]
 
 
 DomModel = Union[dom.BriefChart, dom.Quotes]
@@ -18,7 +18,7 @@ class Quotes(Chart):
     """Chart for quotations."""
 
     class Meta:
-        table_name = 'chart_quotes'
+        table_name = "chart_quotes"
 
     font_color = IntegerField(default=0x000000)
     background_color = IntegerField(default=0x000000)

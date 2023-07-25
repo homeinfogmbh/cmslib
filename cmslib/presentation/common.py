@@ -25,7 +25,7 @@ from cmslib.orm.group import Group
 from cmslib.orm.menu import Menu, MenuItem, MenuItemChart
 
 
-__all__ = ['IndexedBaseChart', 'Presentation']
+__all__ = ["IndexedBaseChart", "Presentation"]
 
 
 LOGGER = getLogger(__file__)
@@ -46,7 +46,7 @@ class IndexedChart(NamedTuple):
 
 
 def get_indexed_charts(
-        indexed_base_charts: Iterable[IndexedBaseChart]
+    indexed_base_charts: Iterable[IndexedBaseChart],
 ) -> Iterator[IndexedChart]:
     """Yields indexed charts."""
 
@@ -56,9 +56,7 @@ def get_indexed_charts(
 
     for chart_type in CHARTS.values():
         for chart in chart_type.prefetch(
-                chart_type.select(cascade=True).where(
-                    chart_type.base << base_chart_ids
-                )
+            chart_type.select(cascade=True).where(chart_type.base << base_chart_ids)
         ):
             charts_by_base_chart[chart.base] = chart
 
@@ -84,7 +82,7 @@ def key(model: Model) -> int:
 
 
 def get_group_levels(
-        groups: Groups, memberships: Iterable[Group]
+    groups: Groups, memberships: Iterable[Group]
 ) -> Iterator[list[Group]]:
     """Yields group levels."""
 
@@ -100,17 +98,16 @@ def get_group_set(group_levels: Iterable[list[Group]]) -> set[Group]:
 
 
 def get_group_configurations(
-        group_levels: Iterable[list[Group]],
-        groups: set[Group]
+    group_levels: Iterable[list[Group]], groups: set[Group]
 ) -> Iterator[Configuration]:
     """Yields group configurations."""
 
     configurations = defaultdict(set)
 
-    for config in Configuration.select(
-            GroupConfiguration, cascade=True).join_from(
-            Configuration, GroupConfiguration).where(
-            GroupConfiguration.group << groups
+    for config in (
+        Configuration.select(GroupConfiguration, cascade=True)
+        .join_from(Configuration, GroupConfiguration)
+        .where(GroupConfiguration.group << groups)
     ):
         configurations[config.groupconfiguration.group_id].add(config)
 
@@ -132,10 +129,10 @@ def get_configuration(*configs: Iterable[Configuration]) -> Configuration:
 def get_group_base_charts(groups: set[Group]) -> Iterator[IndexedBaseChart]:
     """Charts attached to groups, the object is a member of."""
 
-    for base_chart in BaseChart.select(GroupBaseChart, cascade=True).join_from(
-            BaseChart, GroupBaseChart).where(
-            (GroupBaseChart.group << groups)
-            & (BaseChart.trashed == 0)
+    for base_chart in (
+        BaseChart.select(GroupBaseChart, cascade=True)
+        .join_from(BaseChart, GroupBaseChart)
+        .where((GroupBaseChart.group << groups) & (BaseChart.trashed == 0))
     ):
         yield IndexedBaseChart(base_chart.groupbasechart.index, base_chart)
 
@@ -149,24 +146,24 @@ def get_unique_charts(*charts: Iterable[Chart]) -> list[Chart]:
 def get_menu_charts(menus: Iterable[Menu]) -> Iterator[Chart]:
     """Yields charts of the object's menu."""
 
-    base_charts = BaseChart.select().join(
-        MenuItemChart).join(MenuItem).where(
-        (BaseChart.trashed == 0) & (MenuItem.menu << menus)
+    base_charts = (
+        BaseChart.select()
+        .join(MenuItemChart)
+        .join(MenuItem)
+        .where((BaseChart.trashed == 0) & (MenuItem.menu << menus))
     )
 
     for chart_type in CHARTS.values():
-        yield from chart_type.select(cascade=True).where(
-            chart_type.base << base_charts
-        )
+        yield from chart_type.select(cascade=True).where(chart_type.base << base_charts)
 
 
 def get_group_menus(groups: set[Group]) -> Iterable[Menu]:
     """Yields menus attached to groups the object is a member of."""
 
     return Menu.prefetch(
-        Menu.select(cascade=True).join_from(Menu, GroupMenu).where(
-            GroupMenu.group << groups
-        )
+        Menu.select(cascade=True)
+        .join_from(Menu, GroupMenu)
+        .where(GroupMenu.group << groups)
     )
 
 
@@ -176,9 +173,7 @@ def get_menu_tree(menus: Iterable[Menu]) -> Iterable[MenuTreeItem]:
     return MenuTreeItem.from_menus(menus)
 
 
-def get_playlist(
-        *indexed_base_charts: Iterable[IndexedBaseChart]
-) -> list[Chart]:
+def get_playlist(*indexed_base_charts: Iterable[IndexedBaseChart]) -> list[Chart]:
     """Yields the playlist."""
 
     playlist = sorted(get_indexed_charts(chain(*indexed_base_charts)), key=key)
@@ -251,9 +246,7 @@ class Presentation:
     @cached_property
     def _group_configurations(self):
         """Returns the group configurations."""
-        return list(get_group_configurations(
-            self._group_levels, self._group_set
-        ))
+        return list(get_group_configurations(self._group_levels, self._group_set))
 
     @cached_property
     def _configs(self):
@@ -314,16 +307,12 @@ class Presentation:
     def to_json(self) -> dict:
         """Returns a JSON presentation."""
         return {
-            'charts': [
-                chart.to_json(fk_fields=False) for chart in self.charts
-            ],
-            'configuration': self.configuration.to_json(
-                cascade=True, fk_fields=False
-            ),
-            'customer': self.customer.id,
-            'menuItems': [item.to_json() for item in self.menu_tree],
-            'playlist': [
+            "charts": [chart.to_json(fk_fields=False) for chart in self.charts],
+            "configuration": self.configuration.to_json(cascade=True, fk_fields=False),
+            "customer": self.customer.id,
+            "menuItems": [item.to_json() for item in self.menu_tree],
+            "playlist": [
                 chart.to_json(mode=ChartMode.BRIEF, fk_fields=False)
                 for chart in self.playlist
-            ]
+            ],
         }

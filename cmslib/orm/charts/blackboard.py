@@ -15,7 +15,7 @@ from cmslib.orm.charts.api import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, Attachment
 
 
-__all__ = ['Blackboard', 'Image']
+__all__ = ["Blackboard", "Image"]
 
 
 DomModel = Union[dom.BriefChart, dom.Blackboard]
@@ -24,28 +24,28 @@ DomModel = Union[dom.BriefChart, dom.Blackboard]
 class Format(Enum):
     """Image display format."""
 
-    A0 = 'A0'
-    A1 = 'A1'
-    A2 = 'A2'
-    A3 = 'A3'
-    A4 = 'A4'
-    A5 = 'A5'
-    A6 = 'A6'
-    A7 = 'A7'
+    A0 = "A0"
+    A1 = "A1"
+    A2 = "A2"
+    A3 = "A3"
+    A4 = "A4"
+    A5 = "A5"
+    A6 = "A6"
+    A7 = "A7"
 
 
 class Blackboard(Chart):
     """A chart that may contain images."""
 
     class Meta:
-        table_name = 'chart_blackboard'
+        table_name = "chart_blackboard"
 
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates a new chart from a JSON-ish dict."""
         # Pop images first to exclude them from the
         # dictionary before invoking super().from_json().
-        images = json.pop('images', ())
+        images = json.pop("images", ())
         transaction = super().from_json(json, **kwargs)
 
         for image in images:
@@ -67,7 +67,7 @@ class Blackboard(Chart):
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the respective chart."""
-        images = json.pop('images', UNCHANGED) or ()
+        images = json.pop("images", UNCHANGED) or ()
         transaction = super().patch_json(json, **kwargs)
 
         if images is not UNCHANGED:
@@ -85,7 +85,7 @@ class Blackboard(Chart):
         json = super().to_json(mode=mode, **kwargs)
 
         if mode == ChartMode.FULL:
-            json['images'] = [
+            json["images"] = [
                 image.to_json(fk_fields=False, autofields=False)
                 for image in self.images
             ]
@@ -106,11 +106,14 @@ class Image(Attachment):
     """Image for an ImageText chart."""
 
     class Meta:
-        table_name = 'chart_blackboard_image'
+        table_name = "chart_blackboard_image"
 
     chart = ForeignKeyField(
-        Blackboard, column_name='chart', backref='images', on_delete='CASCADE',
-        lazy_load=False
+        Blackboard,
+        column_name="chart",
+        backref="images",
+        on_delete="CASCADE",
+        lazy_load=False,
     )
     format = EnumField(Format, default=Format.A4)
     index = IntegerField(default=0)
@@ -118,7 +121,7 @@ class Image(Attachment):
     @classmethod
     def from_json(cls, json: dict, chart: Blackboard, **kwargs) -> Image:
         """Creates an image from the respective JSON-ish dict."""
-        file_id = json.pop('file')
+        file_id = json.pop("file")
         record = super().from_json(json, **kwargs)
         record.chart = chart
         record.file = get_file(file_id)
@@ -131,6 +134,4 @@ class Image(Attachment):
 
     def to_dom(self) -> dom.Attachment:
         """Returns an XML DOM of this record."""
-        return attachment_dom(
-            self.file, format=self.format.value, index=self.index
-        )
+        return attachment_dom(self.file, format=self.format.value, index=self.index)

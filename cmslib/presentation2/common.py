@@ -27,7 +27,7 @@ from cmslib.presentation2.functions import sorted_base_charts
 from cmslib.presentation2.indexed_base_chart import IndexedBaseChart
 
 
-__all__ = ['Presentation']
+__all__ = ["Presentation"]
 
 
 class Presentation(NamedTuple):
@@ -45,8 +45,8 @@ class Presentation(NamedTuple):
         """Initializes the presentation for the given customer."""
         groups = Groups.for_customer(deployment.customer)
         membership_ids = {
-            group_member_deployment.group for group_member_deployment in
-            GroupMemberDeployment.select().where(
+            group_member_deployment.group
+            for group_member_deployment in GroupMemberDeployment.select().where(
                 GroupMemberDeployment.deployment == deployment.id
             )
         }
@@ -55,61 +55,53 @@ class Presentation(NamedTuple):
         groups_set = set(chain.from_iterable(group_levels))
 
         deployment_menus = {
-            deployment_menu.menu for deployment_menu in
-            DeploymentMenu.select().where(
+            deployment_menu.menu
+            for deployment_menu in DeploymentMenu.select().where(
                 DeploymentMenu.deployment == deployment
             )
         }
         group_menus = {
-            group_menu.menu for group_menu in GroupMenu.select().where(
-                GroupMenu.group << groups_set
-            )
+            group_menu.menu
+            for group_menu in GroupMenu.select().where(GroupMenu.group << groups_set)
         }
-        menu_ids = {
-            *deployment_menus,
-            *group_menus
-        }
+        menu_ids = {*deployment_menus, *group_menus}
 
         try:
-            configuration = DeploymentConfiguration.select().where(
-                DeploymentConfiguration.deployment == deployment
-            ).get().configuration
+            configuration = (
+                DeploymentConfiguration.select()
+                .where(DeploymentConfiguration.deployment == deployment)
+                .get()
+                .configuration
+            )
         except DeploymentConfiguration.DoesNotExist:
             try:
-                configuration, *_ = get_group_configurations(
-                    group_levels, groups_set
-                )
+                configuration, *_ = get_group_configurations(group_levels, groups_set)
             except ValueError:
                 raise NoConfigurationFound()
 
         play_order = sorted_base_charts(
             chain(
                 IndexedBaseChart.from_groups(groups_set),
-                IndexedBaseChart.from_deployment(deployment)
+                IndexedBaseChart.from_deployment(deployment),
             )
         )
         menu_base_charts = {
-            menu_item_chart.base_chart for menu_item_chart in
-            MenuItemChart.select().join(MenuItem).where(
-                MenuItem.menu << menu_ids
-            )
+            menu_item_chart.base_chart
+            for menu_item_chart in MenuItemChart.select()
+            .join(MenuItem)
+            .where(MenuItem.menu << menu_ids)
         }
-        base_charts = {
-            *menu_base_charts,
-            *play_order
-        }
-        chart_map = {
-            chart.base.id: chart for chart in get_charts(base_charts)
-        }
+        base_charts = {*menu_base_charts, *play_order}
+        chart_map = {chart.base.id: chart for chart in get_charts(base_charts)}
         return cls(
             deployment.customer,
-            Configuration.select(cascade=True).where(
-                Configuration.id == configuration
-            ).get(),
+            Configuration.select(cascade=True)
+            .where(Configuration.id == configuration)
+            .get(),
             chart_map,
             [ident for ident in play_order if ident in chart_map],
             list(MenuTreeItem.from_menu_ids(menu_ids)),
-            deployment
+            deployment,
         )
 
     @property
@@ -137,21 +129,17 @@ class Presentation(NamedTuple):
     def to_json(self) -> dict:
         """Returns a JSON presentation."""
         json = {
-            'charts': [
-                chart.to_json(fk_fields=False) for chart in self.charts
-            ],
-            'configuration': self.configuration.to_json(
-                cascade=True, fk_fields=False
-            ),
-            'customer': self.customer.id,
-            'menuItems': [item.to_json() for item in self.menu_tree],
-            'playlist': [
+            "charts": [chart.to_json(fk_fields=False) for chart in self.charts],
+            "configuration": self.configuration.to_json(cascade=True, fk_fields=False),
+            "customer": self.customer.id,
+            "menuItems": [item.to_json() for item in self.menu_tree],
+            "playlist": [
                 chart.to_json(mode=ChartMode.BRIEF, fk_fields=False)
                 for chart in self.playlist
-            ]
+            ],
         }
 
         if self.deployment is not None:
-            json['deployment'] = self.deployment.to_json(address=True)
+            json["deployment"] = self.deployment.to_json(address=True)
 
         return json

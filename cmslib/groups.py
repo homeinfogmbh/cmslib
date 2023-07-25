@@ -9,7 +9,7 @@ from mdb import Customer
 from cmslib.orm.group import Group
 
 
-__all__ = ['Groups']
+__all__ = ["Groups"]
 
 
 def sort_by_index(groups: Iterable[Group]) -> list[Group]:
@@ -27,7 +27,7 @@ def get_ids(ids_or_groups: Iterable[Union[int, Group]]) -> Iterator[int]:
         elif isinstance(item, Group):
             yield item.id
         else:
-            raise TypeError(f'Not a group or ID: {item}')
+            raise TypeError(f"Not a group or ID: {item}")
 
 
 class Groups:
@@ -39,9 +39,7 @@ class Groups:
     @classmethod
     def for_customer(cls, customer: Union[Customer, int]) -> Groups:
         """Creates a Groups object from groups of the given customer."""
-        return cls(
-            Group.select(cascade=True).where(Group.customer == customer)
-        )
+        return cls(Group.select(cascade=True).where(Group.customer == customer))
 
     @property
     def toplevel(self) -> Iterator[Group]:
@@ -51,7 +49,8 @@ class Groups:
     def groups(self, ids_or_groups: Iterable[Union[Group, int]]) -> set[Group]:
         """Yields groups with the given IDs."""
         return {
-            group for ident, group in self._groups.items()
+            group
+            for ident, group in self._groups.items()
             if ident in set(get_ids(ids_or_groups))
         }
 
@@ -71,9 +70,7 @@ class Groups:
         if root is None:
             return sort_by_index(map(self.tree, self.toplevel))
 
-        return {
-            root: sort_by_index(map(self.tree, self.children_of(root)))
-        }
+        return {root: sort_by_index(map(self.tree, self.children_of(root)))}
 
     def parents(self, group: Group) -> Iterator[Group]:
         """Yields parents of the given group."""

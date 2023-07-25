@@ -11,7 +11,7 @@ from cmslib import dom
 from cmslib.orm.charts.api import Chart
 
 
-__all__ = ['Mode', 'URL']
+__all__ = ["Mode", "URL"]
 
 
 DomModel = Union[dom.BriefChart, dom.URL]
@@ -20,15 +20,15 @@ DomModel = Union[dom.BriefChart, dom.URL]
 class Mode(Enum):
     """The type of the URL."""
 
-    RSS = 'RSS'
-    HTML = 'HTML'
+    RSS = "RSS"
+    HTML = "HTML"
 
 
 class URL(Chart):
     """A chart for with configurable URLs."""
 
     class Meta:
-        table_name = 'chart_url'
+        table_name = "chart_url"
 
     url = CharField()
     mode = EnumField(Mode)

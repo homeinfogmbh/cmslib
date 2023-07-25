@@ -9,7 +9,7 @@ from mdb import Customer
 from cmslib.orm.schedule import Schedule
 
 
-__all__ = ['get_schedule', 'get_schedules']
+__all__ = ["get_schedule", "get_schedules"]
 
 
 def get_schedule(ident: int, customer: Union[Customer, int]) -> Schedule:
@@ -21,6 +21,4 @@ def get_schedule(ident: int, customer: Union[Customer, int]) -> Schedule:
 def get_schedules(customer: Union[Customer, int]) -> Select:
     """Selects the schedules of the given customer."""
 
-    return Schedule.select(cascade=True).where(
-        Schedule.customer == customer
-    )
+    return Schedule.select(cascade=True).where(Schedule.customer == customer)

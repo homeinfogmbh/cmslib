@@ -13,7 +13,7 @@ from cmslib.orm.charts.api import ChartMode, Chart
 from cmslib.orm.common import UNCHANGED, DSCMS4Model
 
 
-__all__ = ['Mode', 'Form']
+__all__ = ["Mode", "Form"]
 
 
 DomModel = Union[dom.BriefChart, dom.Form]
@@ -22,16 +22,16 @@ DomModel = Union[dom.BriefChart, dom.Form]
 class Mode(Enum):
     """Form type."""
 
-    REPAIR = 'repair'
-    TENANT_TO_TENANT = 'tenant2tenant'
-    TENANT_TO_LANDLORD = 'tenant2landlord'
+    REPAIR = "repair"
+    TENANT_TO_TENANT = "tenant2tenant"
+    TENANT_TO_LANDLORD = "tenant2landlord"
 
 
 class Form(Chart):
     """A form chart."""
 
     class Meta:
-        table_name = 'chart_form'
+        table_name = "chart_form"
 
     mode = EnumField(Mode)
     text = HTMLTextField(null=True)
@@ -39,7 +39,7 @@ class Form(Chart):
     @classmethod
     def from_json(cls, json: dict, **kwargs) -> Transaction:
         """Creates the chart from a JSON-ish dict."""
-        choices = json.pop('choices', None) or ()
+        choices = json.pop("choices", None) or ()
         transaction = super().from_json(json, **kwargs)
 
         for choice in choices:
@@ -56,7 +56,7 @@ class Form(Chart):
 
     def patch_json(self, json: dict, **kwargs) -> Transaction:
         """Patches the chart from a JSON-ish dict."""
-        choices = json.pop('choices', UNCHANGED) or ()
+        choices = json.pop("choices", UNCHANGED) or ()
         transaction = super().patch_json(json, **kwargs)
 
         if choices is not UNCHANGED:
@@ -74,7 +74,7 @@ class Form(Chart):
         json = super().to_json(mode=mode, **kwargs)
 
         if mode == ChartMode.FULL:
-            json['choices'] = [choice.to_json() for choice in self.choices]
+            json["choices"] = [choice.to_json() for choice in self.choices]
 
         return json
 
@@ -94,11 +94,14 @@ class Choice(DSCMS4Model):
     """Choice options for forms."""
 
     class Meta:
-        table_name = 'chart_form_choice'
+        table_name = "chart_form_choice"
 
     form = ForeignKeyField(
-        Form, column_name='form', backref='choices', on_delete='CASCADE',
-        lazy_load=False
+        Form,
+        column_name="form",
+        backref="choices",
+        on_delete="CASCADE",
+        lazy_load=False,
     )
     text = HTMLTextField()
     index = IntegerField(default=0)

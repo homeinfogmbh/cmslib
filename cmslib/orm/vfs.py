@@ -10,7 +10,7 @@ from cmslib.orm.charts import BaseChart
 from cmslib.orm.common import DSCMS4Model, TreeNode
 
 
-__all__ = ['MODELS', 'DirectoryNotEmpty', 'Directory', 'ContentChart']
+__all__ = ["MODELS", "DirectoryNotEmpty", "Directory", "ContentChart"]
 
 
 class DirectoryNotEmpty(Exception):
@@ -22,8 +22,7 @@ class Directory(TreeNode):
 
     name = HTMLCharField(255)
     parent = ForeignKeyField(
-        'self', column_name='parent', null=True, backref='children',
-        lazy_load=True
+        "self", column_name="parent", null=True, backref="children", lazy_load=True
     )
 
     @property
@@ -42,8 +41,7 @@ class Directory(TreeNode):
     def add_base_chart(self, base_chart: BaseChart):
         """Adds a base chart to the directory."""
         try:
-            return self.base_charts.where(
-                ContentChart.base_chart == base_chart).get()
+            return self.base_charts.where(ContentChart.base_chart == base_chart).get()
         except ContentChart.DoesNotExist:
             content_chart = ContentChart(directory=self, base_chart=base_chart)
             content_chart.save()
@@ -52,7 +50,8 @@ class Directory(TreeNode):
     def remove_base_chart(self, base_chart: BaseChart):
         """Removes a base chart from the directory."""
         for content_chart in self.base_charts.where(
-                ContentChart.base_chart == base_chart):
+            ContentChart.base_chart == base_chart
+        ):
             content_chart.delete_instance()
 
     def delete_instance(self, *args, **kwargs) -> int:
@@ -65,24 +64,23 @@ class Directory(TreeNode):
         raise DirectoryNotEmpty()
 
     def to_json(
-            self,
-            brief: bool = False,
-            children: bool = False,
-            base_charts: bool = False,
-            **kwargs
+        self,
+        brief: bool = False,
+        children: bool = False,
+        base_charts: bool = False,
+        **kwargs,
     ) -> dict:
         """Returns JSON-ish dict."""
         if brief:
-            return {'id': self.id, 'name': self.name}
+            return {"id": self.id, "name": self.name}
 
         json = super().to_json(**kwargs)
 
         if children:
-            json['directories'] = [
-                child.to_json(brief=True) for child in self.children]
+            json["directories"] = [child.to_json(brief=True) for child in self.children]
 
         if base_charts:
-            json['baseCharts'] = [cc.base_chart_id for cc in self.base_charts]
+            json["baseCharts"] = [cc.base_chart_id for cc in self.base_charts]
 
         return json
 
@@ -91,15 +89,17 @@ class ContentChart(DSCMS4Model):
     """Deployments as members in groups."""
 
     class Meta:
-        table_name = 'content_chart'
+        table_name = "content_chart"
 
     directory = ForeignKeyField(
-        Directory, column_name='directory', backref='base_charts',
-        on_delete='CASCADE', lazy_load=False
+        Directory,
+        column_name="directory",
+        backref="base_charts",
+        on_delete="CASCADE",
+        lazy_load=False,
     )
     base_chart = ForeignKeyField(
-        BaseChart, column_name='base_chart', on_delete='CASCADE',
-        lazy_load=False
+        BaseChart, column_name="base_chart", on_delete="CASCADE", lazy_load=False
     )
 
 

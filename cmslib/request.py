@@ -17,13 +17,13 @@ from cmslib.orm.charts import CHARTS, BaseChart, Chart, ChartMode
 from cmslib.orm.settings import Settings
 
 
-__all__ = ['CHART_TYPE', 'CHART_TYPES', 'get_chart_mode', 'get_trashed_flag']
+__all__ = ["CHART_TYPE", "CHART_TYPES", "get_chart_mode", "get_trashed_flag"]
 
 
 def _parse_charts(type_names: str) -> Iterator[Type[Chart]]:
     """Yields charts by type name."""
 
-    for type_name in type_names.split(','):
+    for type_name in type_names.split(","):
         try:
             yield CHARTS[type_name]
         except KeyError:
@@ -34,7 +34,7 @@ def _get_chart_types() -> Iterator[Type[Chart]]:
     """Yields selected chart types."""
 
     try:
-        type_names = request.args['types']
+        type_names = request.args["types"]
     except KeyError:
         return CHARTS.values()
 
@@ -55,7 +55,7 @@ CHART_TYPES = LocalProxy(_filtered_chart_types)
 def _get_chart_type() -> Chart:
     """Returns the selected chart type."""
 
-    chart_type = request.args['type']
+    chart_type = request.args["type"]
 
     try:
         chart_type = CHARTS[chart_type]
@@ -75,21 +75,19 @@ def get_chart_mode() -> ChartMode:
     """Determines the extent of the dataset."""
 
     try:
-        mode = request.args['mode']
+        mode = request.args["mode"]
     except KeyError:
         return ChartMode.FULL
 
     return ChartMode(mode)
 
 
-def get_trashed_flag(
-        customer: Union[Customer, int]
-) -> Union[Expression, bool]:
+def get_trashed_flag(customer: Union[Customer, int]) -> Union[Expression, bool]:
     """Returns an expression to select base
     charts with a certain trashed flag.
     """
 
-    if (trashed := get_bool('trashed', default=None)) is None:
+    if (trashed := get_bool("trashed", default=None)) is None:
         trashed = Settings.for_customer(customer).trashed
 
     if trashed is None:

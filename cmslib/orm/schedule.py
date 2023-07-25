@@ -10,16 +10,16 @@ from cmslib import dom
 from cmslib.orm.common import CustomerModel
 
 
-__all__ = ['MODELS', 'TimeUnit', 'Schedule']
+__all__ = ["MODELS", "TimeUnit", "Schedule"]
 
 
 class TimeUnit(Enum):
     """Time units."""
 
-    DAY = 'day'
-    WEEK = 'week'
-    MONTH = 'month'
-    YEAR = 'year'
+    DAY = "day"
+    WEEK = "week"
+    MONTH = "month"
+    YEAR = "year"
 
 
 class Schedule(CustomerModel):

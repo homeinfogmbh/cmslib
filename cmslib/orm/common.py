@@ -15,18 +15,18 @@ from peeweeplus import MySQLDatabaseProxy, JSONModel
 
 
 __all__ = [
-    'UNCHANGED',
-    'DATABASE',
-    'DSCMS4Model',
-    'CustomerModel',
-    'TreeNode',
-    'Attachment'
+    "UNCHANGED",
+    "DATABASE",
+    "DSCMS4Model",
+    "CustomerModel",
+    "TreeNode",
+    "Attachment",
 ]
 
 
-DATABASE = MySQLDatabaseProxy('dscms4', 'cmslib.conf')
+DATABASE = MySQLDatabaseProxy("dscms4", "cmslib.conf")
 LOGGER = getLogger(__file__)
-UNCHANGED = object()    # Sentinel object for unchanged JSON fields.
+UNCHANGED = object()  # Sentinel object for unchanged JSON fields.
 
 
 class DSCMS4Model(JSONModel):
@@ -39,24 +39,25 @@ class DSCMS4Model(JSONModel):
     def __str__(self):
         """Returns the models' ID and class."""
         cls = type(self)
-        return f'{self.id}@{cls.__name__}'
+        return f"{self.id}@{cls.__name__}"
 
 
 class CustomerModel(DSCMS4Model):
     """Entity that relates to a customer."""
 
     customer = ForeignKeyField(
-        Customer, column_name='customer', on_delete='CASCADE', lazy_load=False
+        Customer, column_name="customer", on_delete="CASCADE", lazy_load=False
     )
 
     def __str__(self):
         """Returns the models' ID and class."""
         cls = type(self)
-        return f'{self.id}:{self.customer_id}@{cls.__name__}'
+        return f"{self.id}:{self.customer_id}@{cls.__name__}"
 
     @classmethod
-    def from_json(cls, json: dict, *, customer: Customer = None,
-                  **kwargs) -> CustomerModel:
+    def from_json(
+        cls, json: dict, *, customer: Customer = None, **kwargs
+    ) -> CustomerModel:
         """Creates a new record from the provided
         JSON-ish dictionary for a customer.
 
@@ -64,11 +65,11 @@ class CustomerModel(DSCMS4Model):
         context exists, the current HIS customer will be used.
         """
         if customer is not None:
-            LOGGER.warning('Explicitly set customer to: %s.', customer)
+            LOGGER.warning("Explicitly set customer to: %s.", customer)
         elif has_request_context():
             customer = CUSTOMER.id
         else:
-            raise TypeError('No customer specified.')
+            raise TypeError("No customer specified.")
 
         record = super().from_json(json, **kwargs)
         record.customer = customer
@@ -80,8 +81,13 @@ class CustomerModel(DSCMS4Model):
         if not cascade:
             return super().select(*args)
 
-        return super().select(cls, Customer, Company, Address, *args).join(
-            Customer).join(Company).join(Address, join_type=JOIN.LEFT_OUTER)
+        return (
+            super()
+            .select(cls, Customer, Company, Address, *args)
+            .join(Customer)
+            .join(Company)
+            .join(Address, join_type=JOIN.LEFT_OUTER)
+        )
 
 
 class TreeNode(CustomerModel):
@@ -89,11 +95,11 @@ class TreeNode(CustomerModel):
 
     @classmethod
     def from_json(
-            cls,
-            json: dict,
-            customer: Union[Customer, int],
-            parent: Optional[Union[TreeNode, int]] = None,
-            **kwargs
+        cls,
+        json: dict,
+        customer: Union[Customer, int],
+        parent: Optional[Union[TreeNode, int]] = None,
+        **kwargs,
     ) -> TreeNode:
         """Creates a group from a JSON-ish dictionary."""
         record = super().from_json(json, **kwargs)
@@ -118,16 +124,18 @@ class TreeNode(CustomerModel):
             return
 
         if not isinstance(parent, cls := type(self)):
-            parent = cls.select().where(
-                (cls.id == parent) & (cls.customer == self.customer)
-            ).get()
+            parent = (
+                cls.select()
+                .where((cls.id == parent) & (cls.customer == self.customer))
+                .get()
+            )
 
         self.parent = parent
 
     def patch_json(self, json: dict, **kwargs) -> None:
         """Creates a group from a JSON-ish dictionary."""
         try:
-            parent = json.pop('parent')
+            parent = json.pop("parent")
         except KeyError:
             pass
         else:
@@ -141,11 +149,11 @@ class TreeNode(CustomerModel):
 
         if parent:
             if self.parent is None:
-                json['parent'] = None
+                json["parent"] = None
             else:
-                json['parent'] = self.parent_id
+                json["parent"] = self.parent_id
         else:
-            json.pop('parent', None)
+            json.pop("parent", None)
 
         return json
 
@@ -153,24 +161,25 @@ class TreeNode(CustomerModel):
 class Attachment(DSCMS4Model):
     """Image for an ImageText chart."""
 
-    file = ForeignKeyField(hisfs.File, column_name='file', lazy_load=False)
+    file = ForeignKeyField(hisfs.File, column_name="file", lazy_load=False)
 
     @classmethod
-    def select(
-            cls,
-            *args,
-            cascade: bool = False,
-            shallow: bool = False
-    ) -> Select:
+    def select(cls, *args, cascade: bool = False, shallow: bool = False) -> Select:
         """Selects images."""
         if not cascade:
             return super().select(*args)
 
         if shallow:
-            return super().select(
-                cls, hisfs.File, *filedb.META_FIELDS, *args
-            ).join(hisfs.File).join(filedb.File)
+            return (
+                super()
+                .select(cls, hisfs.File, *filedb.META_FIELDS, *args)
+                .join(hisfs.File)
+                .join(filedb.File)
+            )
 
-        return super().select(
-            cls, hisfs.File, filedb.File, *args
-        ).join(hisfs.File).join(filedb.File)
+        return (
+            super()
+            .select(cls, hisfs.File, filedb.File, *args)
+            .join(hisfs.File)
+            .join(filedb.File)
+        )

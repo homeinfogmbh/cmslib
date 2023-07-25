@@ -7,13 +7,13 @@ from cmslib.orm.group import Group
 from cmslib.presentation.common import Presentation
 
 
-__all__ = ['Presentation']
+__all__ = ["Presentation"]
 
 
-class Presentation(Presentation):   # pylint: disable=E0102,W0223
+class Presentation(Presentation):  # pylint: disable=E0102,W0223
     """Accumulates content for a group."""
 
-    def __init__(self, group: Group):   # pylint: disable=W0231
+    def __init__(self, group: Group):  # pylint: disable=W0231
         """Sets the respective group."""
         self.group = group
 
@@ -35,5 +35,5 @@ class Presentation(Presentation):   # pylint: disable=E0102,W0223
     def to_json(self) -> dict:
         """Returns a JSON-ish dict."""
         json = super().to_json()
-        json['group'] = self.group.id
+        json["group"] = self.group.id
         return json
